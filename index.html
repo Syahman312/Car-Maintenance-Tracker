@@ -4,22 +4,22 @@
 <title>Car Log</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="theme-color" content="#101a24">
+<meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Car Log">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
-:root{color-scheme:light dark;--bg:#e9eef2;--card:#fff;--tx:#101a24;--mu:#5b6b7a;--ac:#0f766e;--bd:#d3dce3;--red:#c62828;--amb:#b45309;--grn:#15803d}
-@media(prefers-color-scheme:dark){:root{--bg:#0a1119;--card:#142030;--tx:#e6edf3;--mu:#8fa1b2;--ac:#2dd4bf;--bd:#23344a;--red:#f87171;--amb:#fbbf24;--grn:#4ade80}}
+:root{color-scheme:dark;--bg:#000;--card:#0b0b0b;--tx:#f0f0f0;--mu:#7d7d7d;--ac:#e8e8e8;--bd:#1c1c1c;--red:#f87171;--amb:#fbbf24;--grn:#4ade80}
+select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;margin:4px 0 12px}
 *{box-sizing:border-box}
 body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:calc(80px + env(safe-area-inset-bottom))}
 .w{max-width:720px;margin:0 auto;padding:0 14px}
-header{background:#101a24;color:#e9eef2;padding:calc(16px + env(safe-area-inset-top)) 0 20px}
+header{background:#000;border-bottom:1px solid var(--bd);color:var(--tx);padding:calc(16px + env(safe-area-inset-top)) 0 20px}
 header .w{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
-header select{background:transparent;color:#e9eef2;border:0;font:600 18px system-ui,sans-serif;max-width:56vw;padding:0}
-header select option{color:#101a24}
-header small{color:#8fa1b2;display:block}
+header select{background:transparent;color:var(--tx);border:0;width:auto;margin:0;font:600 18px system-ui,sans-serif;max-width:56vw;padding:0}
+header select option{background:#111;color:#eee}
+header small{color:var(--mu);display:block}
 #odo{font:700 34px/1 ui-monospace,"SF Mono",Consolas,monospace;color:#f5b83d;letter-spacing:.04em;font-variant-numeric:tabular-nums;text-align:right}
 #odo small{display:inline;font-size:14px;margin-left:4px}
 #stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
@@ -33,7 +33,7 @@ header small{color:#8fa1b2;display:block}
 button,input,textarea{font:inherit;color:inherit}
 button{background:var(--ac);color:var(--bg);border:0;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
 button.g{background:transparent;color:var(--ac);border:1px solid var(--bd)}
-button.d{background:var(--red);color:#fff}
+button.d{background:var(--red);color:#000}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 input,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);margin:4px 0 12px}
 label{font-size:13px;color:var(--mu)}
@@ -44,7 +44,7 @@ nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);b
 nav button{flex:1;background:none;color:var(--mu);border-radius:0;padding:15px 0;font-size:13px}
 nav button.on{color:var(--ac);box-shadow:inset 0 3px var(--ac)}
 dialog{border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);width:min(440px,92vw);max-height:92vh;padding:18px}
-dialog::backdrop{background:#0009}
+dialog::backdrop{background:#000c}
 dialog h2{margin:0 0 12px;font-size:18px}
 .row{display:flex;gap:8px;align-items:flex-start}.row>*{flex:1}
 .mt{margin-top:10px}
@@ -55,10 +55,9 @@ dialog h2{margin:0 0 12px;font-size:18px}
 <nav><button data-t="log">Services</button><button data-t="fuel">Fuel</button><button data-t="rep">Reports</button><button data-t="todo">Reminders</button><button data-t="set">More</button></nav>
 
 <dialog id="dlg"><form id="f"><h2 id="ft"></h2>
-<label>Tap what was done</label><div id="chips"></div>
-<div class="row mt"><input id="nw" placeholder="Other item…" style="margin:0"><button type="button" class="g" onclick="newItem()">Add item</button></div>
+<label for="si">Items done</label><select id="si"></select><div id="pr"></div>
 <div class="row mt"><div><label for="fd" id="ld">Date</label><input id="fd" type="date"></div><div><label for="fo" id="lo">Odometer (km)</label><input id="fo" type="number" inputmode="numeric" min="0"></div></div>
-<div id="wc"><label>Price of each item (RM)</label><div id="pr"></div><label for="fe">Other costs, e.g. labour (RM)</label><input id="fe" type="number" inputmode="decimal" step="0.01" min="0" oninput="tot()"><div class="r" style="margin-bottom:12px"><b>Total</b><b id="tt"></b></div></div>
+<div id="wc"><label for="fe">Other costs, e.g. labour (RM)</label><input id="fe" type="number" inputmode="decimal" step="0.01" min="0" oninput="tot()"><div class="r" style="margin-bottom:12px"><b>Total</b><b id="tt"></b></div></div>
 <div id="wr" class="row"><div><label for="rpm">Repeat every (months)</label><input id="rpm" type="number" min="0" inputmode="numeric"></div><div><label for="rpk">Repeat every (km)</label><input id="rpk" type="number" min="0" inputmode="numeric"></div></div>
 <div id="wp"><label for="fp">Receipt photo</label><input id="fp" type="file" accept="image/*"><button type="button" class="g" id="rp" onclick="rmPh=1;this.hidden=true" style="margin-bottom:12px">Remove saved receipt</button></div>
 <label for="fn">Notes</label><textarea id="fn" rows="2"></textarea>
@@ -68,7 +67,8 @@ dialog h2{margin:0 0 12px;font-size:18px}
 <label for="cn">Car name</label><input id="cn" required placeholder="e.g. Saga or Wife’s car">
 <label for="co">Current odometer (km)</label><input id="co" type="number" inputmode="numeric" min="0">
 <div class="row"><div><label for="cp">Plate number</label><input id="cp"></div><div><label for="cy">Year</label><input id="cy" type="number" inputmode="numeric"></div></div>
-<label for="cm">Other details (engine, colour, road tax date…)</label><textarea id="cm" rows="3"></textarea>
+<div class="row"><div><label for="cc">Colour</label><input id="cc"></div><div><label for="ce">Engine</label><input id="ce" placeholder="e.g. 1.3L"></div></div>
+<label for="cm">Other details (road tax date, VIN…)</label><textarea id="cm" rows="3"></textarea>
 <div class="row"><button type="button" class="g" onclick="$('#cd').close()">Cancel</button><button type="button" class="d" id="cx" onclick="delC()">Delete</button><button>Save</button></div></form></dialog>
 
 <dialog id="fu"><form id="uf"><h2 id="ut2"></h2>
@@ -107,7 +107,7 @@ const setSvc=(id,o)=>{Object.assign(D.items.find(i=>i.id===id),o,{updated:Date.n
 function render(){
 const c=D.cfg,cs=cars(),car=cur(),L=mine('log'),F=mine('fuel'),y=String(new Date().getFullYear()),sum=a=>a.reduce((s,i)=>s+(+i.cost||0),0);
 $('#cs').innerHTML=cs.length?cs.map(x=>`<option value="${E(x.id)}"${x===car?' selected':''}>${E(x.name)}</option>`).join(''):'<option>Car Log</option>';
-$('#sub').textContent=car?[car.plate,car.year].filter(Boolean).join(' · '):'Add a car to begin';
+$('#sub').textContent=car?[car.plate,car.year,car.colour,car.engine].filter(Boolean).join(' · '):'Add a car to begin';
 $('#odo').innerHTML=car?odoNow().toLocaleString('en-MY')+'<small>km</small>':'';
 $('#stats').innerHTML=car?`<div><b>${rm(sum(L.concat(F).filter(i=>(i.date||'').startsWith(y))))}</b><span>Spent in ${y}</span></div><div><b>${rm(sum(L.concat(F)))}</b><span>Spent overall</span></div><div><b>${L.length} · ${F.length}</b><span>Services · fill-ups</span></div>`:'';
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
@@ -116,9 +116,10 @@ if(tab!=='set'&&!car)h='<p class="m">Add your first car to start logging.</p><bu
 else if(tab==='fuel')h=fuelTab();else if(tab==='rep')h=reports();else if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?L.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(i=>`<div class="c cl" onclick="openF('log','${E(i.id)}')"><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div><div class="m">${fd(i.date)}${i.odo?' · '+km(i.odo):''}</div>${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}${i.ph?`<button class="g mt" onclick="event.stopPropagation();viewP('${E(i.id)}')">View receipt</button>`:''}</div>`).join(''):'<p class="m">No services yet for this car.</p>')}
 else if(tab==='todo'){const U=mine('todo').sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
 h='<button onclick="openF(\'todo\')">Add reminder</button>'+(U.length?U.map(i=>`<div class="c cl" onclick="openF('todo','${E(i.id)}')"><div class="r"><b>${E(i.item)}</b><span class="tag s${st(i)}">${['On track','Due soon','Overdue'][st(i)]}</span></div><div class="m">${i.date?'Due '+fd(i.date):''}${i.date&&i.odo?' · ':''}${i.odo?'at '+km(i.odo):''}</div>${i.notes?`<div class="m">${E(i.notes)}</div>`:''}${i.rpm||i.rpk?'<div class="m">Repeats'+(i.rpm?' every '+i.rpm+' months':'')+(i.rpk?' every '+km(i.rpk):'')+'</div>':''}<button class="g mt" onclick="event.stopPropagation();done('${E(i.id)}')">Mark done</button>${i.date?` <button class="g mt" onclick="event.stopPropagation();ics('${E(i.id)}')">Add to calendar</button>`:''}</div>`).join(''):'<p class="m">Nothing coming up. Add a reminder with a date, a mileage, or both.</p>')}
-else if(tab==='cars')h='<button onclick="openC()">Add car</button>'+cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year].filter(Boolean).join(' · '))}</div>${x.notes?`<div class="m">${E(x.notes)}</div>`:''}</div>`).join('');
-else h=`<div class="c"><b>Your cars</b><br><button class="g mt" onclick="openC()">Add car</button>${cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year].filter(Boolean).join(' · '))}</div></div>`).join('')}</div><div class="c"><b>Your service items</b><p class="m">Tap an item to rename it. Tap × to remove it. Old entries keep their text.</p>${S().map(s=>`<span class="chip" data-id="${E(s.id)}">${E(s.name)}<b data-x="${E(s.id)}">×</b></span>`).join('')}
-<div class="row mt"><input id="ns" placeholder="New item, e.g. Rustproofing" style="margin:0"><button onclick="addSvc($('#ns').value);commit()">Add</button></div></div>
+else if(tab==='cars')h='<button onclick="openC()">Add car</button>'+cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div>${x.notes?`<div class="m">${E(x.notes)}</div>`:''}</div>`).join('');
+else h=`<div class="c"><b>Your cars</b><br><button class="g mt" onclick="openC()">Add car</button>${cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div></div>`).join('')}</div><div class="c"><b>Service items</b><select id="ss">${S().map(s=>`<option value="${E(s.id)}">${E(s.name)}</option>`).join('')}</select>
+<div class="row"><button class="g" onclick="renSvc()">Rename</button><button class="g" onclick="delSvc()">Remove</button></div>
+<div class="row mt"><input id="ns" placeholder="New item, e.g. Rustproofing" style="margin:0"><button onclick="addSvc($('#ns').value);commit()">Add</button></div><p class="m">Old entries keep their text when you rename or remove an item.</p></div>
 <div class="c"><b>Google Sheets sync</b><br><label>Web app URL</label><input value="${E(c.url)}" placeholder="https://script.google.com/macros/s/…/exec" onchange="cf('url',this.value.trim())">
 <label>Secret token (same as in Code.gs)</label><input type="password" value="${E(c.token)}" onchange="cf('token',this.value.trim())">
 <button onclick="sync(1)">Sync now</button><p class="m" id="msg">${E(c.last?'Last synced '+c.last:'Not synced yet')}</p><p class="m">Receipt photos stay on the device that took them. Use Export JSON to carry them across.</p></div>
@@ -129,10 +130,10 @@ const due=car?mine('todo').filter(t=>st(t)>0):[];$('#v').innerHTML=(due.length&&
 $('#v').onclick=e=>{const t=e.target,x=t.dataset.x,ch=t.closest('.chip');
 if(x){if(confirm('Remove this item from your list?'))setSvc(x,{deleted:1})}
 else if(ch&&ch.dataset.id){const s=D.items.find(i=>i.id===ch.dataset.id),n=prompt('Rename item',s.name);if(n&&n.trim())setSvc(s.id,{name:n.replace(/,/g,' ').trim()})}};
-function chips(){$('#chips').innerHTML=[...new Set([...S().map(s=>s.name),...sel])].map(n=>`<span class="chip${sel.has(n)?' on':''}" data-n="${E(n)}">${E(n)}</span>`).join('')}
-$('#chips').onclick=e=>{const n=e.target.dataset.n;if(n){sel.has(n)?sel.delete(n):sel.add(n);chips();prices()}};
-function newItem(){const n=$('#nw').value.replace(/,/g,' ').trim();if(!n)return;addSvc(n);sel.add(n);$('#nw').value='';chips();prices();save()}
-$('#nw').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();newItem()}};
+function chips(){$('#si').innerHTML='<option value="">Add an item…</option>'+S().map(x=>x.name).filter(n=>!sel.has(n)).map(n=>`<option>${E(n)}</option>`).join('')+'<option value="+">New item…</option>'}
+$('#si').onchange=e=>{let v=e.target.value;if(v==='+'){v=(prompt('New item name')||'').replace(/,/g,' ').trim();if(v){addSvc(v);save()}else v=''}if(v){sel.add(v);prices()}chips()};
+function renSvc(){const x=D.items.find(i=>i.id===$('#ss').value);if(!x)return;const n=prompt('Rename item',x.name);if(n&&n.trim())setSvc(x.id,{name:n.replace(/,/g,' ').trim()})}
+function delSvc(){const x=D.items.find(i=>i.id===$('#ss').value);if(x&&confirm('Remove "'+x.name+'" from your list?'))setSvc(x.id,{deleted:1})}
 function openF(k,id,pre){kind=k;editId=id||null;doneId=pre?pre.id:null;rmPh=0;
 const L=k==='log',it=id?D.items.find(i=>i.id===id):pre?{item:pre.item,date:today(),odo:odoNow()||'',notes:pre.notes}:L?{date:today(),odo:odoNow()||''}:{};
 sel=new Set((it.item||'').split(', ').filter(Boolean));chips();
@@ -152,9 +153,9 @@ $('#dlg').close();commit()};
 function del(){const it=D.items.find(i=>i.id===editId);if(it&&confirm('Delete this entry?')){it.deleted=1;it.updated=Date.now();$('#dlg').close();commit()}}
 function viewP(id){kv('get','p:'+id).then(p=>{if(!p)return alert('This receipt was added on another device. Open the app there, or import that device’s backup file.');$('#pi').src=p;$('#pd').showModal()})}
 function openC(id){editC=id||null;const c=id?D.items.find(i=>i.id===id):{};$('#ctt').textContent=id?'Edit car':'Add car';
-$('#cn').value=c.name||'';$('#co').value=c.odo||'';$('#cp').value=c.plate||'';$('#cy').value=c.year||'';$('#cm').value=c.notes||'';$('#cx').hidden=!id;$('#cd').showModal()}
+$('#cn').value=c.name||'';$('#co').value=c.odo||'';$('#cc').value=c.colour||'';$('#ce').value=c.engine||'';$('#cp').value=c.plate||'';$('#cy').value=c.year||'';$('#cm').value=c.notes||'';$('#cx').hidden=!id;$('#cd').showModal()}
 $('#g').onsubmit=e=>{e.preventDefault();let c=editC&&D.items.find(i=>i.id===editC);if(!c){c={id:uid(),kind:'car'};D.items.push(c);D.cfg.sel=c.id}
-Object.assign(c,{name:$('#cn').value.trim(),odo:+$('#co').value||0,plate:$('#cp').value.trim(),year:$('#cy').value.trim(),notes:$('#cm').value.trim(),updated:Date.now()});$('#cd').close();commit()};
+Object.assign(c,{name:$('#cn').value.trim(),odo:+$('#co').value||0,colour:$('#cc').value.trim(),engine:$('#ce').value.trim(),plate:$('#cp').value.trim(),year:$('#cy').value.trim(),notes:$('#cm').value.trim(),updated:Date.now()});$('#cd').close();commit()};
 function delC(){if(!confirm('Delete this car and all its entries?'))return;const now=Date.now();D.items.forEach(i=>{if(i.id===editC||i.carId===editC){i.deleted=1;i.updated=now}});$('#cd').close();commit()}
 function commit(){save();render();if(D.cfg.url){clearTimeout(T);T=setTimeout(sync,1500)}}
 function merge(list){const m=new Map(D.items.map(i=>[i.id,i]));list.forEach(i=>{const o=m.get(i.id);if(!o||o.updated<i.updated)m.set(i.id,i)});D.items=[...m.values()]}
@@ -184,7 +185,8 @@ return `<svg viewBox="0 0 320 165" width="100%" role="img" aria-label="Spending 
 function line(p,u){if(p.length<2)return '<p class="m">Add at least two fill-ups to see this chart.</p>';const ys=p.map(x=>x.y),lo=Math.min(...ys),hi=Math.max(...ys),r=hi-lo||1,pt=p.map((x,i)=>[10+i*300/(p.length-1),130-(x.y-lo)/r*105]);
 return `<svg viewBox="0 0 320 160" width="100%"><polyline points="${pt.map(q=>q.join(',')).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="2"/>${pt.map(q=>`<circle cx="${q[0]}" cy="${q[1]}" r="3" fill="var(--ac)"/>`).join('')}<text x="0" y="10" font-size="10" fill="var(--mu)">${hi.toFixed(2)} ${u}</text><text x="0" y="156" font-size="10" fill="var(--mu)">${lo.toFixed(2)} ${u}</text><text x="320" y="156" font-size="10" text-anchor="end" fill="var(--mu)">${fd(p[p.length-1].d)}</text></svg>`}
 const iso=d=>new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
-function prices(){$('#pr').innerHTML=[...sel].map(n=>`<div class="row" style="align-items:center"><span>${E(n)}</span><input type="number" inputmode="decimal" step="0.01" min="0" placeholder="RM" data-n="${E(n)}" value="${E(PR[n]??'')}" style="margin:4px 0"></div>`).join('');tot()}
+function prices(){const L=kind==='log';$('#pr').innerHTML=[...sel].map(n=>`<div class="row" style="align-items:center;margin:4px 0"><span>${E(n)}</span>${L?`<input type="number" inputmode="decimal" step="0.01" min="0" placeholder="RM" data-n="${E(n)}" value="${E(PR[n]??'')}" style="margin:0">`:''}<button type="button" class="g" data-r="${E(n)}" style="flex:0 0 42px;padding:8px 0">×</button></div>`).join('');tot()}
+$('#pr').onclick=e=>{const n=e.target.dataset.r;if(n){sel.delete(n);prices();chips()}};
 $('#pr').oninput=e=>{if(e.target.dataset.n){PR[e.target.dataset.n]=e.target.value;tot()}};
 function tot(){$('#tt').textContent=rm([...sel].reduce((a,n)=>a+(+PR[n]||0),0)+(+$('#fe').value||0))}
 function preset(m){const n=new Date();RT=today();if(m==='y')RF=n.getFullYear()+'-01-01';else if(m==='0')RF=[...mine('log'),...mine('fuel')].map(i=>i.date).filter(Boolean).sort()[0]||RT;else RF=iso(new Date(n.getFullYear(),n.getMonth()-(+m)+1,1));render()}
@@ -193,7 +195,7 @@ return `<div class="c"><b>Fuel efficiency</b><div class="r mt"><span>Average</sp
 <div class="mt ${c}"><b>${few?'Add a few more fill-ups for a reliable read.':d<-20?'Dropped noticeably':d<-10?'Slightly down':'Looks normal'}</b></div><div class="m">${few?'':d<-10?'Check tyre pressure, air filter and spark plugs. A big drop can also point to an O2 sensor or engine problem, so have it checked. ':'Compared with your earlier fill-ups. '}A guide only: it assumes you fill to full each time.</div></div>`}
 function reports(){const F=mine('fuel'),L=mine('log');if(!RT)RT=today();if(!RF)RF=iso(new Date(new Date().getFullYear(),new Date().getMonth()-11,1));
 const ctl=`<div class="c"><b>Report period</b><div class="row mt"><div><label for="rf">From</label><input id="rf" type="date" value="${RF}" onchange="RF=this.value||RF;render()"></div><div><label for="rt">To</label><input id="rt" type="date" value="${RT}" onchange="RT=this.value||RT;render()"></div></div>
-${[['This month','1'],['3 months','3'],['6 months','6'],['12 months','12'],['This year','y'],['All time','0']].map(([l,m])=>`<span class="chip" onclick="preset('${m}')">${l}</span>`).join('')}</div>`,
+<select onchange="this.value&&preset(this.value)"><option value="">Quick range…</option>${[['This month','1'],['3 months','3'],['6 months','6'],['12 months','12'],['This year','y'],['All time','0']].map(([l,m])=>`<option value="${m}">${l}</option>`).join('')}</select></div>`,
 a=new Date(RF+'T00:00'),z=new Date(RT+'T00:00'),n=(z.getFullYear()-a.getFullYear())*12+z.getMonth()-a.getMonth()+1,yr=n>24,B=[];
 if(!(n>=1))return ctl+'<p class="m">The From date must be before the To date.</p>';
 if(yr)for(let y=a.getFullYear();y<=z.getFullYear();y++)B.push({k:''+y,l:''+y,a:0,b:0});
