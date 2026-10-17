@@ -17,10 +17,11 @@ body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-seri
 .w{max-width:720px;margin:0 auto;padding:0 14px}
 header{background:#101a24;color:#e9eef2;padding:calc(16px + env(safe-area-inset-top)) 0 20px}
 header .w{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
-h1{margin:0;font-size:18px;font-weight:600}
-header small{color:#8fa1b2}
+header select{background:transparent;color:#e9eef2;border:0;font:600 18px system-ui,sans-serif;max-width:56vw;padding:0}
+header select option{color:#101a24}
+header small{color:#8fa1b2;display:block}
 #odo{font:700 34px/1 ui-monospace,"SF Mono",Consolas,monospace;color:#f5b83d;letter-spacing:.04em;font-variant-numeric:tabular-nums;text-align:right}
-#odo small{font-size:14px;margin-left:4px}
+#odo small{display:inline;font-size:14px;margin-left:4px}
 #stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
 #stats div,.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
 #stats b{display:block;font-size:16px}#stats span{color:var(--mu);font-size:12px}
@@ -36,82 +37,129 @@ button.d{background:var(--red);color:#fff}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 input,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);margin:4px 0 12px}
 label{font-size:13px;color:var(--mu)}
+.chip{display:inline-block;padding:6px 12px;margin:3px 4px 3px 0;border:1px solid var(--bd);border-radius:99px;font-size:14px;cursor:pointer;background:var(--bg);user-select:none}
+.chip.on{background:var(--ac);color:var(--bg);border-color:var(--ac)}
+.chip b{margin-left:8px;opacity:.6;padding:0 2px}
 nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom)}
 nav button{flex:1;background:none;color:var(--mu);border-radius:0;padding:15px 0}
 nav button.on{color:var(--ac);box-shadow:inset 0 3px var(--ac)}
-dialog{border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);width:min(440px,92vw);padding:18px}
+dialog{border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);width:min(440px,92vw);max-height:92vh;padding:18px}
 dialog::backdrop{background:#0009}
-.row{display:flex;gap:8px}.row>*{flex:1}
+dialog h2{margin:0 0 12px;font-size:18px}
+.row{display:flex;gap:8px;align-items:flex-start}.row>*{flex:1}
 .mt{margin-top:10px}
+#pi{display:block;max-width:100%;max-height:72vh;margin:auto}
 </style></head><body>
-<header><div class="w"><div><h1 id="car"></h1><small>Odometer</small></div><div id="odo"></div></div></header>
+<header><div class="w"><div><select id="cs" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div><div id="odo"></div></div></header>
 <main class="w"><div id="stats"></div><div id="v"></div></main>
-<nav><button data-t="log">Log</button><button data-t="todo">Upcoming</button><button data-t="set">Sync</button></nav>
-<dialog id="dlg"><form id="f"><h2 id="ft" style="margin:0 0 12px;font-size:18px"></h2>
-<label for="fi">Item</label><input id="fi" list="sg" required autocomplete="off">
-<datalist id="sg"><option>Engine oil and filter<option>Air filter<option>Cabin filter<option>Spark plugs<option>Brake pads<option>Brake fluid<option>Coolant<option>Transmission fluid<option>Tyres<option>Wheel alignment<option>Battery<option>Wiper blades<option>Road tax and insurance<option>O2 sensor</datalist>
-<div class="row"><div><label for="fd" id="ld">Date</label><input id="fd" type="date"></div><div><label for="fo" id="lo">Odometer (km)</label><input id="fo" type="number" inputmode="numeric" min="0"></div></div>
+<nav><button data-t="log">Log</button><button data-t="todo">Upcoming</button><button data-t="cars">Cars</button><button data-t="set">Settings</button></nav>
+
+<dialog id="dlg"><form id="f"><h2 id="ft"></h2>
+<label>Tap what was done</label><div id="chips"></div>
+<div class="row mt"><input id="nw" placeholder="Other item…" style="margin:0"><button type="button" class="g" onclick="newItem()">Add item</button></div>
+<div class="row mt"><div><label for="fd" id="ld">Date</label><input id="fd" type="date"></div><div><label for="fo" id="lo">Odometer (km)</label><input id="fo" type="number" inputmode="numeric" min="0"></div></div>
 <div id="wc"><label for="fc">Cost (RM)</label><input id="fc" type="number" inputmode="decimal" step="0.01" min="0"></div>
+<div id="wp"><label for="fp">Receipt photo</label><input id="fp" type="file" accept="image/*"><button type="button" class="g" id="rp" onclick="rmPh=1;this.hidden=true" style="margin-bottom:12px">Remove saved receipt</button></div>
 <label for="fn">Notes</label><textarea id="fn" rows="2"></textarea>
 <div class="row"><button type="button" class="g" onclick="$('#dlg').close()">Cancel</button><button type="button" class="d" id="fx" onclick="del()">Delete</button><button>Save</button></div></form></dialog>
+
+<dialog id="cd"><form id="g"><h2 id="ctt"></h2>
+<label for="cn">Car name</label><input id="cn" required placeholder="e.g. Saga or Wife’s car">
+<div class="row"><div><label for="cp">Plate number</label><input id="cp"></div><div><label for="cy">Year</label><input id="cy" type="number" inputmode="numeric"></div></div>
+<label for="cm">Other details (engine, colour, road tax date…)</label><textarea id="cm" rows="3"></textarea>
+<div class="row"><button type="button" class="g" onclick="$('#cd').close()">Cancel</button><button type="button" class="d" id="cx" onclick="delC()">Delete</button><button>Save</button></div></form></dialog>
+
+<dialog id="pd"><img id="pi" alt="Receipt"><button class="g mt" onclick="$('#pd').close()">Close</button></dialog>
 <script>
 const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let D={items:[],cfg:{car:'My Car',url:'',token:'',last:''}},tab='log',kind='log',editId=null,doneId=null,T;
-const idb=()=>new Promise((r,j)=>{const q=indexedDB.open('carlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
-async function load(){try{const db=await idb(),v=await new Promise(r=>{const g=db.transaction('k').objectStore('k').get('d');g.onsuccess=()=>r(g.result);g.onerror=()=>r()});if(v){D.items=v.items||[];D.cfg={...D.cfg,...v.cfg}}}catch(e){}}
-async function save(){try{const db=await idb();db.transaction('k','readwrite').objectStore('k').put(D,'d')}catch(e){}}
+let D={items:[],cfg:{url:'',token:'',last:''}},tab='log',kind='log',editId=null,doneId=null,editC=null,sel=new Set,rmPh=0,T;
+const DEF=['Engine oil and filter','Air filter','Cabin filter','Spark plugs','Brake pads','Brake fluid','Coolant','Transmission fluid','Tyres','Wheel alignment','Battery','Wiper blades','Road tax and insurance'];
+const P=new Promise((r,j)=>{const q=indexedDB.open('carlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
+const kv=(m,k,v)=>P.then(d=>new Promise((r,j)=>{const s=d.transaction('k',m==='get'?'readonly':'readwrite').objectStore('k'),q=m==='get'?s.get(k):s.put(v,k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}));
+const save=()=>kv('put','d',D).catch(()=>{});
+async function load(){try{const v=await kv('get','d');if(v){D.items=v.items||[];D.cfg={...D.cfg,...v.cfg}}}catch(e){}}
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),
 live=k=>D.items.filter(i=>i.kind===k&&!i.deleted),
+S=()=>live('svc').sort((a,b)=>a.name.localeCompare(b.name)),
+cars=()=>live('car'),cur=()=>cars().find(c=>c.id===D.cfg.sel)||cars()[0],
+mine=k=>live(k).filter(i=>cur()&&i.carId===cur().id),
 today=()=>{const d=new Date();return new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)},
 rm=n=>'RM '+(+n||0).toLocaleString('en-MY',{minimumFractionDigits:2,maximumFractionDigits:2}),
 km=n=>(+n).toLocaleString('en-MY')+' km',
 fd=s=>s?new Date(s+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'',
-odoNow=()=>Math.max(0,...live('log').map(i=>+i.odo||0)),
+odoNow=()=>Math.max(0,...mine('log').map(i=>+i.odo||0)),
 st=t=>{const dd=t.date?(new Date(t.date+'T00:00')-new Date(today()+'T00:00'))/864e5:null,dk=t.odo?t.odo-odoNow():null;
 if(dd!==null&&dd<0||dk!==null&&dk<=0)return 2;if(dd!==null&&dd<=30||dk!==null&&dk<=500)return 1;return 0},
 msg=t=>{const e=$('#msg');if(e)e.textContent=t},
-cf=(k,v)=>{D.cfg[k]=v;save();if(k==='car')render()};
+cf=(k,v)=>{D.cfg[k]=v;save()},go=t=>{tab=t;render()};
+function addSvc(n,seed){n=n.replace(/,/g,' ').trim();if(!n)return;const id='svc-'+(n.toLowerCase().replace(/[^a-z0-9]+/g,'-')||uid());let s=D.items.find(i=>i.id===id);
+if(s&&seed)return;if(!s){s={id,kind:'svc'};D.items.push(s)}Object.assign(s,{name:n,deleted:0,updated:seed?1:Date.now()})}
+const setSvc=(id,o)=>{Object.assign(D.items.find(i=>i.id===id),o,{updated:Date.now()});commit()};
 function render(){
-const c=D.cfg,L=live('log'),y=String(new Date().getFullYear()),sum=a=>a.reduce((s,i)=>s+(+i.cost||0),0);
-$('#car').textContent=c.car;$('#odo').innerHTML=odoNow().toLocaleString('en-MY')+'<small>km</small>';
-$('#stats').innerHTML=`<div><b>${rm(sum(L.filter(i=>(i.date||'').startsWith(y))))}</b><span>Spent in ${y}</span></div><div><b>${rm(sum(L))}</b><span>Spent overall</span></div><div><b>${L.length}</b><span>Services logged</span></div>`;
+const c=D.cfg,cs=cars(),car=cur(),L=mine('log'),y=String(new Date().getFullYear()),sum=a=>a.reduce((s,i)=>s+(+i.cost||0),0);
+$('#cs').innerHTML=cs.length?cs.map(x=>`<option value="${E(x.id)}"${x===car?' selected':''}>${E(x.name)}</option>`).join(''):'<option>Car Log</option>';
+$('#sub').textContent=car?[car.plate,car.year].filter(Boolean).join(' · '):'Add a car to begin';
+$('#odo').innerHTML=car?odoNow().toLocaleString('en-MY')+'<small>km</small>':'';
+$('#stats').innerHTML=car?`<div><b>${rm(sum(L.filter(i=>(i.date||'').startsWith(y))))}</b><span>Spent in ${y}</span></div><div><b>${rm(sum(L))}</b><span>Spent overall</span></div><div><b>${L.length}</b><span>Services logged</span></div>`:'';
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
 let h='';
-if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?L.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(i=>`<div class="c cl" onclick="openF('log','${E(i.id)}')"><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div><div class="m">${fd(i.date)}${i.odo?' · '+km(i.odo):''}</div>${i.notes?`<div class="m">${E(i.notes)}</div>`:''}</div>`).join(''):'<p class="m">No services yet. Add your first one.</p>')}
-else if(tab==='todo'){const U=live('todo').sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
+if((tab==='log'||tab==='todo')&&!car)h='<p class="m">Add your first car to start logging.</p><button onclick="go(\'cars\');openC()">Add a car</button>';
+else if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?L.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(i=>`<div class="c cl" onclick="openF('log','${E(i.id)}')"><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div><div class="m">${fd(i.date)}${i.odo?' · '+km(i.odo):''}</div>${i.notes?`<div class="m">${E(i.notes)}</div>`:''}${i.ph?`<button class="g mt" onclick="event.stopPropagation();viewP('${E(i.id)}')">View receipt</button>`:''}</div>`).join(''):'<p class="m">No services yet for this car.</p>')}
+else if(tab==='todo'){const U=mine('todo').sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
 h='<button onclick="openF(\'todo\')">Add reminder</button>'+(U.length?U.map(i=>`<div class="c cl" onclick="openF('todo','${E(i.id)}')"><div class="r"><b>${E(i.item)}</b><span class="tag s${st(i)}">${['On track','Due soon','Overdue'][st(i)]}</span></div><div class="m">${i.date?'Due '+fd(i.date):''}${i.date&&i.odo?' · ':''}${i.odo?'at '+km(i.odo):''}</div>${i.notes?`<div class="m">${E(i.notes)}</div>`:''}<button class="g mt" onclick="event.stopPropagation();done('${E(i.id)}')">Mark done</button></div>`).join(''):'<p class="m">Nothing coming up. Add a reminder with a date, a mileage, or both.</p>')}
-else h=`<div class="c"><label>Car name</label><input value="${E(c.car)}" onchange="cf('car',this.value)">
-<label>Google Sheets web app URL</label><input value="${E(c.url)}" placeholder="https://script.google.com/macros/s/…/exec" onchange="cf('url',this.value.trim())">
+else if(tab==='cars')h='<button onclick="openC()">Add car</button>'+cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year].filter(Boolean).join(' · '))}</div>${x.notes?`<div class="m">${E(x.notes)}</div>`:''}</div>`).join('');
+else h=`<div class="c"><b>Your service items</b><p class="m">Tap an item to rename it. Tap × to remove it. Old entries keep their text.</p>${S().map(s=>`<span class="chip" data-id="${E(s.id)}">${E(s.name)}<b data-x="${E(s.id)}">×</b></span>`).join('')}
+<div class="row mt"><input id="ns" placeholder="New item, e.g. Rustproofing" style="margin:0"><button onclick="addSvc($('#ns').value);commit()">Add</button></div></div>
+<div class="c"><b>Google Sheets sync</b><br><label>Web app URL</label><input value="${E(c.url)}" placeholder="https://script.google.com/macros/s/…/exec" onchange="cf('url',this.value.trim())">
 <label>Secret token (same as in Code.gs)</label><input type="password" value="${E(c.token)}" onchange="cf('token',this.value.trim())">
-<button onclick="sync(1)">Sync now</button><p class="m" id="msg">${E(c.last?'Last synced '+c.last:'Not synced yet')}</p></div>
-<div class="c"><b>Backup file</b><p class="m">Save a JSON copy to iCloud Drive, Google Drive or OneDrive, or load one back in.</p>
+<button onclick="sync(1)">Sync now</button><p class="m" id="msg">${E(c.last?'Last synced '+c.last:'Not synced yet')}</p><p class="m">Receipt photos stay on the device that took them. Use Export JSON to carry them across.</p></div>
+<div class="c"><b>Backup file</b><p class="m">Saves everything, including receipt photos. Keep a copy in iCloud Drive, Google Drive or OneDrive.</p>
 <div class="row"><button class="g" onclick="exp()">Export JSON</button><button class="g" onclick="$('#imp').click()">Import JSON</button></div>
 <input id="imp" type="file" accept=".json,application/json" hidden onchange="imp(this)"></div>`;
 $('#v').innerHTML=h}
-function openF(k,id,pre){kind=k;editId=id||null;doneId=pre?pre.id:null;
-const it=id?D.items.find(i=>i.id===id):pre?{item:pre.item,date:today(),odo:odoNow()||'',notes:pre.notes}:k==='log'?{date:today(),odo:odoNow()||''}:{},L=k==='log';
+$('#v').onclick=e=>{const t=e.target,x=t.dataset.x,ch=t.closest('.chip');
+if(x){if(confirm('Remove this item from your list?'))setSvc(x,{deleted:1})}
+else if(ch&&ch.dataset.id){const s=D.items.find(i=>i.id===ch.dataset.id),n=prompt('Rename item',s.name);if(n&&n.trim())setSvc(s.id,{name:n.replace(/,/g,' ').trim()})}};
+function chips(){$('#chips').innerHTML=[...new Set([...S().map(s=>s.name),...sel])].map(n=>`<span class="chip${sel.has(n)?' on':''}" data-n="${E(n)}">${E(n)}</span>`).join('')}
+$('#chips').onclick=e=>{const n=e.target.dataset.n;if(n){sel.has(n)?sel.delete(n):sel.add(n);chips()}};
+function newItem(){const n=$('#nw').value.replace(/,/g,' ').trim();if(!n)return;addSvc(n);sel.add(n);$('#nw').value='';chips();save()}
+$('#nw').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();newItem()}};
+function openF(k,id,pre){kind=k;editId=id||null;doneId=pre?pre.id:null;rmPh=0;
+const L=k==='log',it=id?D.items.find(i=>i.id===id):pre?{item:pre.item,date:today(),odo:odoNow()||'',notes:pre.notes}:L?{date:today(),odo:odoNow()||''}:{};
+sel=new Set((it.item||'').split(', ').filter(Boolean));chips();
 $('#ft').textContent=(id?'Edit ':'Add ')+(L?'service':'reminder');$('#ld').textContent=L?'Date':'Due date';$('#lo').textContent=L?'Odometer (km)':'Due at (km)';
-$('#wc').hidden=!L;$('#fd').required=L;$('#fx').hidden=!id;
-$('#fi').value=it.item||'';$('#fd').value=it.date||'';$('#fo').value=it.odo||'';$('#fc').value=it.cost??'';$('#fn').value=it.notes||'';$('#dlg').showModal()}
+$('#wc').hidden=$('#wp').hidden=!L;$('#rp').hidden=!it.ph;$('#fp').value='';$('#fd').required=L;$('#fx').hidden=!id;
+$('#fd').value=it.date||'';$('#fo').value=it.odo||'';$('#fc').value=it.cost??'';$('#fn').value=it.notes||'';$('#dlg').showModal()}
 const done=id=>openF('log',null,D.items.find(i=>i.id===id));
-$('#f').onsubmit=e=>{e.preventDefault();const g=i=>$('#'+i).value.trim(),now=Date.now();
-let it=editId&&D.items.find(i=>i.id===editId);if(!it){it={id:uid(),kind};D.items.push(it)}
-Object.assign(it,{item:g('fi'),date:g('fd'),odo:g('fo')?+g('fo'):'',cost:kind==='log'&&g('fc')?+g('fc'):'',notes:g('fn'),updated:now});
+const shrink=f=>new Promise((r,j)=>{const i=new Image,u=URL.createObjectURL(f);i.onload=()=>{const s=Math.min(1,1200/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);r(c.toDataURL('image/jpeg',.72))};i.onerror=j;i.src=u});
+$('#f').onsubmit=async e=>{e.preventDefault();if(!sel.size)return alert('Tap at least one item, or add your own.');
+const g=i=>$('#'+i).value.trim(),now=Date.now();let it=editId&&D.items.find(i=>i.id===editId);
+if(!it){it={id:uid(),kind,carId:cur().id};D.items.push(it)}
+Object.assign(it,{item:[...sel].join(', '),date:g('fd'),odo:g('fo')?+g('fo'):'',cost:kind==='log'&&g('fc')?+g('fc'):'',notes:g('fn'),updated:now});
+const f=$('#fp').files[0];
+if(f){try{await kv('put','p:'+it.id,await shrink(f));it.ph=1}catch(x){alert('Could not read that photo.')}}else if(rmPh){it.ph=0;kv('put','p:'+it.id,null)}
 if(doneId){const t=D.items.find(i=>i.id===doneId);if(t){t.deleted=1;t.updated=now}doneId=null}
 $('#dlg').close();commit()};
 function del(){const it=D.items.find(i=>i.id===editId);if(it&&confirm('Delete this entry?')){it.deleted=1;it.updated=Date.now();$('#dlg').close();commit()}}
+function viewP(id){kv('get','p:'+id).then(p=>{if(!p)return alert('This receipt was added on another device. Open the app there, or import that device’s backup file.');$('#pi').src=p;$('#pd').showModal()})}
+function openC(id){editC=id||null;const c=id?D.items.find(i=>i.id===id):{};$('#ctt').textContent=id?'Edit car':'Add car';
+$('#cn').value=c.name||'';$('#cp').value=c.plate||'';$('#cy').value=c.year||'';$('#cm').value=c.notes||'';$('#cx').hidden=!id;$('#cd').showModal()}
+$('#g').onsubmit=e=>{e.preventDefault();let c=editC&&D.items.find(i=>i.id===editC);if(!c){c={id:uid(),kind:'car'};D.items.push(c);D.cfg.sel=c.id}
+Object.assign(c,{name:$('#cn').value.trim(),plate:$('#cp').value.trim(),year:$('#cy').value.trim(),notes:$('#cm').value.trim(),updated:Date.now()});$('#cd').close();commit()};
+function delC(){if(!confirm('Delete this car and all its entries?'))return;const now=Date.now();D.items.forEach(i=>{if(i.id===editC||i.carId===editC){i.deleted=1;i.updated=now}});$('#cd').close();commit()}
 function commit(){save();render();if(D.cfg.url){clearTimeout(T);T=setTimeout(sync,1500)}}
 function merge(list){const m=new Map(D.items.map(i=>[i.id,i]));list.forEach(i=>{const o=m.get(i.id);if(!o||o.updated<i.updated)m.set(i.id,i)});D.items=[...m.values()]}
 async function sync(manual){const c=D.cfg;if(!c.url){if(manual===1)msg('Paste your web app URL first.');return}
 msg('Syncing…');try{const r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:c.token,items:D.items})}),j=await r.json();
 if(j.error)throw new Error(j.error);merge(j.items);c.last=new Date().toLocaleString('en-GB');await save();render();msg('Synced '+c.last)}
 catch(e){msg('Sync failed: '+e.message+'. Your data is safe on this device.')}}
-async function exp(){const b=new Blob([JSON.stringify({v:1,items:D.items},null,1)],{type:'application/json'}),f=new File([b],'car-log-'+today()+'.json',{type:'application/json'});
+async function exp(){const ph={};for(const i of D.items)if(i.ph&&!i.deleted){const p=await kv('get','p:'+i.id);if(p)ph[i.id]=p}
+const b=new Blob([JSON.stringify({v:2,items:D.items,photos:ph})],{type:'application/json'}),f=new File([b],'car-log-'+today()+'.json',{type:'application/json'});
 try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==='AbortError')return}
 const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()}
-function imp(inp){const f=inp.files[0];if(!f)return;f.text().then(t=>{try{const j=JSON.parse(t);merge(j.items||[]);commit();alert('Imported '+(j.items||[]).length+' records.')}catch(e){alert('That file is not a Car Log backup.')}});inp.value=''}
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()});
+async function imp(inp){const f=inp.files[0];if(!f)return;try{const j=JSON.parse(await f.text());merge(j.items||[]);for(const[k,v]of Object.entries(j.photos||{}))await kv('put','p:'+k,v);commit();alert('Imported '+(j.items||[]).length+' records.')}catch(e){alert('That file is not a Car Log backup.')}inp.value=''}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
 addEventListener('online',()=>sync());
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
-load().then(()=>{render();navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
+load().then(()=>{if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}render();navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
 </script></body></html>
