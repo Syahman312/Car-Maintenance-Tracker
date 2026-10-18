@@ -41,7 +41,7 @@ label{font-size:13px;color:var(--mu)}
 .chip.on{background:var(--ac);color:var(--bg);border-color:var(--ac)}
 .chip b{margin-left:8px;opacity:.6;padding:0 2px}
 nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:var(--card);border-top:1px solid var(--bd);padding-bottom:env(safe-area-inset-bottom)}
-nav button{flex:1;background:none;color:var(--mu);border-radius:0;padding:15px 0;font-size:13px}
+nav button{flex:1;background:none;color:var(--mu);border-radius:0;padding:15px 0;font-size:12px}
 nav button.on{color:var(--ac);box-shadow:inset 0 3px var(--ac)}
 dialog{border:1px solid var(--bd);border-radius:16px;background:var(--card);color:var(--tx);width:min(440px,92vw);max-height:92vh;padding:18px}
 dialog::backdrop{background:#000c}
@@ -50,9 +50,9 @@ dialog h2{margin:0 0 12px;font-size:18px}
 .mt{margin-top:10px}
 #pi{display:block;max-width:100%;max-height:72vh;margin:auto}[hidden]{display:none!important}
 </style></head><body>
-<header><div class="w"><div><select id="cs" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div><div id="odo"></div></div></header>
+<header><div class="w"><div><select id="cs" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div><div><div id="odo"></div><small id="sy" style="text-align:right"></small></div></div></header>
 <main class="w"><div id="stats"></div><div id="v"></div></main>
-<nav><button data-t="log">Services</button><button data-t="fuel">Fuel</button><button data-t="rep">Reports</button><button data-t="todo">Reminders</button><button data-t="set">More</button></nav>
+<nav><button data-t="home">Dashboard</button><button data-t="log">Services</button><button data-t="fuel">Fuel</button><button data-t="rep">Reports</button><button data-t="todo">Reminders</button><button data-t="set">More</button></nav>
 
 <dialog id="dlg"><form id="f"><h2 id="ft"></h2>
 <label for="si">Items done</label><select id="si"></select><div id="pr"></div>
@@ -82,7 +82,7 @@ dialog h2{margin:0 0 12px;font-size:18px}
 <dialog id="pd"><img id="pi" alt="Receipt"><button class="g mt" onclick="$('#pd').close()">Close</button></dialog>
 <script>
 const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let D={items:[],cfg:{url:'',token:'',last:''}},tab='log',kind='log',editId=null,doneId=null,editC=null,editU=null,RF='',RT='',PR={},sel=new Set,rmPh=0,T;
+let D={items:[],cfg:{url:'',token:'',last:''}},tab='home',bnOpen=false,kind='log',editId=null,doneId=null,editC=null,editU=null,RF='',RT='',PR={},sel=new Set,rmPh=0,T;
 const DEF=['Engine oil and filter','Air filter','Cabin filter','Spark plugs','Brake pads','Brake fluid','Coolant','Transmission fluid','Tyres','Wheel alignment','Battery','Wiper blades','Road tax and insurance'];
 const P=new Promise((r,j)=>{const q=indexedDB.open('carlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
 const kv=(m,k,v)=>P.then(d=>new Promise((r,j)=>{const s=d.transaction('k',m==='get'?'readonly':'readwrite').objectStore('k'),q=m==='get'?s.get(k):s.put(v,k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}));
@@ -106,14 +106,14 @@ if(s&&seed)return;if(!s){s={id,kind:'svc'};D.items.push(s)}Object.assign(s,{name
 const setSvc=(id,o)=>{Object.assign(D.items.find(i=>i.id===id),o,{updated:Date.now()});commit()};
 function render(){
 const c=D.cfg,cs=cars(),car=cur(),L=mine('log'),F=mine('fuel'),y=String(new Date().getFullYear()),sum=a=>a.reduce((s,i)=>s+(+i.cost||0),0);
-$('#cs').innerHTML=cs.length?cs.map(x=>`<option value="${E(x.id)}"${x===car?' selected':''}>${E(x.name)}</option>`).join(''):'<option>Car Log</option>';
+$('#cs').innerHTML=cs.length?cs.map(x=>`<option value="${E(x.id)}"${x===car?' selected':''}>${E(x.name)}${x.rtax?' · Tax '+new Date(x.rtax+'T00:00').toLocaleString('en-GB',{month:'short',year:'numeric'}):''}</option>`).join(''):'<option>Car Log</option>';
 $('#sub').textContent=car?[car.plate,car.year,car.colour,car.engine].filter(Boolean).join(' · '):'Add a car to begin';
 $('#odo').innerHTML=car?odoNow().toLocaleString('en-MY')+'<small>km</small>':'';
-$('#stats').innerHTML=car?`<div><b>${rm(sum(L.concat(F).filter(i=>(i.date||'').startsWith(y))))}</b><span>Spent in ${y}</span></div><div><b>${rm(sum(L.concat(F)))}</b><span>Spent overall</span></div><div><b>${L.length} · ${F.length}</b><span>Services · fill-ups</span></div>`:'';
+$('#stats').innerHTML=car&&tab!=='home'?`<div><b>${rm(sum(L.concat(F).filter(i=>(i.date||'').startsWith(y))))}</b><span>Spent in ${y}</span></div><div><b>${rm(sum(L.concat(F)))}</b><span>Spent overall</span></div><div><b>${L.length} · ${F.length}</b><span>Services · fill-ups</span></div>`:'';
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
 let h='';
 if(tab!=='set'&&!car)h='<p class="m">Add your first car to start logging.</p><button onclick="go(\'set\');openC()">Add a car</button>';
-else if(tab==='fuel')h=fuelTab();else if(tab==='rep')h=reports();else if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?L.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(i=>`<div class="c cl" onclick="openF('log','${E(i.id)}')"><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div><div class="m">${fd(i.date)}${i.odo?' · '+km(i.odo):''}</div>${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}${i.ph?`<button class="g mt" onclick="event.stopPropagation();viewP('${E(i.id)}')">View receipt</button>`:''}</div>`).join(''):'<p class="m">No services yet for this car.</p>')}
+else if(tab==='home')h=dash();else if(tab==='fuel')h=fuelTab();else if(tab==='rep')h=reports();else if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?L.sort((a,b)=>(b.date||'').localeCompare(a.date||'')).map(i=>`<div class="c cl" onclick="openF('log','${E(i.id)}')"><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div><div class="m">${fd(i.date)}${i.odo?' · '+km(i.odo):''}</div>${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}${i.ph?`<button class="g mt" onclick="event.stopPropagation();viewP('${E(i.id)}')">View receipt</button>`:''}</div>`).join(''):'<p class="m">No services yet for this car.</p>')}
 else if(tab==='todo'){const U=rem().sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
 h='<button onclick="openF(\'todo\')">Add reminder</button>'+(U.length?U.map(remCard).join(''):'<p class="m">Nothing coming up. Add a reminder, or set your road tax expiry in the car details.</p>')}
 else if(tab==='cars')h='<button onclick="openC()">Add car</button>'+cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div>${x.notes?`<div class="m">${E(x.notes)}</div>`:''}</div>`).join('');
@@ -126,7 +126,7 @@ else h=`<div class="c"><b>Your cars</b><br><button class="g mt" onclick="openC()
 <div class="c"><b>Backup file</b><p class="m">Saves everything, including receipt photos. Keep a copy in iCloud Drive, Google Drive or OneDrive.</p>
 <div class="row"><button class="g" onclick="exp()">Export JSON</button><button class="g" onclick="$('#imp').click()">Import JSON</button></div>
 <input id="imp" type="file" accept=".json,application/json" hidden onchange="imp(this)"></div>`;
-const due=rem().filter(t=>st(t)>0);$('#v').innerHTML=(due.length&&tab!=='todo'&&tab!=='set'?`<div class="c cl s${Math.max(...due.map(st))}" onclick="go('todo')"><b>${due.length} reminder${due.length>1?'s need':' needs'} attention</b><div class="m">Tap to view</div></div>`:'')+h}
+const due=rem().filter(t=>st(t)>0);$('#v').innerHTML=(due.length&&tab!=='todo'&&tab!=='set'&&tab!=='home'?`<div class="c s${Math.max(...due.map(st))}"><div class="r cl" onclick="bnOpen=!bnOpen;render()"><b>${due.length} reminder${due.length>1?'s need':' needs'} attention</b><span class="m">${bnOpen?'Hide ▴':'Show ▾'}</span></div>${bnOpen?due.map(i=>mini(i)).join(''):''}</div>`:'')+h}
 $('#v').onclick=e=>{const t=e.target,x=t.dataset.x,ch=t.closest('.chip');
 if(x){if(confirm('Remove this item from your list?'))setSvc(x,{deleted:1})}
 else if(ch&&ch.dataset.id){const s=D.items.find(i=>i.id===ch.dataset.id),n=prompt('Rename item',s.name);if(n&&n.trim())setSvc(s.id,{name:n.replace(/,/g,' ').trim()})}};
@@ -160,9 +160,9 @@ function delC(){if(!confirm('Delete this car and all its entries?'))return;const
 function commit(){save();render();if(D.cfg.url){clearTimeout(T);T=setTimeout(sync,1500)}}
 function merge(list){const m=new Map(D.items.map(i=>[i.id,i]));list.forEach(i=>{const o=m.get(i.id);if(!o||o.updated<i.updated)m.set(i.id,i)});D.items=[...m.values()]}
 async function sync(manual){const c=D.cfg;if(!c.url){if(manual===1)msg('Paste your web app URL first.');return}
-msg('Syncing…');try{const r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:c.token,items:D.items})}),j=await r.json();
-if(j.error)throw new Error(j.error);merge(j.items);c.last=new Date().toLocaleString('en-GB');await save();render();msg('Synced '+c.last)}
-catch(e){msg('Sync failed: '+e.message+'. Your data is safe on this device.')}}
+msg('Syncing…');sy('Syncing…');try{const r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:c.token,items:D.items})}),j=await r.json();
+if(j.error)throw new Error(j.error);merge(j.items);c.last=new Date().toLocaleString('en-GB');await save();render();msg('Synced '+c.last);sy('Synced '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))}
+catch(e){sy('Sync failed');msg('Sync failed: '+e.message+'. Your data is safe on this device.')}}
 async function exp(){const ph={};for(const i of D.items)if(i.ph&&!i.deleted){const p=await kv('get','p:'+i.id);if(p)ph[i.id]=p}
 const b=new Blob([JSON.stringify({v:2,items:D.items,photos:ph})],{type:'application/json'}),f=new File([b],'car-log-'+today()+'.json',{type:'application/json'});
 try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==='AbortError')return}
@@ -224,11 +224,26 @@ ${v?'<div class="m">From your car details. Tap to edit.</div>':''}${i.notes?`<di
 function rg(a){const c=cur(),T=+(c&&c.tank)||0;if(!T)return '<div class="m mt">Add your fuel tank size in the car details to see your full-tank range.</div>';
 const full=T*a,L=mine('fuel').filter(i=>i.odo).sort((x,y)=>y.odo-x.odo)[0],dr=L?Math.max(0,odoNow()-L.odo):0,left=full-dr;
 return `<div class="r"><span>Full tank range (${T} L)</span><b>about ${Math.round(full)} km</b></div>`+(L?`<div class="r"><span>Since last fill-up</span><b>${km(dr)}</b></div><div class="r"><span>Estimated left in tank</span><b>${left>0?'about '+Math.round(left)+' km':'0 km, time to refuel'}</b></div>`:'')}
+const sy=t=>{const y=$('#sy');if(y)y.textContent=D.cfg.url?t:''};
+function lf(i){const{dd,dk}=dl(i);return [dk===null?'':dk>0?km(dk)+' left':'Overdue by '+km(-dk),dd===null?'':dd>0?dd+(dd>1?' days':' day')+' left':dd===0?'Due today':'Overdue by '+(-dd)+(dd<-1?' days':' day')].filter(Boolean).join(' · ')}
+function mini(i,x){return `<div class="r mt cl" onclick="go('todo')"><span>${E(i.item)}</span><span class="tag s${st(i)}">${['On track','Due soon','Overdue'][st(i)]}</span></div><div class="m">${lf(i)}${x||''}</div>`}
+function dash(){const L=mine('log'),F=mine('fuel'),n=today(),od=[...L,...F].filter(i=>i.odo&&i.date).sort((a,b)=>a.date.localeCompare(b.date)),f=od[0],e=od[od.length-1],
+span=f?(new Date(e.date)-new Date(f.date))/864e5:0,kmd=span>=7?(e.odo-f.odo)/span:0,sm=(a,d)=>a.filter(i=>i.date>=d).reduce((s,i)=>s+(+i.cost||0),0),
+mo=n.slice(0,7)+'-01',d30=iso(new Date(Date.now()-30*864e5)),yr=n.slice(0,4)+'-01-01',tot=sm(L,'')+sm(F,''),dist=f?e.odo-f.odo:0,
+R=rem().sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9')),
+ago=d=>{const x=Math.round((new Date(n+'T00:00')-new Date(d+'T00:00'))/864e5);return x<=0?'today':x+(x>1?' days ago':' day ago')},
+ls=[...L].sort((a,b)=>b.date.localeCompare(a.date))[0],lg=[...F].sort((a,b)=>b.date.localeCompare(a.date))[0],
+row=(k,v)=>`<div class="r"><span>${k}</span><b>${v}</b></div>`,
+est=i=>{const{dk}=dl(i);return dk>0&&kmd>0?' · est. '+fd(iso(new Date(Date.now()+dk/kmd*864e5))):''};
+return `<div class="c"><b>Reminders</b>${R.length?R.slice(0,4).map(i=>mini(i,est(i))).join('')+(R.length>4?'<button class="g mt" onclick="go(\'todo\')">Show all '+R.length+'</button>':''):'<p class="m">Nothing due. All clear.</p>'}</div>
+<div class="c"><b>Driving and estimates</b><div class="mt">${kmd?row('Average driving',Math.round(kmd)+' km/day')+row('Estimated per month',km(Math.round(kmd*30)))+row('Estimated per year',km(Math.round(kmd*365))):'<span class="m">Log entries with odometer readings over a week or more to see estimates.</span>'}${ls?row('Last service',fd(ls.date)+' ('+ago(ls.date)+')'):''}${lg?row('Last fill-up',fd(lg.date)+' ('+ago(lg.date)+')'):''}</div></div>
+${health(effs(F))}
+<div class="c"><b>Spending</b><div class="mt">${row('This month',rm(sm(L,mo)+sm(F,mo)))+row('Last 30 days',rm(sm(L,d30)+sm(F,d30)))+row('This year',rm(sm(L,yr)+sm(F,yr)))}${dist>0&&tot?row('Cost per km',rm(tot/dist)):''}${span>=30&&tot?row('Estimated per month',rm(tot/span*30))+row('Estimated per year',rm(tot/span*365)):''}</div></div>`}
 function ics(id){const t=id==='rtax'?rem().find(x=>x.virtual):eff(D.items.find(i=>i.id===id)),car=cars().find(c=>c.id===t.carId)||{},e=new Date(t.date+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);
 const s=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CarLog//EN','BEGIN:VEVENT','UID:'+t.id+(t.carId||'')+'@carlog','DTSTAMP:'+new Date().toISOString().replace(/[-:]|\.\d+/g,''),'DTSTART;VALUE=DATE:'+t.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+e.toISOString().slice(0,10).replace(/-/g,''),'SUMMARY:'+(t.item+' due ('+(car.name||'car')+')').replace(/[,;]/g,' '),'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n'),
 a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/calendar'}));a.download='car-reminder.ics';a.click()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
-addEventListener('online',()=>sync());
+addEventListener('online',()=>sync());document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});setInterval(()=>{if(!document.hidden)sync()},12e4);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 load().then(()=>{if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}render();navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
 </script></body></html>
