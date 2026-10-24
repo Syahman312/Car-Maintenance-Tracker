@@ -49,6 +49,8 @@ dialog h2{margin:0 0 12px;font-size:18px}
 .row{display:flex;gap:8px;align-items:flex-start}.row>*{flex:1}
 .mt{margin-top:10px}
 #pi{display:block;max-width:100%;max-height:72vh;margin:auto}[hidden]{display:none!important}
+a.btn{display:block;text-align:center;padding:10px 14px;border-radius:10px;border:1px solid var(--bd);color:var(--ac);text-decoration:none;font-weight:600}
+#pd{width:min(720px,96vw)}
 .av{width:40px;height:40px;border-radius:50%;object-fit:cover;background:#1c1c1c}
 .tl{position:relative;padding-left:48px;margin-top:12px}
 .tl:before{content:"";position:absolute;left:19px;top:0;bottom:0;width:8px;background:#151515;border:1px solid #262626;border-width:0 1px}
@@ -72,7 +74,7 @@ dialog h2{margin:0 0 12px;font-size:18px}
 <div class="row mt"><div><label for="fd" id="ld">Date</label><input id="fd" type="date"></div><div><label for="fo" id="lo">Odometer (km)</label><input id="fo" type="number" inputmode="numeric" min="0"></div></div>
 <div id="wc"><label for="fe">Other costs, e.g. labour (RM)</label><input id="fe" type="number" inputmode="decimal" step="0.01" min="0" oninput="tot()"><div class="r" style="margin-bottom:12px"><b>Total</b><b id="tt"></b></div></div>
 <div id="wr"><div class="row"><div><label for="rpm">Repeat every (months)</label><input id="rpm" type="number" min="0" inputmode="numeric"></div><div><label for="rpk">Repeat every (km)</label><input id="rpk" type="number" min="0" inputmode="numeric"></div></div><label for="rmd">When both a date and km are set</label><select id="rmd"><option value="or">Due at either one (whichever comes first)</option><option value="and">Due only when both are reached</option></select></div>
-<div id="wp"><label for="fp">Receipt photo</label><input id="fp" type="file" accept="image/*"><button type="button" class="g" id="rp" onclick="rmPh=1;this.hidden=true" style="margin-bottom:12px">Remove saved receipt</button></div>
+<div id="wp"><label for="fp">Receipt (photo or PDF)</label><input id="fp" type="file" accept="image/*,application/pdf" onchange="prev(this)"><div id="pv" class="m" style="margin-bottom:8px"></div><div class="row" style="margin-bottom:12px"><button type="button" class="g" id="vp" onclick="viewP(editId)">View saved file</button><button type="button" class="g" id="rp" onclick="rmPh=1;this.hidden=true;$('#vp').hidden=true">Remove saved file</button></div></div>
 <label for="fn">Notes</label><textarea id="fn" rows="2"></textarea>
 <div class="row"><button type="button" class="g" onclick="$('#dlg').close()">Cancel</button><button type="button" class="d" id="fx" onclick="del()">Delete</button><button>Save</button></div></form></dialog>
 
@@ -93,7 +95,7 @@ dialog h2{margin:0 0 12px;font-size:18px}
 <div class="row"><div><label for="ur">Price per litre (RM)</label><input id="ur" type="number" inputmode="decimal" step="0.001" min="0"></div><div><label for="ul">Litres</label><input id="ul" type="number" inputmode="decimal" step="0.01" min="0" required></div></div>
 <label for="uc">Total cost (RM)</label><input id="uc" type="number" inputmode="decimal" step="0.01" min="0" required>
 <div class="row"><button type="button" class="g" onclick="$('#fu').close()">Cancel</button><button type="button" class="d" id="ux" onclick="delU()">Delete</button><button>Save</button></div></form></dialog>
-<dialog id="pd"><img id="pi" alt="Receipt"><button class="g mt" onclick="$('#pd').close()">Close</button></dialog>
+<dialog id="pd"><img id="pi" alt="Receipt"><iframe id="pf" title="PDF" hidden style="width:100%;height:68vh;border:0;border-radius:8px;background:#fff"></iframe><div id="pb" class="row mt"></div><button class="g mt" onclick="$('#pd').close()">Close</button></dialog>
 <script>
 const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let D={items:[],cfg:{url:'',token:'',last:''}},tab='rep',bnOpen=false,kind='log',editId=null,doneId=null,editC=null,editU=null,RF='',RT='',PR={},rmLg=0,rtab='gen',rO=0,RM='all',RY=0,sel=new Set,rmPh=0,T;
@@ -126,7 +128,7 @@ $('#av').hidden=!(car&&car.logo);if(car&&car.logo)$('#av').src=car.logo;$('#odo'
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
 let h='';
 if(tab!=='set'&&!car)h='<p class="m">Add your first car to start logging.</p><button onclick="go(\'set\');openC()">Add a car</button>';
-else if(tab==='fuel')h=safe(fuelTab);else if(tab==='rep')h=safe(reports);else if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?tl([...L].sort((a,b)=>(b.date||'').localeCompare(a.date||'')),i=>`<div class="ti" onclick="openF('log','${E(i.id)}')"><span class="ic">${E(ico((i.item||'').split(', ')[0]))}</span><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div>${i.odo?`<div class="m">${km(i.odo)}</div>`:''}${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}<div class="r"><span>${i.ph?`<button class="g" style="padding:2px 10px;font-size:12px" onclick="event.stopPropagation();viewP('${E(i.id)}')">Receipt</button>`:''}</span><span class="m">${sd(i.date)}</span></div></div>`):'<p class="m">No services yet for this car.</p>')}
+else if(tab==='fuel')h=safe(fuelTab);else if(tab==='rep')h=safe(reports);else if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?tl([...L].sort((a,b)=>(b.date||'').localeCompare(a.date||'')),i=>`<div class="ti" onclick="openF('log','${E(i.id)}')"><span class="ic">${E(ico((i.item||'').split(', ')[0]))}</span><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div>${i.odo?`<div class="m">${km(i.odo)}</div>`:''}${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}<div class="r"><span>${i.ph?`<button class="g" style="padding:2px 10px;font-size:12px" onclick="event.stopPropagation();viewP('${E(i.id)}')">${i.pt==='pdf'?'PDF':'Receipt'}</button>`:''}</span><span class="m">${sd(i.date)}</span></div></div>`):'<p class="m">No services yet for this car.</p>')}
 else if(tab==='todo'){const U=rem().sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
 h='<button onclick="openF(\'todo\')">Add reminder</button>'+(U.length?U.map(remCard).join(''):'<p class="m">Nothing coming up. Add a reminder, or set your road tax expiry in the car details.</p>')}
 else if(tab==='cars')h='<button onclick="openC()">Add car</button>'+cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div>${x.notes?`<div class="m">${E(x.notes)}</div>`:''}</div>`).join('');
@@ -151,7 +153,7 @@ function openF(k,id,pre){kind=k;editId=id||null;doneId=pre?pre.id:null;rmPh=0;
 const L=k==='log',it=id?D.items.find(i=>i.id===id):pre?{item:pre.item,date:today(),odo:odoNow()||'',notes:pre.notes}:L?{date:today(),odo:odoNow()||''}:{};
 sel=new Set((it.item||'').split(', ').filter(Boolean));chips();
 $('#ft').textContent=(id?'Edit ':'Add ')+(L?'service':'reminder');$('#ld').textContent=L?'Date':'Due date';$('#lo').textContent=L?'Odometer (km)':'Due at (km)';
-$('#wc').hidden=$('#wp').hidden=!L;$('#wr').hidden=L;$('#rpm').value=it.rpm||'';$('#rpk').value=it.rpk||'';$('#rmd').value=it.mode||'or';$('#rp').hidden=!it.ph;$('#fp').value='';$('#fd').required=L;$('#fx').hidden=!id;
+$('#wc').hidden=$('#wp').hidden=!L;$('#wr').hidden=L;$('#rpm').value=it.rpm||'';$('#rpk').value=it.rpk||'';$('#rmd').value=it.mode||'or';$('#rp').hidden=!it.ph;$('#vp').hidden=!(it.ph&&id);$('#pv').innerHTML='';$('#fp').value='';$('#fd').required=L;$('#fx').hidden=!id;
 $('#fd').value=it.date||'';$('#fo').value=it.odo||'';$('#fe').value=it.prices?(it.other||''):(it.cost||'');PR={...(it.prices||{})};prices();$('#fn').value=it.notes||'';$('#dlg').showModal()}
 const done=id=>openF('log',null,D.items.find(i=>i.id===id));
 const shrink=(f,m=1200,t='image/jpeg')=>new Promise((r,j)=>{const i=new Image,u=URL.createObjectURL(f);i.onload=()=>{const s=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);r(c.toDataURL(t,.8))};i.onerror=j;i.src=u});
@@ -160,11 +162,18 @@ const g=i=>$('#'+i).value.trim(),now=Date.now();let it=editId&&D.items.find(i=>i
 if(!it){it={id:uid(),kind,carId:cur().id};D.items.push(it)}
 Object.assign(it,{item:[...sel].join(', '),date:g('fd'),odo:g('fo')?+g('fo'):'',...(kind==='log'?(()=>{const pr={};sel.forEach(n=>{if(+PR[n])pr[n]=+PR[n]});const o=+g('fe')||0,c=Object.values(pr).reduce((a,v)=>a+v,0)+o;return{prices:pr,other:o,cost:c||''}})():{cost:''}),notes:g('fn'),updated:now,...(kind==='todo'?{rpm:+g('rpm')||0,rpk:+g('rpk')||0,mode:$('#rmd').value}:{})});
 const f=$('#fp').files[0];
-if(f){try{await kv('put','p:'+it.id,await shrink(f));it.ph=1}catch(x){alert('Could not read that photo.')}}else if(rmPh){it.ph=0;kv('put','p:'+it.id,null)}
+if(f){try{const pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);await kv('put','p:'+it.id,pdf?await rd(f):await shrink(f));it.ph=1;it.pt=pdf?'pdf':'img'}catch(x){alert('Could not read that file.')}}else if(rmPh){it.ph=0;it.pt='';kv('put','p:'+it.id,null)}
 if(doneId){const t=D.items.find(i=>i.id===doneId);if(t){t.deleted=1;t.updated=now;if(t.rpm||t.rpk){const n=new Date(it.date+'T00:00:00Z');if(t.rpm)n.setUTCMonth(n.getUTCMonth()+t.rpm);D.items.push({id:uid(),kind:'todo',carId:t.carId,item:t.item,notes:t.notes,rpm:t.rpm,rpk:t.rpk,mode:t.mode,date:t.rpm?n.toISOString().slice(0,10):'',odo:t.rpk&&it.odo?it.odo+t.rpk:'',cost:'',updated:now})}}doneId=null}
 $('#dlg').close();commit()};
 function del(){const it=D.items.find(i=>i.id===editId);if(it&&confirm('Delete this entry?')){it.deleted=1;it.updated=Date.now();$('#dlg').close();commit()}}
-function viewP(id){kv('get','p:'+id).then(p=>{if(!p)return alert('This receipt was added on another device. Open the app there, or import that device’s backup file.');$('#pi').src=p;$('#pd').showModal()})}
+const rd=f=>new Promise((r,j)=>{const x=new FileReader;x.onload=()=>r(x.result);x.onerror=j;x.readAsDataURL(f)}),
+blob=(u,t)=>{const b=atob(u.split(',')[1]),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return new Blob([a],{type:t})};
+function prev(inp){const f=inp.files[0],v=$('#pv');v.innerHTML='';if(!f)return;const pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);
+if(pdf&&f.size>8e6){alert('That PDF is over 8 MB. Please choose a smaller file.');inp.value='';return}
+if(pdf)v.textContent='PDF: '+f.name+' ('+Math.round(f.size/1024)+' KB)';else{const i=new Image;i.src=URL.createObjectURL(f);i.style.cssText='max-height:120px;max-width:100%;border-radius:8px';v.appendChild(i)}}
+function viewP(id){const it=D.items.find(i=>i.id===id)||{};kv('get','p:'+id).then(p=>{if(!p)return alert('This file was added on another device. Open the app there, or import that device’s backup file.');
+if(it.pt==='pdf'){const u=URL.createObjectURL(blob(p,'application/pdf'));$('#pi').hidden=true;$('#pf').hidden=false;$('#pf').src=u;$('#pb').innerHTML=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open</a><a class="btn" href="${u}" download="receipt.pdf">Download</a>`}
+else{$('#pf').hidden=true;$('#pf').src='about:blank';$('#pb').innerHTML='';$('#pi').hidden=false;$('#pi').src=p}$('#pd').showModal()})}
 function openC(id){editC=id||null;const c=id?D.items.find(i=>i.id===id):{};$('#ctt').textContent=id?'Edit car':'Add car';
 $('#cn').value=c.name||'';$('#co').value=c.odo||'';$('#cc').value=c.colour||'';$('#ce').value=c.engine||'';$('#cr').value=c.rtax||'';$('#ck').value=c.tank||'';rmLg=0;$('#cl').value='';$('#lx').hidden=!c.logo;$('#cp').value=c.plate||'';$('#cy').value=c.year||'';$('#cm').value=c.notes||'';$('#cx').hidden=!id;$('#cd').showModal()}
 $('#g').onsubmit=async e=>{e.preventDefault();let c=editC&&D.items.find(i=>i.id===editC);if(!c){c={id:uid(),kind:'car'};D.items.push(c);D.cfg.sel=c.id}
