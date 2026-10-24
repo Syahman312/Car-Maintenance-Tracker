@@ -1,13 +1,13 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Car Log</title>
+<title>Garage</title>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#000000">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Car Log">
+<meta name="apple-mobile-web-app-title" content="Garage">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>
 :root{color-scheme:dark;--bg:#000;--card:#0b0b0b;--tx:#f0f0f0;--mu:#7d7d7d;--ac:#e8e8e8;--bd:#1c1c1c;--red:#f87171;--amb:#fbbf24;--grn:#4ade80}
@@ -129,7 +129,7 @@ if(s&&seed)return;if(!s){s={id,kind:'svc'};D.items.push(s)}Object.assign(s,{name
 const setSvc=(id,o)=>{Object.assign(D.items.find(i=>i.id===id),o,{updated:Date.now()});commit()};
 function render(){
 const c=D.cfg,cs=cars(),car=cur(),L=mine('log'),F=mine('fuel'),y=String(new Date().getFullYear()),sum=a=>a.reduce((s,i)=>s+(+i.cost||0),0);
-$('#cs').innerHTML=cs.length?cs.map(x=>`<option value="${E(x.id)}"${x===car?' selected':''}>${E(x.name)}</option>`).join(''):'<option>Car Log</option>';
+$('#cs').innerHTML=cs.length?cs.map(x=>`<option value="${E(x.id)}"${x===car?' selected':''}>${E(x.name)}</option>`).join(''):'<option>Garage</option>';
 $('#sub').textContent=car?[car.plate,car.year,car.colour,car.engine,car.rtax?'Roadtax '+new Date(car.rtax+'T00:00').toLocaleString('en-GB',{month:'short',year:'numeric'}):''].filter(Boolean).join(' · '):'Add a car to begin';
 $('#av').hidden=!(car&&car.logo);if(car&&car.logo)$('#av').src=car.logo;$('#odo').innerHTML=car?odoNow().toLocaleString('en-MY')+'<small>km</small>':'';
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
@@ -197,7 +197,7 @@ async function exp(){const ph={};for(const i of D.items)if(i.ph&&!i.deleted){con
 const b=new Blob([JSON.stringify({v:2,items:D.items,photos:ph})],{type:'application/json'}),f=new File([b],'car-log-'+today()+'.json',{type:'application/json'});
 try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==='AbortError')return}
 const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()}
-async function imp(inp){const f=inp.files[0];if(!f)return;try{const j=JSON.parse(await f.text());merge(j.items||[]);for(const[k,v]of Object.entries(j.photos||{}))await kv('put','p:'+k,v);commit();alert('Imported '+(j.items||[]).length+' records.')}catch(e){alert('That file is not a Car Log backup.')}inp.value=''}
+async function imp(inp){const f=inp.files[0];if(!f)return;try{const j=JSON.parse(await f.text());merge(j.items||[]);for(const[k,v]of Object.entries(j.photos||{}))await kv('put','p:'+k,v);commit();alert('Imported '+(j.items||[]).length+' records.')}catch(e){alert('That file is not a Garage backup.')}inp.value=''}
 function openU(id){editU=id||null;const l=mine('fuel').sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]||{},it=id?D.items.find(i=>i.id===id):{date:today(),odo:odoNow()||'',brand:l.brand,state:l.state,area:l.area,ftype:l.ftype,ppl:l.ppl};
 $('#ut2').textContent=id?'Edit fill-up':'Add fill-up';
 [['ud','date'],['uo','odo'],['ua','area'],['ut','ftype'],['ur','ppl'],['ul','litres'],['uc','cost']].forEach(([k,f])=>$('#'+k).value=it[f]||'');
