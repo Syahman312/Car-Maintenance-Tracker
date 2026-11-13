@@ -13,7 +13,7 @@
 :root{color-scheme:dark;--bg:#000;--card:#0b0b0b;--tx:#f0f0f0;--mu:#7d7d7d;--ac:#e8e8e8;--bd:#1c1c1c;--red:#f87171;--amb:#fbbf24;--grn:#4ade80}
 select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);color:var(--tx);font:inherit;margin:4px 0 12px}
 *{box-sizing:border-box}
-body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:calc(80px + env(safe-area-inset-bottom))}
+body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--tx);padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 .w{max-width:720px;margin:0 auto;padding:0 14px}
 header{background:#000;border-bottom:1px solid var(--bd);color:var(--tx);padding:calc(16px + env(safe-area-inset-top)) 0 20px}
 header .w{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
@@ -51,6 +51,21 @@ dialog h2{margin:0 0 12px;font-size:18px}
 #pi{display:block;max-width:100%;max-height:72vh;margin:auto}[hidden]{display:none!important}
 a.btn{display:block;text-align:center;padding:10px 14px;border-radius:10px;border:1px solid var(--bd);color:var(--ac);text-decoration:none;font-weight:600}
 #pd{width:min(720px,96vw)}
+#fab{position:fixed;right:16px;bottom:calc(70px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;font-size:30px;line-height:1;padding:0;box-shadow:0 6px 20px #000c;z-index:5;transition:transform .2s}
+#fab.open{transform:rotate(45deg)}
+#fm{position:fixed;right:16px;bottom:calc(138px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:flex-end;gap:8px;z-index:5}
+#fm button{border-radius:99px;padding:11px 18px;box-shadow:0 4px 16px #000c;animation:up .18s ease-out}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(140px + env(safe-area-inset-bottom));background:#1a1a1a;border:1px solid #333;color:var(--tx);padding:8px 8px 8px 16px;border-radius:99px;display:flex;gap:12px;align-items:center;z-index:6;font-size:14px;white-space:nowrap;box-shadow:0 6px 20px #000c}
+#toast button{padding:6px 14px}
+#q{margin:10px 0 0}
+#odo{cursor:pointer}
+dialog[open]{animation:up .22s ease-out}
+@keyframes up{from{transform:translateY(24px);opacity:0}}
+#v.an>*{animation:fi .25s ease-out both}
+@keyframes fi{from{opacity:0;transform:translateY(6px)}}
+.cl:active,.ti:active{opacity:.65}
+button:active{transform:scale(.97)}
+.pt{font-size:11px;padding:0 7px;border-radius:99px;border:1px solid var(--amb);color:var(--amb);margin-left:6px;vertical-align:middle}
 .lg{width:30px;height:30px;border-radius:50%;object-fit:cover;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none}
 .m .lg{width:18px;height:18px;font-size:7px;vertical-align:middle}
 .dd{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);margin:4px 0 12px;cursor:pointer}
@@ -72,6 +87,8 @@ a.btn{display:block;text-align:center;padding:10px 14px;border-radius:10px;borde
 </style></head><body>
 <header><div class="w"><div style="display:flex;gap:10px;align-items:center"><img id="av" class="av" alt="" hidden><div><select id="cs" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div></div><div><div id="odo"></div><small id="sy" style="text-align:right"></small></div></div></header>
 <main class="w"><div id="v"></div></main>
+<div id="fm" hidden><button onclick="fab(0);openF('log')">🔧 Service</button><button onclick="fab(0);openU()">⛽ Fill-up</button><button onclick="fab(0);openF('todo')">⏰ Reminder</button></div>
+<button id="fab" aria-label="Add" onclick="fab()">+</button><div id="toast" hidden></div>
 <nav><button data-t="rep">Reports</button><button data-t="log">Services</button><button data-t="fuel">Fuel</button><button data-t="todo">Reminders</button><button data-t="set">More</button></nav>
 
 <dialog id="dlg"><form id="f"><h2 id="ft"></h2>
@@ -101,6 +118,7 @@ a.btn{display:block;text-align:center;padding:10px 14px;border-radius:10px;borde
 <label for="ut">Fuel type</label><input id="ut" list="ft2" autocomplete="off"><datalist id="ft2"><option>RON95<option>RON97<option>Diesel<option>Euro 5 Diesel</datalist>
 <div class="row"><div><label for="ur">Price per litre (RM)</label><input id="ur" type="number" inputmode="decimal" step="0.001" min="0"></div><div><label for="ul">Litres</label><input id="ul" type="number" inputmode="decimal" step="0.01" min="0" required></div></div>
 <label for="uc">Total cost (RM)</label><input id="uc" type="number" inputmode="decimal" step="0.01" min="0" required>
+<label class="m" style="display:flex;gap:8px;align-items:center;margin:0 0 12px"><input id="uff" type="checkbox" style="width:auto;margin:0" checked> Filled to a full tank (keeps km/L accurate)</label>
 <div class="row"><button type="button" class="g" onclick="$('#fu').close()">Cancel</button><button type="button" class="d" id="ux" onclick="delU()">Delete</button><button>Save</button></div></form></dialog>
 <dialog id="pd"><img id="pi" alt="Receipt"><iframe id="pf" title="PDF" hidden style="width:100%;height:68vh;border:0;border-radius:8px;background:#fff"></iframe><div id="pb" class="row mt"></div><button class="g mt" onclick="$('#pd').close()">Close</button></dialog>
 <script>
@@ -123,7 +141,7 @@ fd=s=>s?new Date(s+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'sh
 odoOf=id=>Math.max(+(D.items.find(i=>i.id===id)||{}).odo||0,...D.items.filter(i=>i.carId===id&&!i.deleted&&(i.kind==='log'||i.kind==='fuel')).map(i=>+i.odo||0)),odoNow=()=>cur()?odoOf(cur().id):0,
 st=t=>{t=eff(t);const{dd,dk}=dl(t),a=[dd===null?null:dd<0?2:dd<=30?1:0,dk===null?null:dk<=0?2:dk<=500?1:0].filter(x=>x!==null);return a.length?(t.mode==='and'?Math.min(...a):Math.max(...a)):0},
 msg=t=>{const e=$('#msg');if(e)e.textContent=t},
-cf=(k,v)=>{D.cfg[k]=v;save()},go=t=>{tab=t;render()};
+cf=(k,v)=>{D.cfg[k]=v;save()},go=t=>{tab=t;Q='';fab(0);render();const v=$('#v');v.classList.remove('an');void v.offsetWidth;v.classList.add('an');setTimeout(()=>v.classList.remove('an'),350);scrollTo(0,0)};
 function addSvc(n,seed){n=n.replace(/,/g,' ').trim();if(!n)return;const id='svc-'+(n.toLowerCase().replace(/[^a-z0-9]+/g,'-')||uid());let s=D.items.find(i=>i.id===id);
 if(s&&seed)return;if(!s){s={id,kind:'svc'};D.items.push(s)}Object.assign(s,{name:n,deleted:0,updated:seed?1:Date.now()})}
 const setSvc=(id,o)=>{Object.assign(D.items.find(i=>i.id===id),o,{updated:Date.now()});commit()};
@@ -135,9 +153,9 @@ $('#av').hidden=!(car&&car.logo);if(car&&car.logo)$('#av').src=car.logo;$('#odo'
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
 let h='';
 if(tab!=='set'&&!car)h='<p class="m">Add your first car to start logging.</p><button onclick="go(\'set\');openC()">Add a car</button>';
-else if(tab==='fuel')h=safe(fuelTab);else if(tab==='rep')h=safe(reports);else if(tab==='log'){h='<button onclick="openF(\'log\')">Add service</button>'+(L.length?tl([...L].sort((a,b)=>(b.date||'').localeCompare(a.date||'')),i=>`<div class="ti" onclick="openF('log','${E(i.id)}')"><span class="ic">${E(ico((i.item||'').split(', ')[0]))}</span><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div>${i.odo?`<div class="m">${km(i.odo)}</div>`:''}${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}<div class="r"><span>${i.ph?`<button class="g" style="padding:2px 10px;font-size:12px" onclick="event.stopPropagation();viewP('${E(i.id)}')">${i.pt==='pdf'?'PDF':'Receipt'}</button>`:''}</span><span class="m">${sd(i.date)}</span></div></div>`):'<p class="m">No services yet for this car.</p>')}
+else if(tab==='fuel')h=safe(fuelTab);else if(tab==='rep')h=safe(reports);else if(tab==='log'){h=sb()+(L.filter(fq).length?tl(L.filter(fq).sort((a,b)=>(b.date||'').localeCompare(a.date||'')),i=>`<div class="ti" onclick="openF('log','${E(i.id)}')"><span class="ic">${E(ico((i.item||'').split(', ')[0]))}</span><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div>${i.odo?`<div class="m">${km(i.odo)}</div>`:''}${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}<div class="r"><span>${i.ph?`<button class="g" style="padding:2px 10px;font-size:12px" onclick="event.stopPropagation();viewP('${E(i.id)}')">${i.pt==='pdf'?'PDF':'Receipt'}</button>`:''}</span><span class="m">${sd(i.date)}</span></div></div>`):'<p class="m">'+(Q?'No matches.':'No services yet. Tap + to add one.')+'</p>')}
 else if(tab==='todo'){const U=rem().sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
-h='<button onclick="openF(\'todo\')">Add reminder</button>'+(U.length?U.map(remCard).join(''):'<p class="m">Nothing coming up. Add a reminder, or set your road tax expiry in the car details.</p>')}
+h=(U.length?U.map(remCard).join(''):'<p class="m">Nothing coming up. Add a reminder, or set your road tax expiry in the car details.</p>')}
 else if(tab==='cars')h='<button onclick="openC()">Add car</button>'+cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div>${x.notes?`<div class="m">${E(x.notes)}</div>`:''}</div>`).join('');
 else h=`<div class="c"><b>Your cars</b><br><button class="g mt" onclick="openC()">Add car</button>${cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div></div>`).join('')}</div><div class="c"><b>Service items</b><select id="ss">${S().map(s=>`<option value="${E(s.id)}">${E((s.icon||'')+' '+s.name)}</option>`).join('')}</select>
 <div class="row"><button class="g" onclick="renSvc()">Rename</button><button class="g" onclick="delSvc()">Remove</button><button class="g" onclick="icSvc()">Icon</button></div>
@@ -165,15 +183,15 @@ $('#wc').hidden=$('#wp').hidden=!L;$('#wr').hidden=L;$('#rpm').value=it.rpm||'';
 $('#fd').value=it.date||'';$('#fo').value=it.odo||'';$('#fe').value=it.prices?(it.other||''):(it.cost||'');PR={...(it.prices||{})};prices();$('#fn').value=it.notes||'';$('#dlg').showModal()}
 const done=id=>openF('log',null,D.items.find(i=>i.id===id));
 const shrink=(f,m=1200,t='image/jpeg')=>new Promise((r,j)=>{const i=new Image,u=URL.createObjectURL(f);i.onload=()=>{const s=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);r(c.toDataURL(t,.8))};i.onerror=j;i.src=u});
-$('#f').onsubmit=async e=>{e.preventDefault();if(!sel.size)return alert('Tap at least one item, or add your own.');
+$('#f').onsubmit=async e=>{e.preventDefault();if(!sel.size)return alert('Pick at least one item, or add your own.');if(kind==='log'&&!okOdo(+$('#fo').value,editId))return;
 const g=i=>$('#'+i).value.trim(),now=Date.now();let it=editId&&D.items.find(i=>i.id===editId);
 if(!it){it={id:uid(),kind,carId:cur().id};D.items.push(it)}
 Object.assign(it,{item:[...sel].join(', '),date:g('fd'),odo:g('fo')?+g('fo'):'',...(kind==='log'?(()=>{const pr={};sel.forEach(n=>{if(+PR[n])pr[n]=+PR[n]});const o=+g('fe')||0,c=Object.values(pr).reduce((a,v)=>a+v,0)+o;return{prices:pr,other:o,cost:c||''}})():{cost:''}),notes:g('fn'),updated:now,...(kind==='todo'?{rpm:+g('rpm')||0,rpk:+g('rpk')||0,mode:$('#rmd').value}:{})});
 const f=$('#fp').files[0];
 if(f){try{const pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);await kv('put','p:'+it.id,pdf?await rd(f):await shrink(f));it.ph=1;it.pt=pdf?'pdf':'img';if(it.rid){D.cfg.drop=[...(D.cfg.drop||[]),it.rid];it.rid=''}}catch(x){alert('Could not read that file.')}}else if(rmPh){it.ph=0;it.pt='';if(it.rid){D.cfg.drop=[...(D.cfg.drop||[]),it.rid];it.rid=''}kv('put','p:'+it.id,null)}
 if(doneId){const t=D.items.find(i=>i.id===doneId);if(t){t.deleted=1;t.updated=now;if(t.rpm||t.rpk){const n=new Date(it.date+'T00:00:00Z');if(t.rpm)n.setUTCMonth(n.getUTCMonth()+t.rpm);D.items.push({id:uid(),kind:'todo',carId:t.carId,item:t.item,notes:t.notes,rpm:t.rpm,rpk:t.rpk,mode:t.mode,date:t.rpm?n.toISOString().slice(0,10):'',odo:t.rpk&&it.odo?it.odo+t.rpk:'',cost:'',updated:now})}}doneId=null}
-$('#dlg').close();commit()};
-function del(){const it=D.items.find(i=>i.id===editId);if(it&&confirm('Delete this entry?')){it.deleted=1;it.updated=Date.now();$('#dlg').close();commit()}}
+$('#dlg').close();commit();toast(kind==='log'?(editId?'Service updated':'Service saved'):'Reminder saved')};
+function del(){const it=D.items.find(i=>i.id===editId);if(it)softDel(it,'dlg',kind==='log'?'Service deleted':'Reminder deleted')}
 const rd=f=>new Promise((r,j)=>{const x=new FileReader;x.onload=()=>r(x.result);x.onerror=j;x.readAsDataURL(f)}),
 blob=(u,t)=>{const b=atob(u.split(',')[1]),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return new Blob([a],{type:t})};
 function prev(inp){const f=inp.files[0],v=$('#pv');v.innerHTML='';if(!f)return;const pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);
@@ -189,7 +207,7 @@ Object.assign(c,{name:$('#cn').value.trim(),odo:+$('#co').value||0,colour:$('#cc
 function delC(){if(!confirm('Delete this car and all its entries?'))return;const now=Date.now();D.items.forEach(i=>{if(i.id===editC||i.carId===editC){i.deleted=1;i.updated=now}});$('#cd').close();commit()}
 function commit(){save();render();if(D.cfg.url){clearTimeout(T);T=setTimeout(sync,1500)}}
 function merge(list){const m=new Map(D.items.map(i=>[i.id,i]));list.forEach(i=>{const o=m.get(i.id);if(!o||o.updated<i.updated)m.set(i.id,i)});D.items=[...m.values()]}
-let busy=0;async function sync(m){if(busy)return;busy=1;try{await sync0(m)}finally{busy=0}}
+let busy=0;async function sync(m){if(busy||(UP&&!m))return;busy=1;try{await sync0(m)}finally{busy=0}}
 async function sync0(manual){const c=D.cfg;if(!c.url){if(manual===1)msg('Paste your web app URL first.');return}
 msg('Syncing…');sy('Syncing…');let de='';if(c.drv){try{await pushFiles()}catch(e){de=e.message}}try{const r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:c.token,items:D.items,events:c.cal?evs():undefined,drop:c.drv?(c.drop||[]):undefined})}),j=await r.json();
 if(j.error)throw new Error(j.error);merge(j.items);if(c.drv)c.drop=[];c.last=new Date().toLocaleString('en-GB');await save();render();msg('Synced '+c.last+(c.cal?(j.cal==='ok'?' · calendar updated':' · calendar problem: '+j.cal):'')+(de?' · Drive problem: '+de:''));sy('Synced '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))}
@@ -202,15 +220,15 @@ async function imp(inp){const f=inp.files[0];if(!f)return;try{const j=JSON.parse
 function openU(id){editU=id||null;const l=mine('fuel').sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]||{},it=id?D.items.find(i=>i.id===id):{date:today(),odo:odoNow()||'',brand:l.brand,state:l.state,area:l.area,ftype:l.ftype,ppl:l.ppl};
 $('#ut2').textContent=id?'Edit fill-up':'Add fill-up';
 [['ud','date'],['uo','odo'],['ua','area'],['ut','ftype'],['ur','ppl'],['ul','litres'],['uc','cost']].forEach(([k,f])=>$('#'+k).value=it[f]||'');
-FB=it.brand||'';FS=it.state||'';ddr('fbd',BR,FB,'b');ddr('fst',ST,FS,'s');$('#gm').textContent='';$('#ux').hidden=!id;$('#fu').showModal()}
+FB=it.brand||'';FS=it.state||'';ddr('fbd',BR,FB,'b');ddr('fst',ST,FS,'s');$('#gm').textContent='';$('#uff').checked=it.full!==0;$('#ux').hidden=!id;$('#fu').showModal()}
 ['ur','ul','uc'].forEach(k=>$('#'+k).oninput=()=>{const p=+$('#ur').value,l=+$('#ul').value,c=+$('#uc').value;
 if(k==='uc'){if(p)$('#ul').value=(c/p).toFixed(2);else if(l)$('#ur').value=(c/l).toFixed(3)}else if(p&&l)$('#uc').value=(p*l).toFixed(2);else if(p&&c)$('#ul').value=(c/p).toFixed(2)});
-$('#uf').onsubmit=e=>{e.preventDefault();const g=i=>$('#'+i).value.trim();let it=editU&&D.items.find(i=>i.id===editU);if(!it){it={id:uid(),kind:'fuel',carId:cur().id};D.items.push(it)}
-Object.assign(it,{date:g('ud'),odo:g('uo')?+g('uo'):'',brand:FB,state:FS,area:g('ua'),ftype:g('ut'),ppl:+g('ur')||0,litres:+g('ul')||0,cost:+g('uc')||0,updated:Date.now()});$('#fu').close();commit()};
-function delU(){const it=D.items.find(i=>i.id===editU);if(it&&confirm('Delete this fill-up?')){it.deleted=1;it.updated=Date.now();$('#fu').close();commit()}}
-function effs(F){const s=F.filter(i=>i.odo).sort((a,b)=>a.odo-b.odo),o=[];for(let i=1;i<s.length;i++){const km=s[i].odo-s[i-1].odo,l=+s[i].litres;if(km>0&&l>0)o.push({id:s[i].id,d:s[i].date,y:km/l,km,l})}return o}
+$('#uf').onsubmit=e=>{e.preventDefault();if(!okOdo(+$('#uo').value,editU))return;const g=i=>$('#'+i).value.trim();let it=editU&&D.items.find(i=>i.id===editU);if(!it){it={id:uid(),kind:'fuel',carId:cur().id};D.items.push(it)}
+Object.assign(it,{date:g('ud'),odo:g('uo')?+g('uo'):'',brand:FB,state:FS,area:g('ua'),ftype:g('ut'),ppl:+g('ur')||0,litres:+g('ul')||0,cost:+g('uc')||0,full:$('#uff').checked?1:0,updated:Date.now()});$('#fu').close();commit();toast(editU?'Fill-up updated':'Fill-up saved')};
+function delU(){const it=D.items.find(i=>i.id===editU);if(it)softDel(it,'fu','Fill-up deleted')}
+function effs(F){const s=F.filter(i=>i.odo).sort((a,b)=>a.odo-b.odo),o=[];let base=null,acc=0;for(const x of s){if(base===null){if(x.full!==0)base=x.odo;continue}acc+=+x.litres||0;if(x.full!==0){const km=x.odo-base;if(km>0&&acc>0)o.push({id:x.id,d:x.date,y:km/acc,km,l:acc});base=x.odo;acc=0}}return o}
 function fuelTab(){const F=mine('fuel').sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.odo-a.odo),M={};effs(F).forEach(e=>M[e.id]=e);
-return '<button onclick="openU()">Add fill-up</button>'+(F.length?tl(F,i=>`<div class="ti" onclick="openU('${E(i.id)}')">${i.brand?`<span class="ic">${lg('b',i.brand)}</span>`:'<span class="ic f">⛽</span>'}<div class="r"><b>${E([i.brand,i.ftype].filter(Boolean).join(' · ')||i.place||'Fill-up')}</b><b>${rm(i.cost)}</b></div><div class="m">${i.odo?km(i.odo)+' · ':''}${i.litres} L${i.ppl?' · RM '+(+i.ppl).toFixed(3)+'/L':''}</div><div class="r"><span class="m">${i.state?lg('s',i.state)+' ':''}${[E([i.area,i.state].filter(Boolean).join(', ')||i.place||''),M[i.id]?M[i.id].y.toFixed(1)+' km/L':''].filter(Boolean).join(' · ')}</span><span class="m">${sd(i.date)}</span></div></div>`):'<p class="m">No fill-ups yet. Add one to see fuel economy and price charts.</p>')}
+const FQ=F.filter(fq);return sb()+(FQ.length?tl(FQ,i=>`<div class="ti" onclick="openU('${E(i.id)}')">${i.brand?`<span class="ic">${lg('b',i.brand)}</span>`:'<span class="ic f">⛽</span>'}<div class="r"><b>${E([i.brand,i.ftype].filter(Boolean).join(' · ')||i.place||'Fill-up')}</b><b>${rm(i.cost)}</b></div><div class="m">${i.odo?km(i.odo)+' · ':''}${i.litres} L${i.ppl?' · RM '+(+i.ppl).toFixed(3)+'/L':''}</div><div class="r"><span class="m">${i.state?lg('s',i.state)+' ':''}${[E([i.area,i.state].filter(Boolean).join(', ')||i.place||''),M[i.id]?M[i.id].y.toFixed(1)+' km/L':''].filter(Boolean).join(' · ')}</span><span class="m">${i.full===0?'<span class="pt">Partial</span> ':''}${sd(i.date)}</span></div></div>`):'<p class="m">'+(Q?'No matches.':'No fill-ups yet. Tap + to add one.')+'</p>')}
 const LEG='<div class="m"><span style="color:var(--ac)">■</span> Fuel &nbsp; <span style="color:#f5b83d">■</span> Services</div>',tp=(id,t)=>{$('#'+id).textContent=t};
 function bars(d,id){const mx=Math.max(1,...d.map(x=>x.a+x.b)),w=320/d.length,sk=Math.ceil(d.length/12),g=Math.min(4,w/5);
 return `<svg viewBox="0 0 320 165" width="100%">`+d.map((x,i)=>{const ha=x.a/mx*125,hb=x.b/mx*125;return `<g onclick="tp('${id}','${x.l}: Fuel ${rm(x.a)} · Services ${rm(x.b)}')" style="cursor:pointer"><rect x="${i*w}" y="0" width="${w}" height="145" fill="transparent"/><rect x="${i*w+g}" y="${140-ha}" width="${w-2*g}" height="${ha}" fill="var(--ac)"/><rect x="${i*w+g}" y="${140-ha-hb}" width="${w-2*g}" height="${hb}" fill="#f5b83d"/>${i%sk?'':`<text x="${i*w+w/2}" y="156" font-size="9" text-anchor="middle" fill="var(--mu)">${x.l}</text>`}</g>`}).join('')+`<text x="0" y="10" font-size="10" fill="var(--mu)">RM ${Math.round(mx)}</text></svg><div class="m" id="${id}">Tap a bar for details</div>`}
@@ -296,10 +314,28 @@ async function pushFiles(){for(const it of D.items){if(it.kind!=='log'||!it.ph||
 r=await post({action:'up',name:(it.date||'')+' '+(it.item||'receipt').replace(/[^\w ,.-]/g,'').slice(0,40)+(pdf?'.pdf':'.jpg'),mime,data:p.split(',')[1]});
 if(!r.fid)throw new Error(r.error||'update Code.gs first');it.rid=r.fid;it.updated=Date.now();await save()}}
 async function getP(it){let p=await kv('get','p:'+it.id);if(!p&&it.rid&&D.cfg.url){try{const r=await post({action:'get',fid:it.rid});if(r.data){p='data:'+r.mime+';base64,'+r.data;await kv('put','p:'+it.id,p)}}catch(e){}}return p}
+let Q='',QF=0,UP=0,TT;
+const sb=()=>`<input id="q" type="search" placeholder="Search item, place, month…" value="${E(Q)}" oninput="Q=this.value;QF=1;render()">`,
+fq=i=>{if(!Q)return true;const t=[i.item,i.notes,i.brand,i.area,i.state,i.ftype,i.place,i.date,fd(i.date),i.date&&new Date(i.date+'T00:00').toLocaleString('en-GB',{month:'long'})].join(' ').toLowerCase();return Q.toLowerCase().split(/\s+/).filter(Boolean).every(w=>t.includes(w))};
+function fab(o){const m=$('#fm'),b=$('#fab');o=o===undefined?m.hidden:o;m.hidden=!o;b.classList.toggle('open',!!o)}
+function toast(t,undo){const e=$('#toast');e.innerHTML='<span>'+E(t)+'</span>'+(undo?'<button class="g" id="tu">Undo</button>':'');e.hidden=false;clearTimeout(TT);if(undo){UP=1;$('#tu').onclick=()=>{UP=0;e.hidden=true;clearTimeout(TT);undo()}}
+TT=setTimeout(()=>{e.hidden=true;if(UP){UP=0;sync()}},undo?5000:2200)}
+function softDel(it,dlg,label){it.deleted=1;it.updated=Date.now();$('#'+dlg).close();save();render();toast(label,()=>{it.deleted=0;it.updated=Date.now();commit();toast('Restored')})}
+function okOdo(v,id){const c=cur();if(!v||!c)return true;const prev=Math.max(+c.odo||0,0,...D.items.filter(i=>i.carId===c.id&&!i.deleted&&i.id!==id&&(i.kind==='log'||i.kind==='fuel')).map(i=>+i.odo||0));
+if(!id&&v<prev)return confirm('This reading ('+km(v)+') is lower than your latest one ('+km(prev)+'). Save anyway?');if(prev&&v>prev+3000)return confirm('This is '+km(v-prev)+' more than your latest reading. Is that right?');return true}
+function setOdo(){const c=cur();if(!c)return;const v=prompt('Current odometer reading (km)',odoNow());if(v===null)return;const n=+String(v).replace(/[^0-9]/g,'');if(!n)return;
+const mx=Math.max(0,...D.items.filter(i=>i.carId===c.id&&!i.deleted&&(i.kind==='log'||i.kind==='fuel')).map(i=>+i.odo||0));if(n<mx)return alert('That is lower than your latest entry ('+km(mx)+').');
+if(n>odoNow()+3000&&!confirm('That is '+km(n-odoNow())+' more than now. Is that right?'))return;c.odo=n;c.updated=Date.now();commit();toast('Odometer updated to '+km(n))}
 function ics(id){const t=id==='rtax'?rem().find(x=>x.virtual):eff(D.items.find(i=>i.id===id)),car=cars().find(c=>c.id===t.carId)||{},e=new Date(t.date+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);
 const s=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CarLog//EN','BEGIN:VEVENT','UID:'+t.id+(t.carId||'')+'@carlog','DTSTAMP:'+new Date().toISOString().replace(/[-:]|\.\d+/g,''),'DTSTART;VALUE=DATE:'+t.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+e.toISOString().slice(0,10).replace(/-/g,''),'SUMMARY:'+(t.item+' due ('+(car.name||'car')+')').replace(/[,;]/g,' '),'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n'),
 a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/calendar'}));a.download='car-reminder.ics';a.click()}
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>go(b.dataset.t));
+$('#odo').onclick=setOdo;$('#odo').title='Tap to update your odometer';
+const _render=render;render=function(){_render();$('#fab').hidden=!cur();if(QF){QF=0;const q=$('#q');if(q){q.focus();const n=q.value.length;try{q.setSelectionRange(n,n)}catch(e){}}}};
+document.addEventListener('click',e=>{if(!$('#fm').hidden&&!e.target.closest('#fm')&&!e.target.closest('#fab'))fab(0)});
+(()=>{const T=['rep','log','fuel','todo','set'];let x0=null,y0=0;const m=document.querySelector('main');
+m.addEventListener('touchstart',e=>{const t=e.touches[0];x0=e.target.closest('input,select,textarea,svg')?null:t.clientX;y0=t.clientY},{passive:true});
+m.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>80&&Math.abs(dy)<50){const i=T.indexOf(tab)+(dx<0?1:-1);if(i>=0&&i<T.length)go(T[i])}},{passive:true})})();
 addEventListener('online',()=>sync());document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});setInterval(()=>{if(!document.hidden)sync()},12e4);
 if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
 load().then(()=>{if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}render();navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
