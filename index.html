@@ -1,11 +1,27 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Garage</title>
+<title>Garage – Car maintenance &amp; fuel tracker</title>
+<meta name="description" content="Track services, fill-ups, reminders and running costs for your cars. Works offline on iPhone, Android and PC.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://syahman312.github.io/Car-Maintenance-Tracker/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Garage">
+<meta property="og:title" content="Garage – Car maintenance &amp; fuel tracker">
+<meta property="og:description" content="Track services, fill-ups, reminders and running costs for your cars. Works offline on iPhone, Android and PC.">
+<meta property="og:url" content="https://syahman312.github.io/Car-Maintenance-Tracker/">
+<meta property="og:image" content="https://syahman312.github.io/Car-Maintenance-Tracker/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Garage app icon: a car parked inside a garage">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="icon-192.png" type="image/png">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://script.google.com https://script.googleusercontent.com; frame-src blob: data:; object-src 'none'; base-uri 'self'; form-action 'self'; manifest-src 'self'; worker-src 'self'">
+<script>if(location.protocol==='http:'&&!/^(localhost|127\.0\.0\.1)$/.test(location.hostname))location.replace('https:'+location.href.slice(5))</script>
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="theme-color" content="#000000">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Garage">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -18,9 +34,15 @@ body{margin:0;font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-seri
 header{background:#000;border-bottom:1px solid var(--bd);color:var(--tx);padding:calc(16px + env(safe-area-inset-top)) 0 20px}
 header .w{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
 header select{background:transparent;color:var(--tx);border:0;width:auto;margin:0;font:600 18px system-ui,sans-serif;max-width:56vw;padding:0}
+header .w>div:first-child{min-width:0;flex:1 1 auto}header .w>div:first-child>div{min-width:0}header select{max-width:100%!important;text-overflow:ellipsis}header .w>div:last-child{flex:none}#sub{overflow-wrap:anywhere}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.ct{font-size:16px;font-weight:700;margin:0 0 4px}
+.wn{border-color:var(--amb)!important}
+#gdc a{color:var(--ac)}
+@media (max-width:359px){nav button{font-size:11px}.g2{grid-template-columns:1fr}}
 header select option{background:#111;color:#eee}
 header small{color:var(--mu);display:block}
-#odo{font:700 34px/1 ui-monospace,"SF Mono",Consolas,monospace;color:#f5b83d;letter-spacing:.04em;font-variant-numeric:tabular-nums;text-align:right}
+#odo{font:700 clamp(20px,7.2vw,34px)/1 ui-monospace,"SF Mono",Consolas,monospace;white-space:nowrap;color:#f5b83d;letter-spacing:.04em;font-variant-numeric:tabular-nums;text-align:right}
 #odo small{display:inline;font-size:14px;margin-left:4px}
 #stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
 #stats div,.c{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:12px}
@@ -100,11 +122,11 @@ input[type=checkbox]{accent-color:var(--amb)}.ins::-webkit-scrollbar{display:non
 .st span{flex:1;text-align:center;padding:12px 0;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--mu);cursor:pointer;text-transform:uppercase}
 .st span.on{color:var(--ac);box-shadow:inset 0 -2px var(--ac)}
 </style></head><body>
-<header><div class="w"><div style="display:flex;gap:10px;align-items:center"><img id="av" class="av" alt="" hidden><div><select id="cs" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div></div><div><div id="odo"></div><small id="sy" style="text-align:right"></small></div></div></header>
+<header><h1 class="sr">Garage – car maintenance and fuel tracker</h1><div class="w"><div style="display:flex;gap:10px;align-items:center"><img id="av" class="av" alt="" hidden><div><select id="cs" aria-label="Choose car" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div></div><div><div id="odo"></div><small id="sy" style="text-align:right"></small></div></div></header>
 <main class="w"><div id="v"></div></main>
 <div id="fm" hidden><button onclick="fab(0);openF('log')">🔧 Service</button><button onclick="fab(0);openU()">⛽ Fill-up</button><button onclick="fab(0);openF('todo')">⏰ Reminder</button></div>
 <button id="fab" aria-label="Add" onclick="fab()">+</button><div id="toast" hidden></div>
-<nav><button data-t="rep">Reports</button><button data-t="log">Services</button><button data-t="fuel">Fuel</button><button data-t="todo">Reminders</button><button data-t="set">More</button></nav>
+<nav aria-label="Sections"><button data-t="rep">Reports</button><button data-t="log">Services</button><button data-t="fuel">Fuel</button><button data-t="todo">Reminders</button><button data-t="set">More</button></nav>
 
 <dialog id="dlg"><form id="f"><h2 id="ft"></h2>
 <label for="si">Items done</label><select id="si"></select><div id="pr"></div>
@@ -139,13 +161,14 @@ input[type=checkbox]{accent-color:var(--amb)}.ins::-webkit-scrollbar{display:non
 <dialog id="gd"><div id="gdc"></div><button class="g mt" style="width:100%" onclick="$('#gd').close()">Close</button></dialog>
 <dialog id="pd"><img id="pi" alt="Receipt"><iframe id="pf" title="PDF" hidden style="width:100%;height:68vh;border:0;border-radius:8px;background:#fff"></iframe><div id="pb" class="row mt"></div><button class="g mt" onclick="$('#pd').close()">Close</button></dialog>
 <script>
+var SL={rep:"reports",log:"services",fuel:"fuel",todo:"reminders",set:"more"},LS={reports:"rep",services:"log",fuel:"fuel",reminders:"todo",more:"set"},VER=0,SHOW=60,QT,AT,LOG=[];
 const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let D={items:[],cfg:{url:'',token:'',last:''}},tab='rep',bnOpen=false,kind='log',editId=null,doneId=null,editC=null,editU=null,RF='',RT='',PR={},rmLg=0,FB='',FS='',rtab='gen',rO=0,RM='all',RY=0,sel=new Set,rmPh=0,T;
 const DEF=['Engine oil and filter','Air filter','Cabin filter','Spark plugs','Brake pads','Brake fluid','Coolant','Transmission fluid','Tyres','Wheel alignment','Battery','Wiper blades','Road tax and insurance'];
 const P=new Promise((r,j)=>{const q=indexedDB.open('carlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
 const kv=(m,k,v)=>P.then(d=>new Promise((r,j)=>{const s=d.transaction('k',m==='get'?'readonly':'readwrite').objectStore('k'),q=m==='get'?s.get(k):s.put(v,k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}));
-const save=()=>kv('put','d',D).catch(()=>{});
-async function load(){try{const v=await kv('get','d');if(v){D.items=v.items||[];D.cfg={...D.cfg,...v.cfg}}}catch(e){}}
+const save=()=>{VER++;return kv('put','d',D).catch(e=>{logE('storage',e);toast('Could not save on this device. Storage may be full.')})};
+async function load(){try{const v=await kv('get','d');if(v){D.items=(v.items||[]).map(clean).filter(Boolean);D.cfg={...D.cfg,...v.cfg}}LOG=(await kv('get','log'))||[]}catch(e){logE('storage',e)}VER++}
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7),
 live=k=>D.items.filter(i=>i.kind===k&&!i.deleted),
 S=()=>live('svc').sort((a,b)=>a.name.localeCompare(b.name)),
@@ -158,7 +181,7 @@ fd=s=>s?new Date(s+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'sh
 odoOf=id=>Math.max(+(D.items.find(i=>i.id===id)||{}).odo||0,...D.items.filter(i=>i.carId===id&&!i.deleted&&(i.kind==='log'||i.kind==='fuel')).map(i=>+i.odo||0)),odoNow=()=>cur()?odoOf(cur().id):0,
 st=t=>{t=eff(t);const{dd,dk}=dl(t),a=[dd===null?null:dd<0?2:dd<=30?1:0,dk===null?null:dk<=0?2:dk<=500?1:0].filter(x=>x!==null);return a.length?(t.mode==='and'?Math.min(...a):Math.max(...a)):0},
 msg=t=>{const e=$('#msg');if(e)e.textContent=t},
-cf=(k,v)=>{D.cfg[k]=v;save()},go=t=>{tab=t;Q='';fab(0);render();const v=$('#v');v.classList.remove('an');void v.offsetWidth;v.classList.add('an');setTimeout(()=>v.classList.remove('an'),350);scrollTo(0,0)};
+cf=(k,v)=>{D.cfg[k]=v;save()},go=(t,np)=>{if(!np&&SL[t]&&location.hash!=='#'+SL[t])try{history.pushState(null,'','#'+SL[t])}catch(e){}tab=t;Q='';SHOW=60;fab(0);render();const v=$('#v');v.classList.remove('an');void v.offsetWidth;v.classList.add('an');setTimeout(()=>v.classList.remove('an'),350);scrollTo(0,0)};
 function addSvc(n,seed){n=n.replace(/,/g,' ').trim();if(!n)return;const id='svc-'+(n.toLowerCase().replace(/[^a-z0-9]+/g,'-')||uid());let s=D.items.find(i=>i.id===id);
 if(s&&seed)return;if(!s){s={id,kind:'svc'};D.items.push(s)}Object.assign(s,{name:n,deleted:0,updated:seed?1:Date.now()})}
 const setSvc=(id,o)=>{Object.assign(D.items.find(i=>i.id===id),o,{updated:Date.now()});commit()};
@@ -166,25 +189,25 @@ function render(){
 const c=D.cfg,cs=cars(),car=cur(),L=mine('log'),F=mine('fuel'),y=String(new Date().getFullYear()),sum=a=>a.reduce((s,i)=>s+(+i.cost||0),0);
 $('#cs').innerHTML=cs.length?cs.map(x=>`<option value="${E(x.id)}"${x===car?' selected':''}>${E(x.name)}</option>`).join(''):'<option>Garage</option>';
 $('#sub').textContent=car?[car.plate,car.year,car.colour,car.engine,car.rtax?'Roadtax '+new Date(car.rtax+'T00:00').toLocaleString('en-GB',{month:'short',year:'numeric'}):''].filter(Boolean).join(' · '):'Add a car to begin';
-$('#av').hidden=!(car&&car.logo);if(car&&car.logo)$('#av').src=car.logo;$('#odo').innerHTML=car?odoNow().toLocaleString('en-MY')+'<small>km</small>':'';
+$('#av').hidden=!(car&&car.logo);if(car&&car.logo){$('#av').src=car.logo;$('#av').alt=car.name+' logo'}$('#odo').innerHTML=car?odoNow().toLocaleString('en-MY')+'<small>km</small>':'';
 document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
 let h='';
-if(tab!=='set'&&!car)h='<p class="m">Add your first car to start logging.</p><button onclick="go(\'set\');openC()">Add a car</button>';
+if(tab!=='set'&&!car)h='<p class="m">Add your first car to start logging.</p><button onclick="go(\'set\');openC()">Add a car</button><p class="m mt">Used Garage before? Connect Google Sheets sync or import a backup file in More, and your records come back.</p><button class="g" onclick="go(\'set\')">Restore my data</button>';
 else if(tab==='fuel')h=safe(fuelTab);else if(tab==='rep')h=safe(reports);else if(tab==='log'){h=sb()+(L.filter(fq).length?tl(L.filter(fq).sort((a,b)=>(b.date||'').localeCompare(a.date||'')),i=>`<div class="ti" onclick="openF('log','${E(i.id)}')"><span class="ic">${E(ico((i.item||'').split(', ')[0]))}</span><div class="r"><b>${E(i.item)}</b><b>${i.cost!==''?rm(i.cost):''}</b></div>${i.odo?`<div class="m">${km(i.odo)}</div>`:''}${(i.prices&&Object.keys(i.prices).length>1)||i.other?`<div class="m">${Object.entries(i.prices||{}).map(([n,v])=>E(n)+' '+rm(v)).concat(i.other?['Other '+rm(i.other)]:[]).join(' · ')}</div>`:''}${i.notes?`<div class="m">${E(i.notes)}</div>`:''}<div class="r"><span>${i.ph?`<button class="g" style="padding:2px 10px;font-size:12px" onclick="event.stopPropagation();viewP('${E(i.id)}')">${i.pt==='pdf'?'PDF':'Receipt'}</button>`:''}</span><span class="m">${sd(i.date)}</span></div></div>`):'<p class="m">'+(Q?'No matches.':'No services yet. Tap + to add one.')+'</p>')}
 else if(tab==='todo'){const U=rem().sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
 h=planCard()+(U.length?U.map(remCard).join(''):'<p class="m">Nothing coming up. Tap + to add a reminder, or set your roadtax and insurance dates in the car details.</p>')+(planCard()?'':'<button class="g mt" onclick="plan()">Maintenance plan</button>')}
 else if(tab==='cars')h='<button onclick="openC()">Add car</button>'+cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div>${x.notes?`<div class="m">${E(x.notes)}</div>`:''}</div>`).join('');
-else h=`<div class="c"><b>Your cars</b><br><button class="g mt" onclick="openC()">Add car</button>${cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div></div>`).join('')}</div><div class="c"><b>Service items</b><select id="ss">${S().map(s=>`<option value="${E(s.id)}">${E((s.icon||'')+' '+s.name)}</option>`).join('')}</select>
+else h=`<div class="c"><h2 class="ct">Your cars</h2><button class="g mt" onclick="openC()">Add car</button>${cs.map(x=>`<div class="c cl" onclick="openC('${E(x.id)}')"><b>${E(x.name)}</b><div class="m">${E([x.plate,x.year,x.colour,x.engine].filter(Boolean).join(' · '))}</div></div>`).join('')}</div><div class="c"><h2 class="ct">Service items</h2><select id="ss" aria-label="Service item">${S().map(s=>`<option value="${E(s.id)}">${E((s.icon||'')+' '+s.name)}</option>`).join('')}</select>
 <div class="row"><button class="g" onclick="renSvc()">Rename</button><button class="g" onclick="delSvc()">Remove</button><button class="g" onclick="icSvc()">Icon</button></div>
 <div class="row mt"><input id="ns" placeholder="New item, e.g. Rustproofing" style="margin:0"><button onclick="addSvc($('#ns').value);commit()">Add</button></div><p class="m">Old entries keep their text when you rename or remove an item.</p></div>
-<div class="c"><b>Brand and state logos</b><p class="m">Pick one and upload your own picture. Without one, a coloured badge is used.</p><select id="lgs">${[...BR.map(b=>['b',b]),...ST.map(x=>['s',x])].map(([k,n])=>`<option value="${k}:${n}">${k==='b'?'Brand':'State'}: ${n}</option>`).join('')}</select><div class="row"><button class="g" onclick="$('#lgf').click()">Upload logo</button><button class="g" onclick="lgReset()">Reset</button></div><input id="lgf" type="file" accept="image/*" hidden onchange="lgUp(this)"></div>
-<div class="c"><b>App icon badge</b><p class="m">Show how many reminders need attention on the Garage icon. Works when Garage is opened from your Home Screen.</p><button class="g" onclick="bdg()">Turn on</button></div>
-<div class="c"><b>Google Sheets sync</b><br><label>Web app URL</label><input value="${E(c.url)}" placeholder="https://script.google.com/macros/s/…/exec" onchange="cf('url',this.value.trim())">
-<label>Secret token (same as in Code.gs)</label><input type="password" value="${E(c.token)}" onchange="cf('token',this.value.trim())">
+<div class="c"><h2 class="ct">Brand and state logos</h2><p class="m">Pick one and upload your own picture. Without one, a coloured badge is used.</p><select id="lgs" aria-label="Brand or state">${[...BR.map(b=>['b',b]),...ST.map(x=>['s',x])].map(([k,n])=>`<option value="${k}:${n}">${k==='b'?'Brand':'State'}: ${n}</option>`).join('')}</select><div class="row"><button class="g" onclick="$('#lgf').click()">Upload logo</button><button class="g" onclick="lgReset()">Reset</button></div><input id="lgf" type="file" accept="image/*" hidden onchange="lgUp(this)"></div>
+<div class="c"><h2 class="ct">App icon badge</h2><p class="m">Show how many reminders need attention on the Garage icon. Works when Garage is opened from your Home Screen.</p><button class="g" onclick="bdg()">Turn on</button></div>
+<div class="c"><h2 class="ct">Google Sheets sync</h2><label>Web app URL</label><input value="${E(c.url)}" placeholder="https://script.google.com/macros/s/…/exec" onchange="cf('url',this.value.trim());if(this.value&&!okUrl(this.value.trim()))toast('That link does not look like a Google web app link')">
+<label>Secret token (same as in Code.gs)</label><input type="password" autocomplete="off" value="${E(c.token)}" onchange="cf('token',this.value.trim());render()">${c.token&&c.token.length<16?'<p class="m" style="color:var(--amb);margin-top:-6px">Your secret word is short. Someone who finds your web app link could guess it. Make a strong one below.</p>':''}<button class="g" style="margin-bottom:12px" onclick="mkTok()">Make a strong secret word</button>
 <label class="m" style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" style="width:auto;margin:0" ${c.cal?'checked':''} onchange="cf('cal',this.checked);sync(1)"> Add reminders to Google Calendar</label><label class="m" style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" style="width:auto;margin:0" ${c.drv?'checked':''} onchange="cf('drv',this.checked);sync(1)"> Save receipts to Google Drive</label><button onclick="sync(1)">Sync now</button><p class="m" id="msg">${E(c.last?'Last synced '+c.last:'Not synced yet')}</p><p class="m">Receipt photos stay on the device that took them. Use Export JSON to carry them across.</p></div>
-<div class="c"><b>Backup file</b><p class="m">Saves everything, including receipt photos. Keep a copy in iCloud Drive, Google Drive or OneDrive.</p>
-<div class="row"><button class="g" onclick="exp()">Export JSON</button><button class="g" onclick="$('#imp').click()">Import JSON</button></div>
-<input id="imp" type="file" accept=".json,application/json" hidden onchange="imp(this)"></div>`;
+${bkCard()}
+<div class="c"><h2 class="ct">Connection check</h2><p class="m">Tests the secure connection, your Google Sheet, Drive folders, Calendar and receipt links.</p><button class="g" onclick="diag()">Check connections</button></div>
+${logCard()}<p class="m" style="text-align:center">Garage ${APP_V}</p>`;
 const due=rem().filter(t=>st(t)>0);$('#v').innerHTML=(due.length&&tab!=='todo'&&tab!=='set'&&tab!=='rep'?`<div class="c s${Math.max(...due.map(st))}"><div class="r cl" onclick="bnOpen=!bnOpen;render()"><b>${due.length} reminder${due.length>1?'s need':' needs'} attention</b><span class="m">${bnOpen?'Hide ▴':'Show ▾'}</span></div>${bnOpen?due.map(i=>mini(i)).join(''):''}</div>`:'')+h}
 $('#v').onclick=e=>{const t=e.target,x=t.dataset.x,ch=t.closest('.chip');
 if(x){if(confirm('Remove this item from your list?'))setSvc(x,{deleted:1})}
@@ -200,13 +223,13 @@ $('#ft').textContent=(id?'Edit ':'Add ')+(L?'service':'reminder');$('#ld').textC
 $('#wc').hidden=$('#wp').hidden=!L;$('#wr').hidden=L;$('#rpm').value=it.rpm||'';$('#rpk').value=it.rpk||'';$('#rmd').value=it.mode||'or';$('#rp').hidden=!it.ph;$('#vp').hidden=!(it.ph&&id);$('#pv').innerHTML='';$('#fp').value='';$('#fd').required=L;$('#fx').hidden=!id;
 $('#fd').value=it.date||'';$('#fo').value=it.odo||'';$('#fe').value=it.prices?(it.other||''):(it.cost||'');PR={...(it.prices||{})};prices();$('#fn').value=it.notes||'';$('#dlg').showModal()}
 const done=id=>openF('log',null,D.items.find(i=>i.id===id));
-const shrink=(f,m=1200,t='image/jpeg')=>new Promise((r,j)=>{const i=new Image,u=URL.createObjectURL(f);i.onload=()=>{const s=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);r(c.toDataURL(t,.8))};i.onerror=j;i.src=u});
+const shrink=(f,m=1200,t='image/jpeg',q=.8)=>new Promise((r,j)=>{const i=new Image,u=URL.createObjectURL(f);i.onload=()=>{const s=Math.min(1,m/Math.max(i.width,i.height)),c=document.createElement('canvas');c.width=i.width*s;c.height=i.height*s;c.getContext('2d').drawImage(i,0,0,c.width,c.height);URL.revokeObjectURL(u);r(c.toDataURL(t,q))};i.onerror=j;i.src=u});
 $('#f').onsubmit=async e=>{e.preventDefault();if(!sel.size)return alert('Pick at least one item, or add your own.');if(kind==='log'&&!okOdo(+$('#fo').value,editId))return;
 const g=i=>$('#'+i).value.trim(),now=Date.now();let it=editId&&D.items.find(i=>i.id===editId);
 if(!it){it={id:uid(),kind,carId:cur().id};D.items.push(it)}
 Object.assign(it,{item:[...sel].join(', '),date:g('fd'),odo:g('fo')?+g('fo'):'',...(kind==='log'?(()=>{const pr={};sel.forEach(n=>{if(+PR[n])pr[n]=+PR[n]});const o=+g('fe')||0,c=Object.values(pr).reduce((a,v)=>a+v,0)+o;return{prices:pr,other:o,cost:c||''}})():{cost:''}),notes:g('fn'),updated:now,...(kind==='todo'?{rpm:+g('rpm')||0,rpk:+g('rpk')||0,mode:$('#rmd').value}:{})});
 const f=$('#fp').files[0];
-if(f){try{const pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);await kv('put','p:'+it.id,pdf?await rd(f):await shrink(f));it.ph=1;it.pt=pdf?'pdf':'img';if(it.rid){D.cfg.drop=[...(D.cfg.drop||[]),it.rid];it.rid=''}}catch(x){alert('Could not read that file.')}}else if(rmPh){it.ph=0;it.pt='';if(it.rid){D.cfg.drop=[...(D.cfg.drop||[]),it.rid];it.rid=''}kv('put','p:'+it.id,null)}
+if(f){try{const pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);await kv('put','p:'+it.id,pdf?await rd(f):await rcpt(f));it.ph=1;it.pt=pdf?'pdf':'img';if(it.rid){D.cfg.drop=[...(D.cfg.drop||[]),it.rid];it.rid=''}}catch(x){alert('Could not read that file.')}}else if(rmPh){it.ph=0;it.pt='';if(it.rid){D.cfg.drop=[...(D.cfg.drop||[]),it.rid];it.rid=''}kv('put','p:'+it.id,null)}
 if(doneId){const t=D.items.find(i=>i.id===doneId);if(t){t.deleted=1;t.updated=now;if(t.rpm||t.rpk){const n=new Date(it.date+'T00:00:00Z');if(t.rpm)n.setUTCMonth(n.getUTCMonth()+t.rpm);D.items.push({id:uid(),kind:'todo',carId:t.carId,item:t.item,notes:t.notes,rpm:t.rpm,rpk:t.rpk,mode:t.mode,date:t.rpm?n.toISOString().slice(0,10):'',odo:t.rpk&&it.odo?it.odo+t.rpk:'',cost:'',updated:now})}}doneId=null}
 $('#dlg').close();commit();toast(kind==='log'?(editId?'Service updated':'Service saved'):'Reminder saved')};
 function del(){const it=D.items.find(i=>i.id===editId);if(it)softDel(it,'dlg',kind==='log'?'Service deleted':'Reminder deleted')}
@@ -215,26 +238,26 @@ blob=(u,t)=>{const b=atob(u.split(',')[1]),a=new Uint8Array(b.length);for(let i=
 function prev(inp){const f=inp.files[0],v=$('#pv');v.innerHTML='';if(!f)return;const pdf=f.type==='application/pdf'||/\.pdf$/i.test(f.name);
 if(pdf&&f.size>8e6){alert('That PDF is over 8 MB. Please choose a smaller file.');inp.value='';return}
 if(pdf)v.textContent='PDF: '+f.name+' ('+Math.round(f.size/1024)+' KB)';else{const i=new Image;i.src=URL.createObjectURL(f);i.style.cssText='max-height:120px;max-width:100%;border-radius:8px';v.appendChild(i)}}
-function viewP(id){const it=D.items.find(i=>i.id===id)||{};getP(it).then(p=>{if(!p)return alert('This file was added on another device. Open the app there, or import that device’s backup file.');
+function viewP(id){const it=D.items.find(i=>i.id===id)||{};DRE='';getP(it).then(p=>{if(!p)return alert(DRE?'Could not download this receipt from Google Drive: '+DRE+'. Run Connection check in More.':it.rid?'This receipt is not in Google Drive any more.':'This file was added on another device. Open Garage there with Drive receipts switched on, or import that device’s backup file.');
 if(it.pt==='pdf'){const u=URL.createObjectURL(blob(p,'application/pdf'));$('#pi').hidden=true;$('#pf').hidden=false;$('#pf').src=u;$('#pb').innerHTML=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open</a><a class="btn" href="${u}" download="receipt.pdf">Download</a>`}
 else{$('#pf').hidden=true;$('#pf').src='about:blank';$('#pb').innerHTML='';$('#pi').hidden=false;$('#pi').src=p}$('#pd').showModal()})}
 function openC(id){editC=id||null;const c=id?D.items.find(i=>i.id===id):{};$('#ctt').textContent=id?'Edit car':'Add car';
 $('#cn').value=c.name||'';$('#co').value=c.odo||'';$('#cc').value=c.colour||'';$('#ce').value=c.engine||'';$('#cr').value=c.rtax||'';$('#ci').value=c.ins||'';$('#ck').value=c.tank||'';rmLg=0;$('#cl').value='';$('#lx').hidden=!c.logo;$('#cp').value=c.plate||'';$('#cy').value=c.year||'';$('#cm').value=c.notes||'';$('#cx').hidden=!id;$('#cd').showModal()}
 $('#g').onsubmit=async e=>{e.preventDefault();let c=editC&&D.items.find(i=>i.id===editC);if(!c){c={id:uid(),kind:'car'};D.items.push(c);D.cfg.sel=c.id}
-Object.assign(c,{name:$('#cn').value.trim(),odo:+$('#co').value||0,colour:$('#cc').value.trim(),engine:$('#ce').value.trim(),rtax:$('#cr').value,ins:$('#ci').value,tank:+$('#ck').value||0,plate:$('#cp').value.trim(),year:$('#cy').value.trim(),notes:$('#cm').value.trim(),updated:Date.now()});const f0=$('#cl').files[0];if(f0){try{c.logo=await shrink(f0,96,'image/png')}catch(x){}}else if(rmLg)c.logo='';$('#cd').close();commit()};
+Object.assign(c,{name:$('#cn').value.trim(),odo:+$('#co').value||0,colour:$('#cc').value.trim(),engine:$('#ce').value.trim(),rtax:$('#cr').value,ins:$('#ci').value,tank:+$('#ck').value||0,plate:$('#cp').value.trim(),year:$('#cy').value.trim(),notes:$('#cm').value.trim(),updated:Date.now()});const f0=$('#cl').files[0];if(f0){try{c.logo=await shrink(f0,128,'image/webp',.85)}catch(x){}}else if(rmLg)c.logo='';$('#cd').close();commit()};
 function delC(){if(!confirm('Delete this car and all its entries?'))return;const now=Date.now();D.items.forEach(i=>{if(i.id===editC||i.carId===editC){i.deleted=1;i.updated=now}});$('#cd').close();commit()}
 function commit(){save();render();if(D.cfg.url){clearTimeout(T);T=setTimeout(sync,1500)}}
-function merge(list){const m=new Map(D.items.map(i=>[i.id,i]));list.forEach(i=>{const o=m.get(i.id);if(!o||o.updated<i.updated)m.set(i.id,i)});D.items=[...m.values()]}
+function merge(list){list=(Array.isArray(list)?list:[]).map(clean).filter(Boolean);VER++;const m=new Map(D.items.map(i=>[i.id,i]));list.forEach(i=>{const o=m.get(i.id);if(!o||o.updated<i.updated)m.set(i.id,i)});D.items=[...m.values()]}
 let busy=0;async function sync(m){if(busy||(UP&&!m))return;busy=1;try{await sync0(m)}finally{busy=0}}
 async function sync0(manual){const c=D.cfg;if(!c.url){if(manual===1)msg('Paste your web app URL first.');return}
-msg('Syncing…');sy('Syncing…');let de='';if(c.drv){try{await pushFiles()}catch(e){de=e.message}}try{const r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:c.token,items:D.items,events:c.cal?evs():undefined,drop:c.drv?(c.drop||[]):undefined})}),j=await r.json();
-if(j.error)throw new Error(j.error);merge(j.items);if(c.drv)c.drop=[];c.last=new Date().toLocaleString('en-GB');await save();render();msg('Synced '+c.last+(c.cal?(j.cal==='ok'?' · calendar updated':' · calendar problem: '+j.cal):'')+(de?' · Drive problem: '+de:''));sy('Synced '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))}
-catch(e){sy('Sync failed');msg('Sync failed: '+e.message+'. Your data is safe on this device.')}}
+msg('Syncing…');sy('Syncing…');let de='';if(c.drv){try{await pushFiles()}catch(e){de=e.message;logE('drive',e)}}try{const j=await api({items:D.items,events:c.cal?evs():undefined,drop:c.drv?(c.drop||[]):undefined},60000);
+merge(j.items);if(c.drv)c.drop=[];if(j.bk)c.bk=j.bk;c.sv=j.v||0;c.fails=0;c.last=new Date().toLocaleString('en-GB');if(c.cal&&j.cal&&j.cal!=='ok')logE('calendar',j.cal);await save();render();msg('Synced '+c.last+(c.cal?(j.cal==='ok'?' · calendar updated':' · calendar problem: '+j.cal):'')+(de?' · Drive problem: '+de:''));sy('Synced '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))}
+catch(e){c.fails=(c.fails||0)+1;c.lastErr=e.message;logE('sync',e);save();sy('Sync failed');msg('Sync failed: '+e.message+'. Your data is safe on this device.');if(c.fails===3)render()}}
 async function exp(){const ph={};for(const i of D.items)if(i.ph&&!i.deleted){const p=await kv('get','p:'+i.id);if(p)ph[i.id]=p}
-const b=new Blob([JSON.stringify({v:2,items:D.items,photos:ph})],{type:'application/json'}),f=new File([b],'car-log-'+today()+'.json',{type:'application/json'});
-try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e.name==='AbortError')return}
-const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click()}
-async function imp(inp){const f=inp.files[0];if(!f)return;try{const j=JSON.parse(await f.text());merge(j.items||[]);for(const[k,v]of Object.entries(j.photos||{}))await kv('put','p:'+k,v);commit();alert('Imported '+(j.items||[]).length+' records.')}catch(e){alert('That file is not a Garage backup.')}inp.value=''}
+const b=new Blob([JSON.stringify({v:2,items:D.items,photos:ph})],{type:'application/json'}),f=new File([b],'garage-backup-'+today()+'.json',{type:'application/json'});
+const okx=()=>{D.cfg.lastExport=today();save();toast('Backup file ready')};try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});okx();return}}catch(e){if(e.name==='AbortError')return;logE('export',e)}
+const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=f.name;a.click();okx()}
+async function imp(inp){const f=inp.files[0];if(!f)return;try{const j=JSON.parse(await f.text());merge(j.items||[]);if(!Array.isArray(j.items))throw new Error('no records found in the file');for(const[k,v]of Object.entries(j.photos||{}))if(/^[\w.:-]{1,80}$/.test(k)&&typeof v==='string'&&/^data:(image\/[\w.+-]+|application\/pdf);base64,/.test(v))await kv('put','p:'+k,v);commit();toast('Imported '+j.items.length+' records')}catch(e){logE('import',e);alert('Could not import that file: '+e.message+'. Pick a Garage backup (.json) file.')}inp.value=''}
 function openU(id){editU=id||null;const l=mine('fuel').sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]||{},it=id?D.items.find(i=>i.id===id):{date:today(),odo:odoNow()||'',brand:l.brand,state:l.state,area:l.area,ftype:l.ftype,ppl:l.ppl};
 $('#ut2').textContent=id?'Edit fill-up':'Add fill-up';
 [['ud','date'],['uo','odo'],['ua','area'],['ut','ftype'],['ur','ppl'],['ul','litres'],['uc','cost']].forEach(([k,f])=>$('#'+k).value=it[f]||'');
@@ -259,36 +282,36 @@ $('#pr').oninput=e=>{if(e.target.dataset.n){PR[e.target.dataset.n]=e.target.valu
 function tot(){$('#tt').textContent=rm([...sel].reduce((a,n)=>a+(+PR[n]||0),0)+(+$('#fe').value||0))}
 function preset(m){const n=new Date();RT=today();if(m==='y')RF=n.getFullYear()+'-01-01';else if(m==='0')RF=[...mine('log'),...mine('fuel')].map(i=>i.date).filter(Boolean).sort()[0]||RT;else RF=iso(new Date(n.getFullYear(),n.getMonth()-(+m)+1,1));render()}
 function health(ef){if(!ef.length)return '';const sm=a=>a.reduce((s,e)=>s+e.km,0)/(a.reduce((s,e)=>s+e.l,0)||1),all=sm(ef),k=ef.length>=4?3:1,rec=sm(ef.slice(-k)),base=ef.length>=4?sm(ef.slice(0,-3)):all,d=(rec-base)/base*100,ys=ef.map(e=>e.y),few=ef.length<3,c=few?'':d<-20?'s2':d<-10?'s1':'s0';
-return `<div class="c"><b>Fuel efficiency</b><div class="r mt"><span>Average</span><b>${all.toFixed(1)} km/L</b></div><div class="r"><span>Latest ${k>1?k+' fill-ups':'fill-up'}</span><b>${rec.toFixed(1)} km/L</b></div><div class="r"><span>Best / worst</span><b>${Math.max(...ys).toFixed(1)} / ${Math.min(...ys).toFixed(1)} km/L</b></div><div class="r"><span>Per 100 km</span><b>${(100/all).toFixed(1)} L</b></div>${rg(all)}
+return `<div class="c"><h2 class="ct">Fuel efficiency</h2><div class="r mt"><span>Average</span><b>${all.toFixed(1)} km/L</b></div><div class="r"><span>Latest ${k>1?k+' fill-ups':'fill-up'}</span><b>${rec.toFixed(1)} km/L</b></div><div class="r"><span>Best / worst</span><b>${Math.max(...ys).toFixed(1)} / ${Math.min(...ys).toFixed(1)} km/L</b></div><div class="r"><span>Per 100 km</span><b>${(100/all).toFixed(1)} L</b></div>${rg(all)}
 <div class="mt ${c}"><b>${few?'Add a few more fill-ups for a reliable read.':d<-20?'Dropped noticeably':d<-10?'Slightly down':'Looks normal'}</b></div><div class="m">${few?'':d<-10?'Check tyre pressure, air filter and spark plugs. A big drop can also point to an O2 sensor or engine problem, so have it checked. ':'Compared with your earlier fill-ups. '}A guide only: it assumes you fill to full each time.</div></div>`}
 const dmy=s=>s?s.split('-').reverse().join('/'):'',sd=d=>d?new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short'}):'',mns=(f,t)=>(t.slice(0,4)-f.slice(0,4))*12+(+t.slice(5,7))-(+f.slice(5,7))+1,
 ico=n=>{const x=S().find(v=>v.name===n);return x&&x.icon||'🔧'};
 function icSvc(){const x=D.items.find(i=>i.id===$('#ss').value);if(!x)return;const v=prompt('Type an emoji for this item, e.g. 🛢️ or 🛞',x.icon||'');if(v!==null)setSvc(x.id,{icon:v.trim().slice(0,4)})}
-function tl(a,row){const g={};a.forEach(i=>{const k=(i.date||'').slice(0,7);(g[k]=g[k]||[]).push(i)});
-return '<div class="tl">'+Object.keys(g).sort().reverse().map(k=>`<div class="mh"><div class="m">${new Date(k+'-01T00:00').toLocaleString('en-GB',{month:'long',year:'numeric'}).toUpperCase()}</div><b>${rm(g[k].reduce((s,i)=>s+(+i.cost||0),0))}</b></div>`+g[k].map(row).join('')).join('')+'</div>'}
+function tl(a,row){const g={},T={};a.forEach(i=>{const k=(i.date||'').slice(0,7);T[k]=(T[k]||0)+(+i.cost||0)});a.slice(0,SHOW).forEach(i=>{const k=(i.date||'').slice(0,7);(g[k]=g[k]||[]).push(i)});
+return '<div class="tl">'+Object.keys(g).sort().reverse().map(k=>`<div class="mh"><div class="m">${new Date(k+'-01T00:00').toLocaleString('en-GB',{month:'long',year:'numeric'}).toUpperCase()}</div><b>${rm(T[k])}</b></div>`+g[k].map(row).join('')).join('')+'</div>'+(a.length>SHOW?`<button class="g mt" style="width:100%" onclick="SHOW+=120;render()">Show older entries (${a.length-SHOW} more)</button>`:'')}
 function mk(fr,to,yr){const a=new Date(fr+'T00:00'),z=new Date(to+'T00:00'),n=mns(fr,to),B=[];
 if(yr)for(let y=a.getFullYear();y<=z.getFullYear();y++)B.push({k:''+y,l:''+y,a:0,b:0});else for(let i=0;i<n;i++){const d=new Date(a.getFullYear(),a.getMonth()+i,1);B.push({k:d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'),l:d.toLocaleString('en-GB',{month:'short'})+(n>12?' '+String(d.getFullYear()).slice(2):''),a:0,b:0})}
 return B}
 function put(B,F,L,fr,to,yr){const add=(x,f)=>x.filter(i=>i.date>=fr&&i.date<=to).forEach(i=>{const m=B.find(q=>q.k===i.date.slice(0,yr?4:7));if(m)m[f]+=+i.cost||0});add(F,'a');add(L,'b');return B}
 const kc=(t,i,c,v,rows)=>`<div class="c"><div style="display:flex;gap:8px;align-items:center"><span class="ic2" style="background:${c}">${i}</span><b style="color:${c}">${t}</b></div><div class="m mt">Total</div><div style="font-size:20px;font-weight:700;color:${c}">${v}</div><div style="border-top:1px solid var(--bd);margin-top:8px;padding-top:6px">${rows.map(([k,x])=>`<div class="r"><span class="m">${k}</span><b style="font-size:13px">${x}</b></div>`).join('')}</div></div>`;
-function reports(){return safe(hero)+reports0()}
+function reports(){return safe(syncWarn)+safe(hero)+reports0()}
 function reports0(){const F=mine('fuel'),L=mine('log');if(!RT)RT=today();if(!RF)RF=iso(new Date(new Date().getFullYear(),new Date().getMonth()-11,1));
 const inR=i=>i.date>=RF&&i.date<=RT,FR=F.filter(inR),LR=L.filter(inR),A=[...FR,...LR],S2=(a,k)=>a.reduce((s,i)=>s+(+i[k]||0),0),od=A.filter(i=>i.odo).map(i=>+i.odo),dist=od.length>1?Math.max(...od)-Math.min(...od):0,
 ds=A.map(i=>i.date).sort(),days=ds.length>1?Math.max(1,Math.round((new Date(ds[ds.length-1])-new Date(ds[0]))/864e5)):0,fa=S2(FR,'cost'),sv=S2(LR,'cost'),tot=fa+sv,lt=S2(FR,'litres'),
 ef=effs(F).filter(e=>e.d>=RF&&e.d<=RT),ak=ef.reduce((s,e)=>s+e.km,0)/(ef.reduce((s,e)=>s+e.l,0)||1),yr=RY||mns(RF,RT)>24,
 pp=FR.filter(i=>i.ppl).sort((x,y)=>x.date.localeCompare(y.date)).map(i=>({d:i.date,y:+i.ppl})),by={},ad=(k,v)=>by[k]=(by[k]||0)+v,
 head=`<div class="st">${[['gen','General'],['fuel','Refueling'],['svc','Services']].map(([k,l])=>`<span class="${rtab===k?'on':''}" onclick="rtab='${k}';render()">${l}</span>`).join('')}</div>
-<div class="c cl r" onclick="rO=!rO;render()"><b>${A.length} entries (${dmy(RF)} - ${dmy(RT)})</b><span>${rO?'▴':'▾'}</span></div>${rO?`<div class="c"><div class="row"><div><label for="rf">From</label><input id="rf" type="date" value="${RF}" onchange="RF=this.value||RF;render()"></div><div><label for="rt">To</label><input id="rt" type="date" value="${RT}" onchange="RT=this.value||RT;render()"></div></div><select onchange="this.value&&preset(this.value)"><option value="">Quick range…</option>${[['This month','1'],['3 months','3'],['6 months','6'],['12 months','12'],['This year','y'],['All time','0']].map(([l,m])=>`<option value="${m}">${l}</option>`).join('')}</select></div>`:''}`;
+<div class="c cl r" onclick="rO=!rO;render()"><b>${A.length} entries (${dmy(RF)} - ${dmy(RT)})</b><span>${rO?'▴':'▾'}</span></div>${rO?`<div class="c"><div class="row"><div><label for="rf">From</label><input id="rf" type="date" value="${RF}" onchange="RF=this.value||RF;render()"></div><div><label for="rt">To</label><input id="rt" type="date" value="${RT}" onchange="RT=this.value||RT;render()"></div></div><select aria-label="Quick date range" onchange="this.value&&preset(this.value)"><option value="">Quick range…</option>${[['This month','1'],['3 months','3'],['6 months','6'],['12 months','12'],['This year','y'],['All time','0']].map(([l,m])=>`<option value="${m}">${l}</option>`).join('')}</select></div>`:''}`;
 if(!(mns(RF,RT)>=1))return head+'<p class="m">The From date must be before the To date.</p>';
 const B=put(mk(RF,RT,yr),F,L,RF,RT,yr),so=(v,l)=>`<option value="${v}"${(RM===v||String(RY)===v)?' selected':''}>${l}</option>`;
 LR.forEach(i=>{if(i.prices&&Object.keys(i.prices).length){Object.entries(i.prices).forEach(([k,v])=>ad(k,v));if(i.other)ad('Other costs',i.other)}else if(+i.cost)ad(i.item||'Service',+i.cost)});
 const bs=Object.entries(by).sort((x,y)=>y[1]-x[1]),bm=bs.length?bs[0][1]:1;
 if(rtab==='fuel')return head+health(effs(F))+`<div class="g2">${kc('Fuel','⛽','#f5b83d',rm(fa),[['Litres',lt.toFixed(1)+' L'],['Avg price',lt?rm(fa/lt)+'/L':'-']])}${kc('Per fill-up','🧾','#94a3b8',FR.length?rm(fa/FR.length):'-',[['Litres',FR.length?(lt/FR.length).toFixed(1)+' L':'-'],['Fill-ups',FR.length]])}</div>
-<div class="c"><b>Fuel spending</b>${bars(B.map(x=>({...x,b:0})),'r2')}</div><div class="c"><b>Fuel economy</b>${line(ef.map(e=>({d:e.d,y:e.y})),'km/L','r3')}</div><div class="c"><b>Price per litre</b>${line(pp,'RM','r4')}</div>`;
+<div class="c"><h2 class="ct">Fuel spending</h2>${bars(B.map(x=>({...x,b:0})),'r2')}</div><div class="c"><h2 class="ct">Fuel economy</h2>${line(ef.map(e=>({d:e.d,y:e.y})),'km/L','r3')}</div><div class="c"><h2 class="ct">Price per litre</h2>${line(pp,'RM','r4')}</div>`;
 if(rtab==='svc')return head+`<div class="g2">${kc('Services','🔧','#4ade80',rm(sv),[['Entries',LR.length],['Average',LR.length?rm(sv/LR.length):'-']])}${kc('Per km','📍','#94a3b8',dist?rm(sv/dist):'-',[['Distance',km(dist)],['Per day',days?rm(sv/days):'-']])}</div>
-<div class="c"><b>Service spending</b>${bars(B.map(x=>({...x,a:0})),'r5')}</div><div class="c"><b>By item</b>${bs.length?bs.map(([k,v])=>`<div class="r mt"><span>${E(k)}</span><b>${rm(v)}</b></div><div style="height:6px;border-radius:3px;background:var(--ac);width:${v/bm*100}%"></div>`).join(''):'<p class="m">No services in this period.</p>'}</div>`;
+<div class="c"><h2 class="ct">Service spending</h2>${bars(B.map(x=>({...x,a:0})),'r5')}</div><div class="c"><h2 class="ct">By item</h2>${bs.length?bs.map(([k,v])=>`<div class="r mt"><span>${E(k)}</span><b>${rm(v)}</b></div><div style="height:6px;border-radius:3px;background:var(--ac);width:${v/bm*100}%"></div>`).join(''):'<p class="m">No services in this period.</p>'}</div>`;
 const X=extra(F,L);return head+safe(insights)+X.rem+`<div class="g2">${kc('Cost','↘','#f97316',rm(tot),[['By day',days?rm(tot/days):'-'],['By km',dist?rm(tot/dist):'-']])}${kc('Distance','📍','#94a3b8',km(dist),[['Daily average',days?Math.round(dist/days)+' km':'-'],['Entries',A.length]])}${kc('Fuel','⛽','#f5b83d',rm(fa),[['Litres',lt.toFixed(1)+' L'],['Avg km/L',ef.length?ak.toFixed(1):'-']])}${kc('Services','🔧','#4ade80',rm(sv),[['Entries',LR.length],['Average',LR.length?rm(sv/LR.length):'-']])}</div>
-<div class="c"><b>Spending</b><div class="row mt"><select onchange="RM=this.value;render()">${so('all','Fuel and services').replace(/ selected/,RM==='all'?' selected':'')}<option value="fuel"${RM==='fuel'?' selected':''}>Fuel only</option><option value="svc"${RM==='svc'?' selected':''}>Services only</option></select><select onchange="RY=+this.value;render()"><option value="0"${RY?'':' selected'}>By month</option><option value="1"${RY?' selected':''}>By year</option></select></div>${bars(B.map(x=>({...x,a:RM==='svc'?0:x.a,b:RM==='fuel'?0:x.b})),'r1')}${LEG}</div>`+X.est}
+<div class="c"><h2 class="ct">Spending</h2><div class="row mt"><select aria-label="What to show" onchange="RM=this.value;render()">${so('all','Fuel and services').replace(/ selected/,RM==='all'?' selected':'')}<option value="fuel"${RM==='fuel'?' selected':''}>Fuel only</option><option value="svc"${RM==='svc'?' selected':''}>Services only</option></select><select aria-label="Group by" onchange="RY=+this.value;render()"><option value="0"${RY?'':' selected'}>By month</option><option value="1"${RY?' selected':''}>By year</option></select></div>${bars(B.map(x=>({...x,a:RM==='svc'?0:x.a,b:RM==='fuel'?0:x.b})),'r1')}${LEG}</div>`+X.est}
 function dl(t){return{dd:t.date?Math.round((new Date(t.date+'T00:00')-new Date(today()+'T00:00'))/864e5):null,dk:t.odo?t.odo-odoOf(t.carId):null}}
 function eff(t){if(!(t.rpm||t.rpk))return t;const ts=(t.item||'').toLowerCase().split(', '),m=live('log').filter(l=>l.carId===t.carId&&(l.item||'').toLowerCase().split(', ').some(x=>ts.includes(x))).sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.odo-a.odo)[0];
 if(!m)return{...t,last:null};const d=new Date(m.date+'T00:00:00Z');if(t.rpm)d.setUTCMonth(d.getUTCMonth()+t.rpm);
@@ -308,38 +331,37 @@ return `<div class="r"><span>Full tank range (${T} L)</span><b>about ${Math.roun
 const sy=t=>{const y=$('#sy');if(y)y.textContent=D.cfg.url?t:''};
 function lf(i){const{dd,dk}=dl(i);return [dk===null?'':dk>0?km(dk)+' left':'Overdue by '+km(-dk),dd===null?'':dd>0?dd+(dd>1?' days':' day')+' left':dd===0?'Due today':'Overdue by '+(-dd)+(dd<-1?' days':' day')].filter(Boolean).join(' · ')}
 function mini(i,x){return `<div class="r mt cl" onclick="go('todo')"><span>${E(i.item)}</span><span class="tag s${st(i)}">${['On track','Due soon','Overdue'][st(i)]}</span></div><div class="m">${lf(i)}${x||''}</div>`}
-const safe=f=>{try{return f()}catch(x){return `<div class="c"><b>Could not show this part</b><div class="m">${E(x.message)}</div></div>`}};
+const safe=f=>{try{return f()}catch(x){return `<div class="c"><h2 class="ct">Could not show this part</h2><div class="m">${E(x.message)}</div></div>`}};
 function evs(){const o=[];cars().forEach(c=>{remOf(c).forEach(i=>{if(i.date)o.push({key:i.virtual?i.id+'-'+c.id:i.id,title:'Car Log: '+i.item+' ('+c.name+')',date:i.date})})});return o}
 function extra(F,L){const n=today(),od=[...F,...L].filter(i=>i.odo&&i.date).sort((a,b)=>a.date.localeCompare(b.date)),f=od[0],e=od[od.length-1],span=f?(new Date(e.date)-new Date(f.date))/864e5:0,kmd=span>=7?(e.odo-f.odo)/span:0,
 all=[...F,...L].reduce((s,i)=>s+(+i.cost||0),0),dt=(a,b)=>(a.date||'').localeCompare(b.date||''),ls=[...L].sort(dt).pop(),lg=[...F].sort(dt).pop(),
 ago=d=>{const x=Math.round((new Date(n+'T00:00')-new Date(d+'T00:00'))/864e5);return x<=0?'today':x+(x>1?' days ago':' day ago')},row=(k,v)=>`<div class="r"><span class="m">${k}</span><b>${v}</b></div>`,
 est=i=>{try{const{dk}=dl(i);return dk>0&&kmd>0?' · est. '+fd(iso(new Date(Date.now()+dk/kmd*864e5))):''}catch(x){return ''}},R=rem().sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9'));
-return{kmd,rem:R.length?`<div class="c"><b>Reminders</b>${R.slice(0,3).map(i=>mini(i,est(i))).join('')}${R.length>3?`<button class="g mt" onclick="go('todo')">Show all ${R.length}</button>`:''}</div>`:'',
-est:`<div class="c"><b>Estimates</b><div class="mt">${kmd>0?row('Distance per month',km(Math.round(kmd*30)))+row('Distance per year',km(Math.round(kmd*365))):''}${span>=30&&all?row('Cost per month',rm(all/span*30))+row('Cost per year',rm(all/span*365)):''}${ls?row('Last service',ago(ls.date)):''}${lg?row('Last fill-up',ago(lg.date)):''}${kmd>0||ls||lg?'':'<span class="m">Add entries with odometer readings to see estimates.</span>'}</div></div>`}}
+return{kmd,rem:R.length?`<div class="c"><h2 class="ct">Reminders</h2>${R.slice(0,3).map(i=>mini(i,est(i))).join('')}${R.length>3?`<button class="g mt" onclick="go('todo')">Show all ${R.length}</button>`:''}</div>`:'',
+est:`<div class="c"><h2 class="ct">Estimates</h2><div class="mt">${kmd>0?row('Distance per month',km(Math.round(kmd*30)))+row('Distance per year',km(Math.round(kmd*365))):''}${span>=30&&all?row('Cost per month',rm(all/span*30))+row('Cost per year',rm(all/span*365)):''}${ls?row('Last service',ago(ls.date)):''}${lg?row('Last fill-up',ago(lg.date)):''}${kmd>0||ls||lg?'':'<span class="m">Add entries with odometer readings to see estimates.</span>'}</div></div>`}}
 const ST=['Johor','Kedah','Kelantan','Melaka','Negeri Sembilan','Pahang','Perak','Perlis','Pulau Pinang','Sabah','Sarawak','Selangor','Terengganu','Kuala Lumpur','Putrajaya','Labuan'],BR=['Petronas','Petron','Shell','Caltex','Others'],
 BC={Petronas:'#00a19c',Petron:'#1b3f94',Shell:'#fbce07',Caltex:'#e31837',Others:'#555'},AB={Johor:'JHR',Kedah:'KDH',Kelantan:'KTN',Melaka:'MLK','Negeri Sembilan':'NSN',Pahang:'PHG',Perak:'PRK',Perlis:'PLS','Pulau Pinang':'PNG',Sabah:'SBH',Sarawak:'SWK',Selangor:'SGR',Terengganu:'TRG','Kuala Lumpur':'KUL',Putrajaya:'PJY',Labuan:'LBN'},
 stN=g=>{g=(g||'').toLowerCase();const m=[['penang','Pulau Pinang'],['pinang','Pulau Pinang'],['malacca','Melaka'],['melaka','Melaka'],['kuala lumpur','Kuala Lumpur'],['putrajaya','Putrajaya'],['labuan','Labuan']].find(([k])=>g.includes(k));return m?m[1]:ST.find(x=>g.includes(x.toLowerCase()))||''};
-function lg(k,n){const x=D.items.find(i=>i.kind==='logo'&&i.name===k+':'+n&&!i.deleted&&i.logo);if(x)return `<img class="lg" src="${x.logo}" alt="">`;
+function lg(k,n){const x=D.items.find(i=>i.kind==='logo'&&i.name===k+':'+n&&!i.deleted&&i.logo);if(x)return `<img class="lg" src="${x.logo}" alt="${E(n)} logo">`;
 return `<span class="lg" style="background:${k==='b'?BC[n]||'#555':'#2b2b2b'};color:${n==='Shell'?'#c8102e':'#fff'}">${E(k==='b'?n.slice(0,2):AB[n]||n.slice(0,3).toUpperCase())}</span>`}
 function ddr(id,o,v,k){const el=$('#'+id);el.innerHTML=`<div class="dd" onclick="$('#${id}l').hidden=!$('#${id}l').hidden">${v?lg(k,v)+' '+E(v):'Choose…'}<span style="margin-left:auto">▾</span></div><div id="${id}l" class="ddl" hidden>${o.map(x=>`<div class="ddo" data-v="${E(x)}">${lg(k,x)} ${E(x)}</div>`).join('')}</div>`;
 el.onclick=e=>{const x=e.target.closest('.ddo');if(x){if(k==='b')FB=x.dataset.v;else FS=x.dataset.v;ddr(id,o,x.dataset.v,k)}}}
 function detect(){const m=$('#gm');if(!D.cfg.url){m.textContent='Set up Google Sheets sync first (More tab).';return}if(!navigator.geolocation){m.textContent='Location is not available on this device.';return}
-m.textContent='Getting your location…';navigator.geolocation.getCurrentPosition(async p=>{try{m.textContent='Asking Google Maps…';const r=await fetch(D.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:D.cfg.token,action:'geo',lat:p.coords.latitude,lng:p.coords.longitude})}),j=await r.json();
-if(j.error)throw new Error(j.error);if(!j.geo)throw new Error('update Code.gs first');FS=stN(j.state);$('#ua').value=j.area||'';ddr('fst',ST,FS,'s');m.textContent='Detected: '+[j.area,j.state].filter(Boolean).join(', ')}catch(e){m.textContent='Could not detect: '+e.message}},
+m.textContent='Getting your location…';navigator.geolocation.getCurrentPosition(async p=>{try{m.textContent='Asking Google Maps…';const j=await api({action:'geo',lat:p.coords.latitude,lng:p.coords.longitude});if(!j.geo)throw new Error('update Code.gs first');FS=stN(j.state);$('#ua').value=j.area||'';ddr('fst',ST,FS,'s');m.textContent='Detected: '+[j.area,j.state].filter(Boolean).join(', ')}catch(e){logE('location',e);m.textContent='Could not detect: '+e.message}},
 ()=>{m.textContent='Location is blocked. Allow location for this site, or pick the state yourself.'},{enableHighAccuracy:true,timeout:15000})}
-async function lgUp(inp){const f=inp.files[0];if(!f)return;const n=$('#lgs').value;try{const d=await shrink(f,96,'image/png');let x=D.items.find(i=>i.kind==='logo'&&i.name===n);if(!x){x={id:'logo-'+n.replace(/[^a-z0-9]/gi,'-').toLowerCase(),kind:'logo',name:n};D.items.push(x)}Object.assign(x,{logo:d,deleted:0,updated:Date.now()});commit()}catch(e){alert('Could not read that picture.')}inp.value=''}
+async function lgUp(inp){const f=inp.files[0];if(!f)return;const n=$('#lgs').value;try{const d=await shrink(f,128,'image/webp',.85);let x=D.items.find(i=>i.kind==='logo'&&i.name===n);if(!x){x={id:'logo-'+n.replace(/[^a-z0-9]/gi,'-').toLowerCase(),kind:'logo',name:n};D.items.push(x)}Object.assign(x,{logo:d,deleted:0,updated:Date.now()});commit()}catch(e){alert('Could not read that picture.')}inp.value=''}
 function lgReset(){const x=D.items.find(i=>i.kind==='logo'&&i.name===$('#lgs').value);if(x){x.logo='';x.deleted=1;x.updated=Date.now();commit()}}
-const post=o=>fetch(D.cfg.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:D.cfg.token,...o})}).then(r=>r.json());
+const post=(o,ms)=>api(o,ms);
 async function pushFiles(){for(const it of D.items){if(it.kind!=='log'||!it.ph||it.rid||it.deleted)continue;const p=await kv('get','p:'+it.id);if(!p)continue;const pdf=it.pt==='pdf',mime=pdf?'application/pdf':(p.match(/^data:([^;]+)/)||[])[1]||'image/jpeg',
-r=await post({action:'up',name:(it.date||'')+' '+(it.item||'receipt').replace(/[^\w ,.-]/g,'').slice(0,40)+(pdf?'.pdf':'.jpg'),mime,data:p.split(',')[1]});
-if(!r.fid)throw new Error(r.error||'update Code.gs first');it.rid=r.fid;it.updated=Date.now();await save()}}
-async function getP(it){let p=await kv('get','p:'+it.id);if(!p&&it.rid&&D.cfg.url){try{const r=await post({action:'get',fid:it.rid});if(r.data){p='data:'+r.mime+';base64,'+r.data;await kv('put','p:'+it.id,p)}}catch(e){}}return p}
+r=await post({action:'up',ms:0,name:(it.date||'')+' '+(it.item||'receipt').replace(/[^\w ,.-]/g,'').slice(0,40)+(pdf?'.pdf':'.jpg'),mime,data:p.split(',')[1]});
+if(!r.fid)throw new Error('update Code.gs first');it.rid=r.fid;it.updated=Date.now();await save()}}
+async function getP(it){let p=await kv('get','p:'+it.id);if(!p&&it.rid&&D.cfg.url){try{const r=await post({action:'get',fid:it.rid},60000);if(r.data&&/^(image\/[\w.+-]+|application\/pdf)$/.test(r.mime)){p='data:'+r.mime+';base64,'+r.data;await kv('put','p:'+it.id,p)}}catch(e){logE('drive',e);DRE=e.message}}return p}
 let Q='',QF=0,UP=0,TT;
-const sb=()=>`<input id="q" type="search" placeholder="Search item, place, month…" value="${E(Q)}" oninput="Q=this.value;QF=1;render()">`,
+const sb=()=>`<input id="q" type="search" placeholder="Search item, place, month…" value="${E(Q)}" oninput="Q=this.value;QF=1;clearTimeout(QT);QT=setTimeout(()=>{SHOW=60;render()},150)">`,
 fq=i=>{if(!Q)return true;const t=[i.item,i.notes,i.brand,i.area,i.state,i.ftype,i.place,i.date,fd(i.date),i.date&&new Date(i.date+'T00:00').toLocaleString('en-GB',{month:'long'})].join(' ').toLowerCase();return Q.toLowerCase().split(/\s+/).filter(Boolean).every(w=>t.includes(w))};
 function fab(o){const m=$('#fm'),b=$('#fab');o=o===undefined?m.hidden:o;m.hidden=!o;b.classList.toggle('open',!!o)}
-function toast(t,undo){const e=$('#toast');e.innerHTML='<span>'+E(t)+'</span>'+(undo?'<button class="g" id="tu">Undo</button>':'');e.hidden=false;clearTimeout(TT);if(undo){UP=1;$('#tu').onclick=()=>{UP=0;e.hidden=true;clearTimeout(TT);undo()}}
-TT=setTimeout(()=>{e.hidden=true;if(UP){UP=0;sync()}},undo?5000:2200)}
+function toast(t,undo,lab){const e=$('#toast');e.innerHTML='<span>'+E(t)+'</span>'+(undo?'<button class="g" id="tu">'+E(lab||'Undo')+'</button>':'');e.hidden=false;clearTimeout(TT);if(undo){UP=1;$('#tu').onclick=()=>{UP=0;e.hidden=true;clearTimeout(TT);undo()}}
+TT=setTimeout(()=>{e.hidden=true;if(UP){UP=0;sync()}},lab?12000:undo?5000:2200)}
 function softDel(it,dlg,label){it.deleted=1;it.updated=Date.now();$('#'+dlg).close();save();render();toast(label,()=>{it.deleted=0;it.updated=Date.now();commit();toast('Restored')})}
 function okOdo(v,id){const c=cur();if(!v||!c)return true;const prev=Math.max(+c.odo||0,0,...D.items.filter(i=>i.carId===c.id&&!i.deleted&&i.id!==id&&(i.kind==='log'||i.kind==='fuel')).map(i=>+i.odo||0));
 if(!id&&v<prev)return confirm('This reading ('+km(v)+') is lower than your latest one ('+km(prev)+'). Save anyway?');if(prev&&v>prev+3000)return confirm('This is '+km(v-prev)+' more than your latest reading. Is that right?');return true}
@@ -406,7 +428,7 @@ T('Total spent',80,452,34,'#8a8a8a','500');T(rm(fa+sv),80,562,110,'#f5b83d','800
 x.fillStyle='#0f0f0f';x.strokeStyle='#262626';x.lineWidth=3;x.beginPath();x.roundRect?x.roundRect(X,Y,450,160,24):x.rect(X,Y,450,160);x.fill();x.stroke();T(k,X+30,Y+60,32,'#8a8a8a','500');T(v,X+30,Y+124,48,'#f4f4f5','700')});
 T('🔥 '+streak()+'-week streak    🏆 '+achs().filter(a=>a.ok).length+' badges',80,1278,34,'#f4f4f5','600');
 const u=cv.toDataURL('image/png');RCB=blob(u,'image/png');
-sheet(`<h2>Monthly recap</h2><select onchange="recap(this.value)">${ms.map(k=>`<option value="${k}"${k===m?' selected':''}>${MN(k)}</option>`).join('')}</select><img src="${u}" alt="Recap for ${MN(m)}" style="width:100%;border-radius:12px;border:1px solid var(--bd)"><div class="row mt"><button onclick="shareRc()">Share</button><button class="g" onclick="saveRc()">Save picture</button></div>`)}
+sheet(`<h2>Monthly recap</h2><select aria-label="Month" onchange="recap(this.value)">${ms.map(k=>`<option value="${k}"${k===m?' selected':''}>${MN(k)}</option>`).join('')}</select><img src="${u}" alt="Recap for ${MN(m)}" style="width:100%;border-radius:12px;border:1px solid var(--bd)"><div class="row mt"><button onclick="shareRc()">Share</button><button class="g" onclick="saveRc()">Save picture</button></div>`)}
 async function shareRc(){if(!RCB)return;const f=new File([RCB],'garage-recap.png',{type:'image/png'});try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'My Garage recap'});return}}catch(e){if(e.name==='AbortError')return}saveRc()}
 function saveRc(){if(!RCB)return;const a=document.createElement('a');a.href=URL.createObjectURL(RCB);a.download='garage-recap.png';a.click()}
 const PLAN=[['Engine oil and filter',5000,6],['Air filter',20000,12],['Cabin filter',20000,12],['Spark plugs',20000,24],['Brake pads',10000,6],['Brake fluid',40000,24],['Coolant',40000,24],['Transmission fluid',40000,24],['Tyres',10000,6],['Wheel alignment',10000,12],['Battery',0,24],['Timing belt',80000,60]];
@@ -419,6 +441,67 @@ const d=new Date();d.setMonth(d.getMonth()+mo);D.items.push({id:uid(),kind:'todo
 $('#gd').close();if(n){commit();go('todo');toast('Added '+n+' reminder'+(n>1?'s':''))}else toast('Nothing selected')}
 function bdg(){if(!('Notification' in window))return toast('Open Garage from your Home Screen first');Notification.requestPermission().then(p=>{toast(p==='granted'?'Icon badge turned on':'Permission was not given');render()})}
 function badge(){if(!navigator.setAppBadge)return;const n=cars().reduce((s,c)=>s+remOf(c).filter(i=>st(i)>0).length,0);(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}
+function memo(f){let k,v;return function(){const kk=VER+'|'+(D.cfg.sel||'')+'|'+today();if(kk!==k){v=f();k=kk}return v}}
+const APP_V='2026.11.15',CODE_V=6;let DRE='',MISS=[];
+const logE=(a,m)=>{const x={t:Date.now(),a:String(a),m:String((m&&m.message)||m||'').replace(/token[^,;]*/gi,'token …').slice(0,300)};LOG.unshift(x);if(LOG.length>100)LOG.length=100;kv('put','log',LOG).catch(()=>{})};
+addEventListener('error',e=>logE('app',(e.message||'Error')+(e.lineno?' (line '+e.lineno+')':'')));addEventListener('unhandledrejection',e=>logE('app',e.reason));
+const okUrl=u=>/^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+|macros)\/s\/[\w-]{20,}\/(exec|dev)$/.test(u||'');
+async function api(o,ms){if(o&&'ms' in o){ms=o.ms;o={...o};delete o.ms}const c=D.cfg;if(!okUrl(c.url))throw new Error('the web app link must start with https://script.google.com/macros/s/ and end with /exec');
+const ac=new AbortController(),t=ms===undefined?30000:ms||120000,tm=setTimeout(()=>ac.abort(),t);let r;
+try{r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:c.token,...o}),signal:ac.signal,referrerPolicy:'no-referrer'})}
+catch(e){throw new Error(e.name==='AbortError'?'no reply from Google after '+Math.round(t/1000)+' seconds':navigator.onLine===false?'you are offline':'could not reach Google ('+e.message+')')}finally{clearTimeout(tm)}
+const tx=await r.text();let j;try{j=JSON.parse(tx)}catch(e){throw new Error(/<html/i.test(tx)?'Google sent a web page instead of data. Check the web app link and that access is set to Anyone':'unreadable reply from Google')}
+if(j&&j.error)throw new Error(j.error);return j}
+const NUMF=['odo','cost','ppl','litres','tank','rpm','rpk','other','updated','full','ph','deleted'],DATEF=['date','rtax','ins'],IDF=['id','carId','rid'],
+STRF={kind:8,item:300,name:120,plate:20,year:8,colour:40,engine:40,notes:1000,brand:40,state:40,area:80,ftype:30,place:120,mode:4,pt:4,icon:8};
+function clean(i){if(!i||typeof i!=='object'||Array.isArray(i))return null;if(typeof i.id!=='string'||!/^[\w.:-]{1,80}$/.test(i.id))return null;if(!['car','log','fuel','todo','svc','logo'].includes(i.kind))return null;const o={};
+for(const k of Object.keys(i)){const v=i[k];
+if(NUMF.includes(k)){if(v==='')o[k]='';else if(v!=null&&v!==''){const n=+v;if(isFinite(n))o[k]=n}}
+else if(DATEF.includes(k))o[k]=typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v:'';
+else if(IDF.includes(k)){if(typeof v==='string'&&/^[\w.:-]{0,120}$/.test(v))o[k]=v}
+else if(k in STRF){if(v!=null)o[k]=String(v).slice(0,STRF[k])}
+else if(k==='logo')o[k]=typeof v==='string'&&v.length<300000&&/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(v)?v:'';
+else if(k==='prices'&&v&&typeof v==='object'){const p={};for(const[n,x]of Object.entries(v).slice(0,40)){const y=+x;if(isFinite(y))p[String(n).slice(0,120)]=y}o.prices=p}}
+if(o.mode&&o.mode!=='and')o.mode='or';if(o.pt&&o.pt!=='pdf')o.pt='img';return o}
+async function rcpt(f){const sm=await shrink(f,1400,'image/jpeg',.72);return /jpe?g/i.test(f.type)&&f.size<sm.length*.74?rd(f):sm}
+function syncWarn(){const c=D.cfg;return c.url&&(c.fails||0)>=3?`<div class="c cl wn" onclick="go('set');diag()"><h2 class="ct">⚠️ Sync has failed ${c.fails} times in a row</h2><div class="m">${E(c.lastErr||'')}. Your data is safe on this device. Tap to run a connection check.</div></div>`:''}
+function bkCard(){const c=D.cfg,L=live('log'),rp=L.filter(i=>i.ph).length,rd2=L.filter(i=>i.rid).length,old=!c.lastExport||(new Date(today())-new Date(c.lastExport))/864e5>30,row=(k,v)=>`<div class="r mt"><span class="m">${k}</span><b style="font-size:14px;text-align:right">${v}</b></div>`;
+return `<div class="c"><h2 class="ct">Backup and recovery</h2>${row('Google Sheets',c.url?(c.last?'Synced '+E(c.last):'Not synced yet'):'Not set up')}${row('Daily backup in Drive',c.url?(c.bk?fd(c.bk):(c.sv>=6?'After the next sync':'Needs the new Code.gs')):'Needs Sheets sync')}${row('Receipts in Drive',c.drv?rd2+' of '+rp:'Switched off')}${row('Storage on this device','<span id="stq">Checking…</span>')}${row('Last backup file',c.lastExport?fd(c.lastExport):'Never')}
+${!c.url&&old?'<p class="m" style="color:var(--amb)">Your records only live on this device. Turn on Google Sheets sync, or export a backup file at least once a month.</p>':''}
+<div class="row mt"><button class="g" onclick="exp()">Export backup file</button><button class="g" onclick="$('#imp').click()">Import backup file</button></div>${c.url?'<button class="g mt" style="width:100%" onclick="rbList()">Restore from a Drive backup</button>':''}<input id="imp" type="file" accept=".json,application/json" hidden onchange="imp(this)"></div>`}
+async function stq(){const e=$('#stq');if(!e)return;try{const p=navigator.storage&&navigator.storage.persisted?await navigator.storage.persisted():false,q=navigator.storage&&navigator.storage.estimate?await navigator.storage.estimate():null;
+e.textContent=(p?'Protected':'Can be cleared by the browser')+(q&&q.usage?' · '+(q.usage/1048576).toFixed(1)+' MB':'')}catch(x){e.textContent='Unknown'}}
+const AREA={sync:'Sync',drive:'Google Drive',calendar:'Google Calendar',location:'Location',import:'Import',export:'Export',storage:'Device storage',app:'App',check:'Connection check',restore:'Restore'};let LOGALL=0;
+function logCard(){const L=LOGALL?LOG:LOG.slice(0,5);return `<div class="c"><h2 class="ct">Problems log</h2><p class="m">Errors on this device: failed syncs, imports, uploads and so on. Copy it and send it to whoever helps you with the app.</p>${LOG.length?L.map(e=>`<div class="mt"><div class="r"><b style="font-size:14px">${E(AREA[e.a]||e.a)}</b><span class="m">${new Date(e.t).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</span></div><div class="m">${E(e.m)}</div></div>`).join('')+(LOG.length>5?`<button class="g mt" onclick="LOGALL=!LOGALL;render()">${LOGALL?'Show fewer':'Show all '+LOG.length}</button>`:'')+`<div class="row mt"><button class="g" onclick="cpLog()">Copy log</button><button class="g" onclick="LOG=[];kv('put','log',LOG);render()">Clear</button></div>`:'<p class="m mt">No problems recorded. 👍</p>'}</div>`}
+function cpLog(){const t='Garage '+APP_V+' · '+navigator.userAgent+'\n'+LOG.map(e=>new Date(e.t).toISOString()+' ['+e.a+'] '+e.m).join('\n');(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Log copied'),()=>sheet('<h2>Problems log</h2><textarea rows="12" readonly>'+E(t)+'</textarea>'))}
+function mkTok(){const A='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789',b=crypto.getRandomValues(new Uint8Array(32)),t=[...b].map(x=>A[x%A.length]).join('');
+sheet(`<h2>Strong secret word</h2><input id="tk" readonly value="${t}" style="font-family:ui-monospace,monospace"><button class="g" onclick="navigator.clipboard&&navigator.clipboard.writeText($('#tk').value).then(()=>toast('Copied'))">Copy</button>
+<ol class="m" style="padding-left:18px"><li>Copy it.</li><li>In Apps Script, put it between the quote marks in the line <b>const TOKEN = '…'</b>, click Save, then Deploy › Manage deployments › pencil › New version › Deploy.</li><li>Come back and tap <b>Use on this device</b>.</li><li>Paste it in More › Secret word on your other devices too.</li></ol><button style="width:100%" onclick="cf('token',$('#tk').value);$('#gd').close();render();toast('Secret word saved on this device')">Use on this device</button>`)}
+async function rbList(){sheet('<h2>Drive backups</h2><p class="m">Loading…</p>');try{const r=await api({action:'backups'});const B=r.backups||[];
+sheet(`<h2>Drive backups</h2><p class="m">Pick one to bring back entries that are missing or deleted. Entries you have now stay as they are.</p>${B.length?B.map(b=>`<div class="r mt cl" onclick="rbGo('${E(b.fid)}')"><span>${E(b.name.replace(/^garage-backup-|\.json$/g,''))}</span><span class="m">${Math.max(1,Math.round(b.size/1024))} KB ›</span></div>`).join(''):'<p class="m">No backups yet. The first one is made on your next sync.</p>'}`)}catch(e){logE('restore',e);sheet('<h2>Drive backups</h2><p class="m">Could not load backups: '+E(e.message)+'</p>')}}
+async function rbGo(fid){if(!/^[\w-]{10,}$/.test(fid)||!confirm('Bring back entries from this backup? Nothing you have now is removed or changed.'))return;sheet('<h2>Restoring…</h2><p class="m">Saving a safety copy first.</p>');
+try{await api({action:'snap'});const r=await api({action:'getbackup',fid},60000),j=JSON.parse(r.data),its=(j.items||[]).map(clean).filter(Boolean),now=Date.now();let n=0;
+its.forEach(b=>{const x=D.items.find(y=>y.id===b.id);if(b.deleted)return;if(!x||x.deleted){b.updated=now;if(x)Object.assign(x,b);else D.items.push(b);n++}});$('#gd').close();commit();toast(n?'Brought back '+n+' entr'+(n>1?'ies':'y'):'Nothing was missing')}
+catch(e){logE('restore',e);sheet('<h2>Restore</h2><p class="m">Restore failed: '+E(e.message)+'. Nothing was changed.</p>')}}
+const glink=(u,t)=>/^https:\/\/(docs|drive)\.google\.com\//.test(u||'')?`<a href="${E(u)}" target="_blank" rel="noopener">${E(t)}</a>`:'';
+async function diag(){const L=[],add=(t,ok,x)=>L.push(`<div class="mt"><div>${ok===null?'➖':ok?'✅':'❌'} ${t}</div>${x?`<div class="m" style="padding-left:24px">${x}</div>`:''}</div>`),show=(d)=>sheet('<h2>Connection check</h2>'+L.join('')+`<p class="m mt">${d?'Checked at '+new Date().toLocaleTimeString('en-GB'):'Checking…'}</p>`);
+add('Secure connection (HTTPS)',location.protocol==='https:'||/^(localhost|127\.0\.0\.1)$/.test(location.hostname));
+const st2=matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;add('Opened from your Home Screen',st2||null,st2?'':'Optional. On iPhone, apps on the Home Screen keep their data more reliably.');
+let ps=null;try{ps=navigator.storage&&navigator.storage.persisted?await navigator.storage.persisted():null}catch(e){}add('Device storage protected from clean-up',ps,ps?'':'The browser may clear data when space is low. Keep sync and backups on.');
+const c=D.cfg;if(!c.url){add('Google Sheets sync',false,'Not set up. Add your web app link in More.');return show(1)}
+add('Web app link is a Google Apps Script link',okUrl(c.url),okUrl(c.url)?'':'It should start with https://script.google.com/macros/s/ and end with /exec.');
+add('Secret word is strong',(c.token||'').length>=16,(c.token||'').length>=16?'':'Use at least 16 characters. Tap “Make a strong secret word”.');show();
+try{const h=await api({action:'health'});add('Script reachable and secret word accepted',true);
+add('Code.gs is up to date',(h.v||0)>=CODE_V,(h.v||0)>=CODE_V?'Version '+h.v:'Yours is '+(h.v?'version '+h.v:'an older version')+'. Paste the new Code.gs and redeploy.');
+add('Google Sheet',!!h.sheet,h.sheet?glink(h.sheet.url,h.sheet.name)+' · '+h.sheet.rows+' records':'');
+add('Receipts folder in Drive',c.drv?!!h.receipts:null,h.receipts?glink(h.receipts.url,'Open Garage Receipts'):c.drv?'Appears after the first receipt uploads.':'Drive receipts are switched off.');
+add('Daily backups in Drive',!!h.backups,h.backups?glink(h.backups.url,'Open Garage Backups')+(h.backups.last?' · last '+fd(h.backups.last):''):'Made on the next sync.');
+add('Google Calendar',c.cal?h.calendar:null,c.cal?(h.calendar?glink('https://calendar.google.com/','“Car Log” calendar found'):'Created on the next sync.'):'Calendar reminders are switched off.');
+add('No errors logged by the script',!h.errors,h.errors?h.errors+' logged in the Log tab of your sheet. Latest: '+(h.recent||[]).slice(0,2).map(x=>E(x[1]+': '+x[2])).join(' · '):'');
+const R=D.items.filter(i=>i.rid&&!i.deleted).map(i=>i.rid);if(R.length){const m=await api({action:'check',rids:R},60000);MISS=m.missing||[];
+add('Receipt links in Drive',!MISS.length,MISS.length?MISS.length+' receipt'+(MISS.length>1?'s are':' is')+' missing from Drive. <button class="g" style="padding:4px 10px" onclick="fixRc()">Fix links</button>':R.length+' receipts found')}}
+catch(e){logE('check',e);add('Script reachable',false,E(e.message))}show(1)}
+async function fixRc(){let up=0,gone=0;for(const it of D.items){if(!MISS.includes(it.rid))continue;const p=await kv('get','p:'+it.id);it.rid='';if(p)up++;else{it.ph=0;it.pt='';gone++}it.updated=Date.now()}MISS=[];commit();$('#gd').close();toast(up?up+' will upload again'+(gone?', '+gone+' removed':''):gone+' broken link'+(gone>1?'s':'')+' removed')}
 function ics(id){const t=(id==='rtax'||id==='ins')?rem().find(x=>x.id===id):eff(D.items.find(i=>i.id===id)),car=cars().find(c=>c.id===t.carId)||{},e=new Date(t.date+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);
 const s=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CarLog//EN','BEGIN:VEVENT','UID:'+t.id+(t.carId||'')+'@carlog','DTSTAMP:'+new Date().toISOString().replace(/[-:]|\.\d+/g,''),'DTSTART;VALUE=DATE:'+t.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+e.toISOString().slice(0,10).replace(/-/g,''),'SUMMARY:'+(t.item+' due ('+(car.name||'car')+')').replace(/[,;]/g,' '),'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n'),
 a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/calendar'}));a.download='car-reminder.ics';a.click()}
@@ -430,7 +513,10 @@ document.addEventListener('click',e=>{if(!$('#fm').hidden&&!e.target.closest('#f
 m.addEventListener('touchstart',e=>{const t=e.touches[0];x0=e.target.closest('input,select,textarea,svg')?null:t.clientX;y0=t.clientY},{passive:true});
 m.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>80&&Math.abs(dy)<50){const i=T.indexOf(tab)+(dx<0?1:-1);if(i>=0&&i<T.length)go(T[i])}},{passive:true})})();
 addEventListener('online',()=>sync());document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});setInterval(()=>{if(!document.hidden)sync()},12e4);
-if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js');
-{const _r3=render;render=function(){_r3();try{achCheck()}catch(e){}try{badge()}catch(e){}}}
-load().then(()=>{if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}render();navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
+if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(e=>logE('app','Offline support could not start: '+e.message));let nv=0;const newV=()=>{if(nv)return;nv=1;toast('A new version of Garage is ready',()=>location.reload(),'Reload')},askV=()=>{const w=navigator.serviceWorker.controller;if(w)w.postMessage('ver')};
+navigator.serviceWorker.addEventListener('message',e=>{if(e.data==='updated'||(e.data&&e.data.ver&&e.data.ver!==APP_V))newV()});setTimeout(askV,4000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(askV,3000)})}
+addEventListener('popstate',()=>{const d=document.querySelector('dialog[open]');if(d){d.close();try{history.pushState(null,'','#'+SL[tab])}catch(e){}return}const h=location.hash.slice(1);if(cur()&&(h==='add-fuel'||h==='add-service')){go(h==='add-fuel'?'fuel':'log');return h==='add-fuel'?openU():openF('log')}const t=LS[h]||'rep';if(t!==tab)go(t,1)});
+{const _r3=render;render=function(){_r3();clearTimeout(AT);AT=setTimeout(()=>{try{achCheck()}catch(e){}try{badge()}catch(e){}if(tab==='set')stq()},250)}}
+hs=memo(hs);achs=memo(achs);streak=memo(streak);
+load().then(()=>{if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}const hs0=location.hash.slice(1);if(LS[hs0])tab=LS[hs0];render();if(cur()&&(hs0==='add-fuel'||hs0==='add-service')){go(hs0==='add-fuel'?'fuel':'log');hs0==='add-fuel'?openU():openF('log')}else if(!LS[hs0])try{history.replaceState(null,'','#'+SL[tab])}catch(e){}navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
 </script></body></html>
