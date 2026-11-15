@@ -7,7 +7,10 @@
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
+  "orientation": "any",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
   "background_color": "#000000",
   "theme_color": "#000000",
   "categories": [
