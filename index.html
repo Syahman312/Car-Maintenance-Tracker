@@ -109,6 +109,12 @@ input[type=checkbox]{accent-color:var(--amb)}.ins::-webkit-scrollbar{display:non
 .dl{font-size:12px;font-weight:700;margin-left:6px}.up{color:var(--grn)}.dn{color:var(--red)}
 #ptr{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top));transform:translateX(-50%);background:#1a1a1a;border:1px solid #333;border-radius:99px;padding:6px 14px;font-size:13px;z-index:7;pointer-events:none}
 .hi{font-size:15px;margin:12px 2px 0;color:var(--mu)}.hi b{color:var(--tx)}
+.pill{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;margin-top:8px;border-radius:99px;background:#16171a;border:1px solid #24252a;font:500 12.5px system-ui,-apple-system,sans-serif;color:#8d8f97;white-space:nowrap;max-width:46vw;overflow:hidden;text-overflow:ellipsis;cursor:pointer}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:#5c5e66;flex:none}
+.pill.ok .dot{background:#4ade80}.pill.busy .dot{background:#60a5fa;animation:pulse 1s infinite}.pill.err .dot{background:#f87171}.pill.off .dot{background:#fbbf24}
+@keyframes pulse{50%{opacity:.3}}
+header .w>div:last-child{display:flex;flex-direction:column;align-items:flex-end}
+@media (max-width:360px){.pill{max-width:38vw}}
 .pt{font-size:11px;padding:0 7px;border-radius:99px;border:1px solid var(--amb);color:var(--amb);margin-left:6px;vertical-align:middle}
 .lg{width:30px;height:30px;border-radius:50%;object-fit:cover;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex:none}
 .m .lg{width:18px;height:18px;font-size:7px;vertical-align:middle}
@@ -129,7 +135,7 @@ input[type=checkbox]{accent-color:var(--amb)}.ins::-webkit-scrollbar{display:non
 .st span{flex:1;text-align:center;padding:12px 0;font-size:13px;font-weight:600;letter-spacing:.04em;color:var(--mu);cursor:pointer;text-transform:uppercase}
 .st span.on{color:var(--ac);box-shadow:inset 0 -2px var(--ac)}
 </style></head><body>
-<header><h1 class="sr">Garage – car maintenance and fuel tracker</h1><div class="w"><div style="display:flex;gap:10px;align-items:center"><img id="av" class="av" alt="" hidden><div><select id="cs" aria-label="Choose car" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div></div><div><div id="odo"></div><small id="sy" style="text-align:right"></small></div></div></header>
+<header><h1 class="sr">Garage – car maintenance and fuel tracker</h1><div class="w"><div style="display:flex;gap:10px;align-items:center"><img id="av" class="av" alt="" hidden><div><select id="cs" aria-label="Choose car" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div></div><div><div id="odo"></div><button class="pill" id="sy" type="button" aria-label="Sync status, open sync settings" onclick="toSync()"><span class="dot"></span><span id="syt">Local only</span></button></div></div></header>
 <main class="w"><div id="v"></div></main>
 <div id="fm" hidden><button onclick="fab(0);openF('log')">🔧 Service</button><button onclick="fab(0);openU()">⛽ Fill-up</button><button onclick="fab(0);openF('todo')">⏰ Reminder</button></div>
 <button id="fab" aria-label="Add" onclick="fab()">+</button><div id="toast" hidden></div><div id="ptr" hidden></div>
@@ -209,7 +215,7 @@ else h=`${safe(profile)}<div class="c"><h2 class="ct">Your cars</h2><button clas
 <div class="row mt"><input id="ns" placeholder="New item, e.g. Rustproofing" style="margin:0"><button onclick="addSvc($('#ns').value);commit()">Add</button></div><p class="m">Old entries keep their text when you rename or remove an item.</p></div>
 <div class="c"><h2 class="ct">Brand and state logos</h2><p class="m">Pick one and upload your own picture. Without one, a coloured badge is used.</p><select id="lgs" aria-label="Brand or state">${[...BR.map(b=>['b',b]),...ST.map(x=>['s',x])].map(([k,n])=>`<option value="${k}:${n}">${k==='b'?'Brand':'State'}: ${n}</option>`).join('')}</select><div class="row"><button class="g" onclick="$('#lgf').click()">Upload logo</button><button class="g" onclick="lgReset()">Reset</button></div><input id="lgf" type="file" accept="image/*" hidden onchange="lgUp(this)"></div>
 <div class="c"><h2 class="ct">App icon badge</h2><p class="m">Show how many reminders need attention on the Garage icon. Works when Garage is opened from your Home Screen.</p><button class="g" onclick="bdg()">Turn on</button></div>
-<div class="c"><h2 class="ct">Google Sheets sync</h2><label>Web app URL</label><input value="${E(c.url)}" placeholder="https://script.google.com/macros/s/…/exec" onchange="cf('url',this.value.trim());if(this.value&&!okUrl(this.value.trim()))toast('That link does not look like a Google web app link')">
+<div class="c" id="syncCard"><h2 class="ct">Google Sheets sync</h2><label>Web app URL</label><input value="${E(c.url)}" placeholder="https://script.google.com/macros/s/…/exec" onchange="cf('url',this.value.trim());if(this.value&&!okUrl(this.value.trim()))toast('That link does not look like a Google web app link')">
 <label>Secret token (same as in Code.gs)</label><input type="password" autocomplete="off" value="${E(c.token)}" onchange="cf('token',this.value.trim());render()">${c.token&&c.token.length<16?'<p class="m" style="color:var(--amb);margin-top:-6px">Your secret word is short. Someone who finds your web app link could guess it. Make a strong one below.</p>':''}<button class="g" style="margin-bottom:12px" onclick="mkTok()">Make a strong secret word</button>
 <label class="m" style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" style="width:auto;margin:0" ${c.cal?'checked':''} onchange="cf('cal',this.checked);sync(1)"> Add reminders to Google Calendar</label><label class="m" style="display:flex;gap:8px;align-items:center;margin:4px 0 12px"><input type="checkbox" style="width:auto;margin:0" ${c.drv?'checked':''} onchange="cf('drv',this.checked);sync(1)"> Save receipts to Google Drive</label><button onclick="sync(1)">Sync now</button><p class="m" id="msg">${E(c.last?'Last synced '+c.last:'Not synced yet')}</p><p class="m">Receipt photos stay on the device that took them. Use Export JSON to carry them across.</p></div>
 ${bkCard()}
@@ -258,7 +264,7 @@ function merge(list){list=(Array.isArray(list)?list:[]).map(clean).filter(Boolea
 let busy=0;async function sync(m){if(busy||(UP&&!m))return;busy=1;try{await sync0(m)}finally{busy=0}}
 async function sync0(manual){const c=D.cfg;if(!c.url){if(manual===1)msg('Paste your web app URL first.');return}
 msg('Syncing…');sy('Syncing…');let de='';if(c.drv){try{await pushFiles()}catch(e){de=e.message;logE('drive',e)}}try{const j=await api({items:D.items,events:c.cal?evs():undefined,drop:c.drv?(c.drop||[]):undefined},60000);
-merge(j.items);if(c.drv)c.drop=[];if(j.bk)c.bk=j.bk;c.sv=j.v||0;c.fails=0;c.last=new Date().toLocaleString('en-GB');if(c.cal&&j.cal&&j.cal!=='ok')logE('calendar',j.cal);await save();render();msg('Synced '+c.last+(c.cal?(j.cal==='ok'?' · calendar updated':' · calendar problem: '+j.cal):'')+(de?' · Drive problem: '+de:''));sy('Synced '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))}
+merge(j.items);if(c.drv)c.drop=[];if(j.bk)c.bk=j.bk;c.sv=j.v||0;c.fails=0;c.lastErr='';c.lastAt=Date.now();c.last=new Date().toLocaleString('en-GB');if(c.cal&&j.cal&&j.cal!=='ok')logE('calendar',j.cal);await save();render();msg('Synced '+c.last+(c.cal?(j.cal==='ok'?' · calendar updated':' · calendar problem: '+j.cal):'')+(de?' · Drive problem: '+de:''));sy('Synced '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}))}
 catch(e){c.fails=(c.fails||0)+1;c.lastErr=e.message;logE('sync',e);save();sy('Sync failed');msg('Sync failed: '+e.message+'. Your data is safe on this device.');if(c.fails===3)render()}}
 async function exp(){const ph={};for(const i of D.items)if(i.ph&&!i.deleted){const p=await kv('get','p:'+i.id);if(p)ph[i.id]=p}
 const b=new Blob([JSON.stringify({v:2,items:D.items,photos:ph})],{type:'application/json'}),f=new File([b],'garage-backup-'+today()+'.json',{type:'application/json'});
@@ -335,7 +341,7 @@ ${(i.rpm||i.rpk)&&i.last===null?'<div class="m" style="color:var(--amb)">No past
 function rg(a){const c=cur(),T=+(c&&c.tank)||0;if(!T)return '<div class="m mt">Add your fuel tank size in the car details to see your full-tank range.</div>';
 const full=T*a,L=mine('fuel').filter(i=>i.odo).sort((x,y)=>y.odo-x.odo)[0],dr=L?Math.max(0,odoNow()-L.odo):0,left=full-dr;
 return `<div class="r"><span>Full tank range (${T} L)</span><b>about ${Math.round(full)} km</b></div>`+(L?`<div class="r"><span>Since last fill-up</span><b>${km(dr)}</b></div><div class="r"><span>Estimated left in tank</span><b>${left>0?'about '+Math.round(left)+' km':'0 km, time to refuel'}</b></div>`:'')}
-const sy=t=>{const y=$('#sy');if(y)y.textContent=D.cfg.url?t:''};
+const sy=t=>pill(/^Syncing/.test(t||'')?'busy':'');
 function lf(i){const{dd,dk}=dl(i);return [dk===null?'':dk>0?km(dk)+' left':'Overdue by '+km(-dk),dd===null?'':dd>0?dd+(dd>1?' days':' day')+' left':dd===0?'Due today':'Overdue by '+(-dd)+(dd<-1?' days':' day')].filter(Boolean).join(' · ')}
 function mini(i,x){return `<div class="r mt cl" onclick="go('todo')"><span>${E(i.item)}</span><span class="tag s${st(i)}">${['On track','Due soon','Overdue'][st(i)]}</span></div><div class="m">${lf(i)}${x||''}</div>`}
 const safe=f=>{try{return f()}catch(x){return `<div class="c"><h2 class="ct">Could not show this part</h2><div class="m">${E(x.message)}</div></div>`}};
@@ -450,7 +456,7 @@ $('#gd').close();if(n){commit();go('todo');toast('Added '+n+' reminder'+(n>1?'s'
 function bdg(){if(!('Notification' in window))return toast('Open Garage from your Home Screen first');Notification.requestPermission().then(p=>{toast(p==='granted'?'Icon badge turned on':'Permission was not given');render()})}
 function badge(){if(!navigator.setAppBadge)return;const n=cars().reduce((s,c)=>s+remOf(c).filter(i=>st(i)>0).length,0);(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}
 function memo(f){let k,v;return function(){const kk=VER+'|'+(D.cfg.sel||'')+'|'+today();if(kk!==k){v=f();k=kk}return v}}
-const APP_V='2026.11.15b',CODE_V=6;let DRE='',MISS=[];
+const APP_V='2026.11.15c',CODE_V=6;let DRE='',MISS=[];
 const logE=(a,m)=>{const x={t:Date.now(),a:String(a),m:String((m&&m.message)||m||'').replace(/token[^,;]*/gi,'token …').slice(0,300)};LOG.unshift(x);if(LOG.length>100)LOG.length=100;kv('put','log',LOG).catch(()=>{})};
 addEventListener('error',e=>logE('app',(e.message||'Error')+(e.lineno?' (line '+e.lineno+')':'')));addEventListener('unhandledrejection',e=>logE('app',e.reason));
 const okUrl=u=>/^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+|macros)\/s\/[\w-]{20,}\/(exec|dev)$/.test(u||'');
@@ -542,6 +548,15 @@ dist=cars().reduce((s,c)=>{const o=A.filter(i=>i.carId===c.id&&i.odo).map(i=>+i.
 return `<div class="c"><h2 class="ct">Your Garage</h2><label for="me">Your name (for the greeting)</label><input id="me" value="${E(D.cfg.me||'')}" maxlength="30" autocomplete="given-name" onchange="cf('me',this.value.trim());toast('Saved')">
 <div class="g2"><div class="c"><div class="m">Tracking since</div><b>${first?new Date(first+'T00:00').toLocaleString('en-GB',{month:'short',year:'numeric'}):'-'}</b></div><div class="c"><div class="m">Entries</div><b>${fmtN(A.length)}</b></div><div class="c"><div class="m">Distance tracked</div><b>${km(Math.round(dist))}</b></div><div class="c"><div class="m">Money tracked</div><b>${rm(sp)}</b></div></div>
 <div class="chips"><span class="chip2 cl" onclick="stD()">🔥 ${streak()}-week streak</span><span class="chip2 cl" onclick="achD()">🏆 ${u}/${B.length} badges</span><span class="chip2 cl" onclick="recap()">📤 Monthly recap</span></div></div>`}
+const ago=ms=>{const s=(Date.now()-ms)/1e3;return s<45?'just now':s<3600?`${Math.round(s/60)}m ago`:s<86400?`${Math.round(s/3600)}h ago`:`${Math.round(s/86400)}d ago`};
+let PST='';function pill(st){if(st!==undefined)PST=st;const p=$('#sy'),t=$('#syt');if(!p)return;const c=D.cfg;p.className='pill';
+if(!c.url){p.classList.add('off');t.textContent='Local only';return}
+if(PST==='busy'){p.classList.add('busy');t.textContent='Syncing…';return}
+if(navigator.onLine===false){p.classList.add('off');t.textContent='Offline';return}
+if(c.fails){p.classList.add('err');t.textContent='Sync error';return}
+p.classList.add('ok');t.textContent=c.lastAt?'Synced '+ago(c.lastAt):'Ready'}
+function toSync(){go('set');setTimeout(()=>{const e=$('#syncCard');if(e)e.scrollIntoView({behavior:'smooth',block:'start'})},60)}
+setInterval(()=>pill(),3e4);addEventListener('online',()=>pill());addEventListener('offline',()=>pill());
 function ics(id){const t=(id==='rtax'||id==='ins')?rem().find(x=>x.id===id):eff(D.items.find(i=>i.id===id)),car=cars().find(c=>c.id===t.carId)||{},e=new Date(t.date+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);
 const s=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CarLog//EN','BEGIN:VEVENT','UID:'+t.id+(t.carId||'')+'@carlog','DTSTAMP:'+new Date().toISOString().replace(/[-:]|\.\d+/g,''),'DTSTART;VALUE=DATE:'+t.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+e.toISOString().slice(0,10).replace(/-/g,''),'SUMMARY:'+(t.item+' due ('+(car.name||'car')+')').replace(/[,;]/g,' '),'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n'),
 a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'text/calendar'}));a.download='car-reminder.ics';a.click()}
@@ -560,7 +575,7 @@ addEventListener('online',()=>sync());document.addEventListener('visibilitychang
 if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(e=>logE('app','Offline support could not start: '+e.message));let nv=0;const newV=()=>{if(nv)return;nv=1;toast('A new version of Garage is ready',()=>location.reload(),'Reload')},askV=()=>{const w=navigator.serviceWorker.controller;if(w)w.postMessage('ver')};
 navigator.serviceWorker.addEventListener('message',e=>{if(e.data==='updated'||(e.data&&e.data.ver&&e.data.ver!==APP_V))newV()});setTimeout(askV,4000);document.addEventListener('visibilitychange',()=>{if(!document.hidden)setTimeout(askV,3000)})}
 addEventListener('popstate',()=>{const d=document.querySelector('dialog[open]');if(d){d.close();try{history.pushState(null,'','#'+SL[tab])}catch(e){}return}const h=location.hash.slice(1);if(cur()&&(h==='add-fuel'||h==='add-service')){go(h==='add-fuel'?'fuel':'log');return h==='add-fuel'?openU():openF('log')}const t=LS[h]||'rep';if(t!==tab)go(t,1)});
-{const _r3=render;render=function(){_r3();clearTimeout(AT);AT=setTimeout(()=>{try{achCheck()}catch(e){}try{badge()}catch(e){}if(tab==='set')stq()},250)}}
+{const _r3=render;render=function(){_r3();pill();clearTimeout(AT);AT=setTimeout(()=>{try{achCheck()}catch(e){}try{badge()}catch(e){}if(tab==='set')stq()},250)}}
 hs=memo(hs);achs=memo(achs);streak=memo(streak);
 load().then(()=>{PREV=D.cfg.seen||'';if(D.cfg.seen!==today()){D.cfg.seen=today();save()}if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}const hs0=location.hash.slice(1);if(LS[hs0])tab=LS[hs0];render();if(cur()&&(hs0==='add-fuel'||hs0==='add-service')){go(hs0==='add-fuel'?'fuel':'log');hs0==='add-fuel'?openU():openF('log')}else if(!LS[hs0])try{history.replaceState(null,'','#'+SL[tab])}catch(e){}navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
 </script></body></html>
