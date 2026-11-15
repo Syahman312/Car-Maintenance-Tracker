@@ -183,13 +183,15 @@ label.f{display:block;margin:12px 0 0}label.f>span{display:block;font-size:12.5p
 .fb{fill:#2a2b30}.fb.on,.fb:last-of-type{fill:var(--cy)}.fhl{stroke:var(--mu);stroke-width:1}.fdt{fill:var(--bg);stroke:var(--cy);stroke-width:2}
 .fbar{height:4px;background:#1c1c1c;border-radius:99px;margin:10px 0 6px;overflow:hidden}.fbar i{display:block;height:100%;border-radius:99px}
 .lnk{background:none;color:var(--cy);padding:0;font-size:13px;font-weight:600}
-.fpr{display:flex;gap:6px;margin:10px 0 6px;overflow-x:auto;scrollbar-width:none}.fpr::-webkit-scrollbar{display:none}.fpr button{flex:1 0 88px;background:#111214;border:1px solid var(--bd);border-radius:12px;padding:8px 10px;text-align:left;color:var(--tx);font-weight:400}
+.fpr{display:flex;gap:6px;margin:10px 0 6px;overflow-x:auto;scrollbar-width:none}.fpr::-webkit-scrollbar{display:none}.fpr button{flex:1 0 104px;background:#111214;border:1px solid var(--bd);border-radius:12px;padding:8px 10px;text-align:left;color:var(--tx);font-weight:400}
 .fpr b{display:block;font-size:18px;font-variant-numeric:tabular-nums}.fpr .dl{margin:0;font-size:11px}
 .ftabs{display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;margin:2px 2px 8px;border-bottom:1px solid var(--bd)}.ftabs::-webkit-scrollbar{display:none}
 .ftabs button{background:none;color:var(--mu);padding:8px 0;border-radius:0;font-size:13.5px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:6px}.ftabs button.on{color:var(--tx);box-shadow:inset 0 -2px var(--tx)}.ftabs i{width:7px;height:7px;border-radius:50%}
 .fmh{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin:16px 2px 6px;letter-spacing:.02em}
 .flist{background:var(--card);border:1px solid var(--bd);border-radius:14px;overflow:hidden}
 .frow{display:flex;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--bd);cursor:pointer}.frow:first-child{border-top:0}.frow:active{background:#121316}
+.fpc{display:flex;gap:6px;flex-wrap:wrap;margin:-6px 0 12px}.fpc:empty{display:none}.fpc button{background:#16171a;border:1px solid #24252a;color:var(--mu);padding:6px 11px;border-radius:99px;font-size:13px;font-weight:500}.fpc button.on{border-color:var(--cy);color:var(--tx);background:rgba(34,227,255,.08)}
+.fpr .m{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.fmid b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fdot{width:8px;height:8px;border-radius:50%;flex:none}.fmid{flex:1;min-width:0}.fmid b{font-size:15px;font-weight:600}.fmid .m,.fend .m{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fend{text-align:right;flex:none}.fend b{font-size:15px;font-variant-numeric:tabular-nums}.fend .dl{margin-left:4px}
 </style></head><body>
@@ -224,7 +226,7 @@ label.f{display:block;margin:12px 0 0}label.f>span{display:block;font-size:12.5p
 <label>Brand</label><div id="fbd"></div>
 <label>State</label><div id="fst"></div>
 <label for="ua">Area</label><div class="row" style="margin-bottom:6px"><input id="ua" placeholder="e.g. Kajang" style="margin:0"><button type="button" class="g" onclick="detect()">Detect location</button></div><div id="gm" class="m" style="margin-bottom:10px"></div>
-<label for="ut">Fuel type</label><input id="ut" list="ft2" autocomplete="off"><datalist id="ft2"><option>RON95<option>RON97<option>Diesel<option>Euro 5 Diesel</datalist>
+<label for="ut">Fuel type</label><input id="ut" list="ft2" autocomplete="off"><datalist id="ft2"><option>RON95 Subsidised<option>RON95 Normal<option>RON97<option>Diesel<option>Euro 5 Diesel</datalist><div id="fpc" class="fpc"></div>
 <div class="row"><div><label for="ur">Price per litre (RM)</label><input id="ur" type="number" inputmode="decimal" step="0.001" min="0"></div><div><label for="ul">Litres</label><input id="ul" type="number" inputmode="decimal" step="0.01" min="0" required></div></div>
 <label for="uc">Total cost (RM)</label><input id="uc" type="number" inputmode="decimal" step="0.01" min="0" required>
 <label class="m" style="display:flex;gap:8px;align-items:center;margin:0 0 12px"><input id="uff" type="checkbox" style="width:auto;margin:0" checked> Filled to a full tank (keeps km/L accurate)</label>
@@ -320,11 +322,12 @@ const b=new Blob([JSON.stringify({v:2,items:D.items,photos:ph})],{type:'applicat
 const okx=()=>{D.cfg.lastExport=today();save();toast('Backup file ready')};try{if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});okx();return}}catch(e){if(e.name==='AbortError')return;logE('export',e)}
 dlBlob(b,f.name);okx()}
 async function imp(inp){const f=inp.files[0];if(!f)return;try{const j=JSON.parse(await f.text());merge(j.items||[]);if(!Array.isArray(j.items))throw new Error('no records found in the file');for(const[k,v]of Object.entries(j.photos||{}))if(/^[\w.:-]{1,80}$/.test(k)&&typeof v==='string'&&/^data:(image\/[\w.+-]+|application\/pdf);base64,/.test(v))await kv('put','p:'+k,v);commit();toast('Imported '+j.items.length+' records')}catch(e){logE('import',e);alert('Could not import that file: '+e.message+'. Pick a Garage backup (.json) file.')}inp.value=''}
-function openU(id){editU=id||null;const l=mine('fuel').sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]||{},it=id?D.items.find(i=>i.id===id):{date:today(),odo:odoNow()||'',brand:l.brand,state:l.state,area:l.area,ftype:l.ftype,ppl:fpOf(l.ftype)||l.ppl};
+function openU(id){editU=id||null;const l=mine('fuel').sort((a,b)=>(b.date||'').localeCompare(a.date||''))[0]||{},it=id?D.items.find(i=>i.id===id):{date:today(),odo:odoNow()||'',brand:l.brand,state:l.state,area:l.area,ftype:/^ron95$/i.test(l.ftype||'')?'RON95 Subsidised':l.ftype,ppl:fpOf(l.ftype)||l.ppl};
 $('#ut2').textContent=id?'Edit fill-up':'Add fill-up';
 [['ud','date'],['uo','odo'],['ua','area'],['ut','ftype'],['ur','ppl'],['ul','litres'],['uc','cost']].forEach(([k,f])=>$('#'+k).value=it[f]||'');
-FB=it.brand||'';FS=it.state||'';ddr('fbd',BR,FB,'b');ddr('fst',ST,FS,'s');$('#gm').textContent='';$('#uff').checked=it.full!==0;$('#ux').hidden=!id;$('#fu').showModal()}
-$('#ut').onchange=()=>{const p=fpOf($('#ut').value);if(p){$('#ur').value=p.toFixed(2);$('#ur').oninput()}};
+FB=it.brand||'';FS=it.state||'';ddr('fbd',BR,FB,'b');ddr('fst',ST,FS,'s');$('#gm').textContent='';$('#uff').checked=it.full!==0;$('#ux').hidden=!id;fpChips();$('#fu').showModal()}
+$('#ut').onchange=()=>{const p=fpOf($('#ut').value);if(p){$('#ur').value=p.toFixed(2);$('#ur').oninput()}fpChips()};$('#ut').oninput=fpChips;
+$('#fpc').onclick=e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.set){$('#fu').close();return fpEdit()}$('#ut').value=b.dataset.t;$('#ut').onchange();buzz(5)};
 ['ur','ul','uc'].forEach(k=>$('#'+k).oninput=()=>{const p=+$('#ur').value,l=+$('#ul').value,c=+$('#uc').value;
 if(k==='uc'){if(p)$('#ul').value=(c/p).toFixed(2);else if(l)$('#ur').value=(c/l).toFixed(3)}else if(p&&l)$('#uc').value=(p*l).toFixed(2);else if(p&&c)$('#ul').value=(c/p).toFixed(2)});
 $('#uf').onsubmit=e=>{e.preventDefault();if(!okOdo(+$('#uo').value,editU))return;const g=i=>$('#'+i).value.trim();let it=editU&&D.items.find(i=>i.id===editU);if(!it){it={id:uid(),kind:'fuel',carId:cur().id};D.items.push(it)}
@@ -332,7 +335,12 @@ Object.assign(it,{date:g('ud'),odo:g('uo')?+g('uo'):'',brand:FB,state:FS,area:g(
 function delU(){const it=D.items.find(i=>i.id===editU);if(it)softDel(it,'fu','Fill-up deleted')}
 function effs(F){const s=F.filter(i=>i.odo).sort((a,b)=>a.odo-b.odo),o=[];let base=null,acc=0;for(const x of s){if(base===null){if(x.full!==0)base=x.odo;continue}acc+=+x.litres||0;if(x.full!==0){const km=x.odo-base;if(km>0&&acc>0)o.push({id:x.id,d:x.date,y:km/acc,km,l:acc});base=x.odo;acc=0}}return o}
 let FPER='6',FMET='eco',FSRCH=0,CH=null;
-const FPL=[['3','3M'],['6','6M'],['12','1Y'],['0','All']],fpOf=t=>{const P=D.cfg.fp||{},k=Object.keys(P).find(x=>x.toLowerCase()===String(t||'').trim().toLowerCase());return k?+P[k]||0:0};
+const FPL=[['3','3M'],['6','6M'],['12','1Y'],['0','All']],FT0=['RON95 Subsidised','RON95 Normal','RON97','Diesel'],FPH={'RON95 Subsidised':'1.99','RON95 Normal':'2.60','RON97':'3.18','Diesel':'2.93'},
+fpOf=t=>{const P=D.cfg.fp||{},q=String(t||'').trim().toLowerCase(),f=n=>{const k=Object.keys(P).find(x=>x.toLowerCase()===n);return k?+P[k]||0:0};return f(q)||(q==='ron95'?f('ron95 subsidised'):0)};
+// Prices saved before RON95 was split: treat a low RON95 price as the subsidised one.
+function fpMig(){const P=D.cfg.fp;if(!P||!('RON95' in P))return;const k=+P.RON95<2.3?'RON95 Subsidised':'RON95 Normal';if(!P[k])P[k]=P.RON95;delete P.RON95;const V=D.cfg.fpPrev||{};if('RON95' in V){if(!V[k])V[k]=V.RON95;delete V.RON95}save()}
+function fpChips(){const el=$('#fpc');if(!el)return;const P=D.cfg.fp||{},t=$('#ut').value.trim().toLowerCase(),k=Object.keys(P).filter(x=>+P[x]);
+el.innerHTML=k.map(x=>`<button type="button" class="${x.toLowerCase()===t?'on':''}" data-t="${E(x)}">${E(x)} · ${(+P[x]).toFixed(2)}</button>`).join('')+(k.length?'':`<button type="button" data-set="1">Set pump prices ›</button>`)}
 function fuelTab(){const c=cur(),F=mine('fuel').sort((a,b)=>(b.date||'').localeCompare(a.date||'')||b.odo-a.odo),M={};effs(F).forEach(e=>M[e.id]=e);
 const EV=Object.values(M),AV=EV.length?EV.reduce((s,e)=>s+e.km,0)/EV.reduce((s,e)=>s+e.l,0):0,BEST=EV.length>2?EV.reduce((a,b)=>b.y>a.y?b:a).id:'';
 if(!F.length)return fuelPrices()+`<div class="c fz"><b>No fill-ups yet</b><div class="m">Tap + and choose Fill-up. After two full tanks you'll see your km/L here.</div></div>`;
@@ -364,17 +372,17 @@ function fuelTank(F,AV){const c=cur(),T=+(c&&c.tank)||0,lf=F.filter(i=>i.odo).so
 if(!T)return c?`<div class="c fz cl" onclick="openC('${E(c.id)}')"><div class="r"><b>Fuel left</b><span class="m">Add tank size ›</span></div><div class="m">Enter your tank size in the car details to see an estimate.</div></div>`:'';
 if(!AV||!lf)return '';const full=T*AV,left=Math.max(0,full-Math.max(0,odoNow()-lf.odo)),fr=left/full,kmd=extra(F,mine('log')).kmd,col=fr<.15?'var(--red)':fr<.3?'var(--amb)':'var(--cy)';
 return `<div class="c fz cl" onclick="setOdo()" title="Tap to update your odometer"><div class="r"><span class="m">Fuel left (estimate)</span><b>~${fmtN(left)} km</b></div><div class="fbar"><i style="width:${(fr*100).toFixed(0)}%;background:${col}"></i></div><div class="r m"><span>${fr<.15?'Time to refuel':Math.round(fr*100)+'% of a '+T+' L tank'}</span><span>${kmd>0&&fr>=.15?'about '+Math.max(1,Math.round(left/kmd))+' days':''}</span></div></div>`}
-function fuelPrices(){const P=D.cfg.fp||{},V=D.cfg.fpPrev||{},k=Object.keys(P).filter(x=>+P[x]);
+function fuelPrices(){fpMig();const P=D.cfg.fp||{},V=D.cfg.fpPrev||{},k=Object.keys(P).filter(x=>+P[x]);
 if(!k.length)return `<div class="c fz cl" onclick="fpEdit()"><div class="r"><b>Pump prices</b><span class="m">Set ›</span></div><div class="m">Save today's price per litre. New fill-ups fill it in for you.</div></div>`;
 return `<div class="c fz"><div class="r"><span class="m">Pump prices${D.cfg.fpAt?' · '+sd(D.cfg.fpAt):''}</span><button class="lnk" onclick="fpEdit()">Edit</button></div><div class="fpr">${k.map(t=>{const d=+V[t]?+P[t]-+V[t]:0;return `<button onclick="fpFill(this.dataset.t)" data-t="${E(t)}" title="Add a fill-up with this price"><span class="m">${E(t)}</span><b>${(+P[t]).toFixed(2)}</b>${d?`<span class="dl ${d>0?'dn':'up'}">${d>0?'▲':'▼'}${Math.abs(d).toFixed(2)}</span>`:'<span class="dl">&nbsp;</span>'}</button>`}).join('')}</div><div class="m">RM per litre. Tap one to add a fill-up at that price.</div></div>`}
-function fpEdit(){const P=D.cfg.fp||{},T=[...new Set(['RON95','RON97','Diesel',...Object.keys(P)])];
-sheet(`<h2>Pump prices</h2><p class="m">Price per litre in RM. Leave a box empty to hide that fuel. New fill-ups use these prices.</p>${T.map(t=>`<label class="f"><span>${E(t)}</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fp="${E(t)}" value="${P[t]?(+P[t]).toFixed(2):''}" placeholder="e.g. 2.05"></label>`).join('')}
+function fpEdit(){fpMig();const P=D.cfg.fp||{},T=[...new Set([...FT0,...Object.keys(P)])];
+sheet(`<h2>Pump prices</h2><p class="m">Price per litre in RM. Leave a box empty to hide that fuel. New fill-ups use these prices.</p><p class="m"><b>RON95 Subsidised</b> is the BUDI95 price you pay with your MyKad. <b>RON95 Normal</b> is the unsubsidised pump price, for example when you are over the monthly quota.</p>${T.map(t=>`<label class="f"><span>${E(t)}</span><input type="number" inputmode="decimal" step="0.01" min="0" data-fp="${E(t)}" value="${P[t]?(+P[t]).toFixed(2):''}" placeholder="e.g. ${FPH[t]||'2.05'}"></label>`).join('')}
 <div class="row mt"><input id="fpn" placeholder="Other fuel, e.g. Diesel B10" aria-label="Other fuel name" style="margin:0"><input id="fpv" type="number" inputmode="decimal" step="0.01" min="0" placeholder="RM/L" aria-label="Its price per litre" style="margin:0;flex:0 0 96px"></div>
 <button class="mt" style="width:100%" onclick="fpSave()">Save prices</button>`)}
 function fpSave(){const o=D.cfg.fp||{},n={};document.querySelectorAll('#gdc [data-fp]').forEach(i=>{const v=+i.value;if(v>0&&v<50)n[i.dataset.fp]=+v.toFixed(3)});
 const nn=$('#fpn').value.trim().slice(0,30),nv=+$('#fpv').value;if(nn&&nv>0&&nv<50)n[nn]=+nv.toFixed(3);
 const pv={...(D.cfg.fpPrev||{})};Object.keys(n).forEach(t=>{if(o[t]&&o[t]!==n[t])pv[t]=o[t]});D.cfg.fpPrev=pv;D.cfg.fp=n;D.cfg.fpAt=today();save();$('#gd').close();render();if($('#st').open)openSettings();toast('Pump prices saved')}
-function fpFill(t){openU();$('#ut').value=t;$('#ur').value=fpOf(t).toFixed(2);$('#uc').focus()}
+function fpFill(t){openU();$('#ut').value=t;$('#ur').value=fpOf(t).toFixed(2);fpChips();$('#uc').focus()}
 function fuelList(F,FQ,M,AV,BEST){const br={};F.forEach(i=>{const b=i.brand||'Other';br[b]=(br[b]||0)+1});const bs=Object.keys(br).sort((a,b)=>br[b]-br[a]);
 let h=`<div class="sh"><span>History</span><button class="lnk" onclick="FSRCH=!FSRCH;if(!FSRCH)Q='';render();FSRCH&&setTimeout(()=>{const q=$('#q');q&&q.focus()},30)" aria-label="Search fill-ups">${FSRCH||Q?'Close':'Search'}</button></div>`+(FSRCH||Q?sb():'')+
 (bs.length>1?`<div class="ftabs">${[['','All'],...bs.map(b=>[b,b])].map(([k,l])=>`<button class="${SF===k?'on':''}" data-f="${E(k)}" onclick="setSF(this.dataset.f)">${k?`<i style="background:${BC[k]||'#555'}"></i>`:''}${E(l)}</button>`).join('')}</div>`:'')+fuelSum(FQ,M);
@@ -556,7 +564,7 @@ $('#gd').close();if(n){commit();go('todo');toast('Added '+n+' reminder'+(n>1?'s'
 function bdg(){if(!('Notification' in window))return toast('Open Garage from your Home Screen first');Notification.requestPermission().then(p=>{toast(p==='granted'?'Icon badge turned on':'Permission was not given');render()})}
 function badge(){if(!navigator.setAppBadge)return;const n=cars().reduce((s,c)=>s+remOf(c).filter(i=>st(i)>0).length,0);(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}
 function memo(f){let k,v;return function(){const kk=VER+'|'+(D.cfg.sel||'')+'|'+today();if(kk!==k){v=f();k=kk}return v}}
-const APP_V='2026.11.15g',CODE_V=6;let DRE='',MISS=[];
+const APP_V='2026.11.15h',CODE_V=6;let DRE='',MISS=[];
 const logE=(a,m)=>{const x={t:Date.now(),a:String(a),m:String((m&&m.message)||m||'').replace(/token[^,;]*/gi,'token …').slice(0,300)};LOG.unshift(x);if(LOG.length>100)LOG.length=100;kv('put','log',LOG).catch(()=>{})};
 addEventListener('error',e=>logE('app',(e.message||'Error')+(e.lineno?' (line '+e.lineno+')':'')));addEventListener('unhandledrejection',e=>logE('app',e.reason));
 const okUrl=u=>/^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+|macros)\/s\/[\w-]{20,}\/(exec|dev)$/.test(u||'');
@@ -736,5 +744,5 @@ navigator.serviceWorker.addEventListener('message',e=>{if(e.data==='updated'||(e
 addEventListener('popstate',()=>{const d=document.querySelector('dialog[open]');if(d){d.close();try{history.pushState(null,'','#'+SL[tab])}catch(e){}return}const h=location.hash.slice(1);if(cur()&&(h==='add-fuel'||h==='add-service')){go(h==='add-fuel'?'fuel':'log');return h==='add-fuel'?openU():openF('log')}const t=LS[h]||'rep';if(t!==tab)go(t,1)});
 {const _r3=render;render=function(){_r3();pill();clearTimeout(AT);AT=setTimeout(()=>{try{achCheck()}catch(e){}try{badge()}catch(e){}if(tab==='set')stq()},250)}}
 hs=memo(hs);achs=memo(achs);streak=memo(streak);
-load().then(()=>{PREV=D.cfg.seen||'';if(D.cfg.seen!==today()){D.cfg.seen=today();save()}if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}const hs0=location.hash.slice(1);if(LS[hs0])tab=LS[hs0];render();if(cur()&&(hs0==='add-fuel'||hs0==='add-service')){go(hs0==='add-fuel'?'fuel':'log');hs0==='add-fuel'?openU():openF('log')}else if(!LS[hs0])try{history.replaceState(null,'','#'+SL[tab])}catch(e){}navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
+load().then(()=>{try{fpMig()}catch(e){}PREV=D.cfg.seen||'';if(D.cfg.seen!==today()){D.cfg.seen=today();save()}if(!D.cfg.seeded){DEF.forEach(n=>addSvc(n,1));D.cfg.seeded=1;save()}const hs0=location.hash.slice(1);if(LS[hs0])tab=LS[hs0];render();if(cur()&&(hs0==='add-fuel'||hs0==='add-service')){go(hs0==='add-fuel'?'fuel':'log');hs0==='add-fuel'?openU():openF('log')}else if(!LS[hs0])try{history.replaceState(null,'','#'+SL[tab])}catch(e){}navigator.storage&&navigator.storage.persist&&navigator.storage.persist();sync()});
 </script></body></html>
