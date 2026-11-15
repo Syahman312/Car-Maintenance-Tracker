@@ -59,6 +59,7 @@ button.d{background:var(--red);color:#000}
 button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 input,textarea{width:100%;padding:10px;border:1px solid var(--bd);border-radius:10px;background:var(--bg);margin:4px 0 12px}
 label{font-size:13px;color:var(--mu)}
+input:not([type=checkbox]):not([type=radio]),select,textarea{font-size:16px!important}
 .chip{display:inline-block;padding:6px 12px;margin:3px 4px 3px 0;border:1px solid var(--bd);border-radius:99px;font-size:14px;cursor:pointer;background:var(--bg);user-select:none}
 .chip.on{background:var(--ac);color:var(--bg);border-color:var(--ac)}
 .chip b{margin-left:8px;opacity:.6;padding:0 2px}
@@ -485,7 +486,7 @@ $('#gd').close();if(n){commit();go('todo');toast('Added '+n+' reminder'+(n>1?'s'
 function bdg(){if(!('Notification' in window))return toast('Open Garage from your Home Screen first');Notification.requestPermission().then(p=>{toast(p==='granted'?'Icon badge turned on':'Permission was not given');render()})}
 function badge(){if(!navigator.setAppBadge)return;const n=cars().reduce((s,c)=>s+remOf(c).filter(i=>st(i)>0).length,0);(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}
 function memo(f){let k,v;return function(){const kk=VER+'|'+(D.cfg.sel||'')+'|'+today();if(kk!==k){v=f();k=kk}return v}}
-const APP_V='2026.11.15e',CODE_V=6;let DRE='',MISS=[];
+const APP_V='2026.11.15f',CODE_V=6;let DRE='',MISS=[];
 const logE=(a,m)=>{const x={t:Date.now(),a:String(a),m:String((m&&m.message)||m||'').replace(/token[^,;]*/gi,'token …').slice(0,300)};LOG.unshift(x);if(LOG.length>100)LOG.length=100;kv('put','log',LOG).catch(()=>{})};
 addEventListener('error',e=>logE('app',(e.message||'Error')+(e.lineno?' (line '+e.lineno+')':'')));addEventListener('unhandledrejection',e=>logE('app',e.reason));
 const okUrl=u=>/^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+|macros)\/s\/[\w-]{20,}\/(exec|dev)$/.test(u||'');
@@ -601,7 +602,7 @@ ${lg.map(e=>`<div class="logline" style="color:${/sync|app|storage/.test(e.a)?'v
 ${LOG.length?`<div class="btns" style="margin-top:8px">${LOG.length>4?`<button class="btn sm" onclick="LOGALL=!LOGALL;openSettings()">${LOGALL?'Less':'Show all'}</button>`:''}<button class="btn sm" onclick="cpLog()">Copy log</button><button class="btn sm" onclick="LOG=[];kv('put','log',LOG);openSettings()">Clear</button></div>`:''}
 <h3>About</h3><p class="m">Garage ${APP_V}${c.sv?' · script v'+c.sv:''} · Works offline · Your data stays in your own Google account.</p>
 <div class="foot"><button class="btn pri" onclick="$('#st').close()">Done</button></div>`;
-if(!d.open)d.showModal();d.scrollTop=y;stq()}
+if(!d.open){d.showModal();const a=document.activeElement;if(a&&d.contains(a)&&a.matches('input,textarea'))a.blur()}d.scrollTop=y;stq()}
 async function saveConn(){const u=$('#s_url').value.trim(),t=$('#s_tok').value.trim();if(u&&!okUrl(u))return toast('That link should start with https://script.google.com/macros/s/ and end with /exec');
 D.cfg.url=u;D.cfg.token=t;save();pill();if(!u)return openSettings();toast('Connecting…');await sync(1);openSettings();diag()}
 function setSV(v){D.cfg.sv=v;save();buzz(5);render()}
@@ -655,8 +656,8 @@ return `<div class="c"><div style="display:flex;gap:12px;align-items:center"><di
 <div class="sh"><span>Brand and state logos</span><span></span></div><div class="c"><h2 class="ct">Brand and state logos</h2><p class="m">Pick one and upload your own picture. Without one, a coloured badge is used.</p><select id="lgs" aria-label="Brand or state">${[...BR.map(b=>['b',b]),...ST.map(x=>['s',x])].map(([k,n])=>`<option value="${k}:${n}">${k==='b'?'Brand':'State'}: ${n}</option>`).join('')}</select><div class="row"><button class="g" onclick="$('#lgf').click()">Upload logo</button><button class="g" onclick="lgReset()">Reset</button></div><input id="lgf" type="file" accept="image/*" hidden onchange="lgUp(this)"></div>
 <button class="btn" style="width:100%;margin-top:16px" onclick="openSettings()">⚙ Settings · sync, backup, logs</button><p class="m" style="text-align:center">Garage ${APP_V}</p>`}
 (()=>{let y0=null,dg=null;const small=()=>matchMedia('(max-width:759px)').matches;
-document.addEventListener('touchstart',e=>{const d=e.target.closest('dialog[open]');y0=null;if(!d||!small()||d.scrollTop>0||e.target.closest('input,select,textarea,iframe,.ins,.fr,.cars'))return;y0=e.touches[0].clientY;dg=d},{passive:true});
-document.addEventListener('touchmove',e=>{if(y0===null)return;const dy=e.touches[0].clientY-y0;if(dy>0&&dg.scrollTop<=0){dg.style.transition='none';dg.style.transform=`translateY(${dy}px)`}},{passive:true});
+document.addEventListener('touchstart',e=>{const d=e.target.closest('dialog[open]');if(dg&&y0!==null&&e.touches.length>1)dg.style.transform='';y0=null;if(e.touches.length>1||(window.visualViewport&&visualViewport.scale>1.01)||!d||!small()||d.scrollTop>0||e.target.closest('input,select,textarea,iframe,.ins,.fr,.cars'))return;y0=e.touches[0].clientY;dg=d},{passive:true});
+document.addEventListener('touchmove',e=>{if(y0===null)return;if(e.touches.length>1||(window.visualViewport&&visualViewport.scale>1.01)){dg.style.transform='';y0=null;return}const dy=e.touches[0].clientY-y0;if(dy>0&&dg.scrollTop<=0){dg.style.transition='none';dg.style.transform=`translateY(${dy}px)`}},{passive:true});
 document.addEventListener('touchend',e=>{if(y0===null)return;const dy=e.changedTouches[0].clientY-y0,d=dg;y0=null;d.style.transition='transform .2s';if(dy>110){d.style.transform='translateY(100%)';setTimeout(()=>{d.close();d.style.transform='';d.style.transition=''},190)}else d.style.transform=''},{passive:true})})();
 function ics(id){const t0=(id==='rtax'||id==='ins')?rem().find(x=>x.id===id):D.items.find(i=>i.id===id);if(!t0||!t0.date&&!(t0.rpm||t0.rpk))return;const t=eff(t0);if(!t.date)return toast('This reminder has no due date yet');const car=cars().find(c=>c.id===t.carId)||{},e=new Date(t.date+'T00:00:00Z');e.setUTCDate(e.getUTCDate()+1);
 const s=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//CarLog//EN','BEGIN:VEVENT','UID:'+t.id+(t.carId||'')+'@carlog','DTSTAMP:'+new Date().toISOString().replace(/[-:]|\.\d+/g,''),'DTSTART;VALUE=DATE:'+t.date.replace(/-/g,''),'DTEND;VALUE=DATE:'+e.toISOString().slice(0,10).replace(/-/g,''),'SUMMARY:'+(t.item+' due ('+(car.name||'car')+')').replace(/[,;]/g,' '),'BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:Car reminder','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n');
@@ -666,11 +667,11 @@ $('#odo').onclick=setOdo;$('#odo').title='Tap to update your odometer';
 const _render=render;render=function(){_render();$('#fab').hidden=!cur();if(QF){QF=0;const q=$('#q');if(q){q.focus();const n=q.value.length;try{q.setSelectionRange(n,n)}catch(e){}}}};
 document.addEventListener('click',e=>{if(!$('#fm').hidden&&!e.target.closest('#fm')&&!e.target.closest('#fab'))fab(0)});
 (()=>{(()=>{let y0=null,dy=0;const P=$('#ptr'),busyEl=()=>document.querySelector('dialog[open]');
-document.addEventListener('touchstart',e=>{y0=scrollY<=0&&!busyEl()&&!e.target.closest('input,select,textarea,.ins,.fr')?e.touches[0].clientY:null;dy=0},{passive:true});
+document.addEventListener('touchstart',e=>{y0=e.touches.length===1&&scrollY<=0&&!busyEl()&&!e.target.closest('input,select,textarea,.ins,.fr')?e.touches[0].clientY:null;dy=0},{passive:true});
 document.addEventListener('touchmove',e=>{if(y0===null)return;dy=e.touches[0].clientY-y0;if(dy>20&&D.cfg.url){P.hidden=false;P.textContent=dy>90?'↻ Release to sync':'↓ Pull to sync'}},{passive:true});
 document.addEventListener('touchend',()=>{if(y0!==null&&dy>90&&D.cfg.url){P.textContent='Syncing…';buzz(10);sync(1).finally(()=>{P.hidden=true})}else P.hidden=true;y0=null},{passive:true})})();
 const T=['rep','log','fuel','todo','set'];let x0=null,y0=0;const m=document.querySelector('main');
-m.addEventListener('touchstart',e=>{const t=e.touches[0];x0=e.target.closest('input,select,textarea,svg')?null:t.clientX;y0=t.clientY},{passive:true});
+m.addEventListener('touchstart',e=>{const t=e.touches[0];x0=e.touches.length>1||e.target.closest('input,select,textarea,svg')?null:t.clientX;y0=t.clientY},{passive:true});
 m.addEventListener('touchend',e=>{if(x0===null)return;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>80&&Math.abs(dy)<50){const i=T.indexOf(tab)+(dx<0?1:-1);if(i>=0&&i<T.length)go(T[i])}},{passive:true})})();
 addEventListener('online',()=>sync());document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});setInterval(()=>{if(!document.hidden)sync()},12e4);
 if('serviceWorker'in navigator){navigator.serviceWorker.register('sw.js').catch(e=>logE('app','Offline support could not start: '+e.message));let nv=0;const newV=()=>{if(nv)return;nv=1;toast('A new version of Garage is ready',()=>location.reload(),'Reload')},askV=()=>{const w=navigator.serviceWorker.controller;if(w)w.postMessage('ver')};
