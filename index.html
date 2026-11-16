@@ -256,6 +256,16 @@ main{position:relative;min-height:calc(100dvh - 200px);overflow-x:clip}html,body
 <div class="row" id="cdoc" style="margin-bottom:12px"><button type="button" class="g" onclick="$('#cd').close();openD('car:roadtax:'+editC)">🧾 Road tax document</button><button type="button" class="g" onclick="$('#cd').close();openD('car:insurance:'+editC)">🛡️ Insurance document</button></div>
 <label for="cm">Other details (VIN, policy number…)</label><textarea id="cm" rows="3"></textarea>
 <div class="row"><button type="button" class="g" onclick="$('#cd').close()">Cancel</button><button type="button" class="d" id="cx" onclick="delC()">Delete</button><button>Save</button></div></form></dialog>
+<dialog id="lnd" aria-labelledby="lh"><form id="lnf"><h2 id="lh"></h2>
+<label for="lm">Agreement</label><select id="lm" onchange="lnForm()"><option value="eir">Reducing balance (EIR)</option><option value="flat">Older flat rate (Rule of 78)</option></select>
+<p class="m" id="lhint" style="margin:-6px 0 12px"></p>
+<div class="row"><div><label for="ln">Bank or lender</label><input id="ln" placeholder="e.g. Maybank" maxlength="60"></div><div><label for="lc">Car</label><select id="lc"></select></div></div>
+<div class="row"><div><label for="la">Amount financed (RM)</label><input id="la" type="number" inputmode="decimal" min="0" step="0.01" oninput="lnForm()"></div><div><label for="lyr">Tenure (years)</label><input id="lyr" type="number" inputmode="decimal" min="0.5" max="10" step="0.5" oninput="lnForm()"></div></div>
+<div class="row"><div><label for="lr" id="lrl">Rate</label><input id="lr" type="number" inputmode="decimal" min="0" max="30" step="0.01" oninput="lnForm()"></div><div><label for="lfd">First instalment date</label><input id="lfd" type="date"></div></div>
+<label for="li">Monthly instalment (RM)</label><input id="li" type="number" inputmode="decimal" min="0" step="0.01">
+<p class="m" style="margin:-6px 0 12px">Leave empty to work it out. If your agreement shows a slightly different amount, enter that one.</p>
+<label for="lno">Notes</label><textarea id="lno" rows="2"></textarea>
+<div class="row"><button type="button" class="g" onclick="$('#lnd').close()">Cancel</button><button type="button" class="d" id="lxd" onclick="delL()">Delete</button><button>Save</button></div></form></dialog>
 <dialog id="docd" aria-labelledby="kh"><form id="kf2"><h2 id="kh"></h2>
 <label for="kt">Type</label><select id="kt"></select>
 <div id="kwn"><label for="kn">Name</label><input id="kn" maxlength="80"></div>
@@ -517,7 +527,7 @@ const sy=t=>pill(/^Syncing/.test(t||'')?'busy':'');
 function lf(i){const{dd,dk}=dl(i);return [dk===null?'':dk>0?km(dk)+' left':'Overdue by '+km(-dk),dd===null?'':dd>0?dd+(dd>1?' days':' day')+' left':dd===0?'Due today':'Overdue by '+(-dd)+(dd<-1?' days':' day')].filter(Boolean).join(' · ')}
 function mini(i,x){return `<div class="r mt cl" onclick="go('todo')"><span>${E(i.item)}</span><span class="tag s${st(i)}">${['On track','Due soon','Overdue'][st(i)]}</span></div><div class="m">${lf(i)}${x||''}</div>`}
 const safe=f=>{try{return f()}catch(x){return `<div class="c"><h2 class="ct">Could not show this part</h2><div class="m">${E(x.message)}</div></div>`}};
-function evs(){const o=[];cars().forEach(c=>{remOf(c).forEach(i=>{if(i.date)o.push({key:i.virtual?i.id+'-'+c.id:i.id,title:'Car Log: '+i.item+' ('+c.name+')',date:i.date})})});try{o.push(...docEvs())}catch(e){logE('calendar',e)}return o}
+function evs(){const o=[];cars().forEach(c=>{remOf(c).forEach(i=>{if(i.date)o.push({key:i.virtual?i.id+'-'+c.id:i.id,title:'Car Log: '+i.item+' ('+c.name+')',date:i.date})})});try{o.push(...docEvs())}catch(e){logE('calendar',e)}try{o.push(...loanEvs())}catch(e){logE('calendar',e)}return o}
 function extra(F,L){const n=today(),od=[...F,...L].filter(i=>i.odo&&i.date).sort((a,b)=>a.date.localeCompare(b.date)),f=od[0],e=od[od.length-1],span=f?(new Date(e.date)-new Date(f.date))/864e5:0,kmd=span>=7?(e.odo-f.odo)/span:0,
 all=[...F,...L].reduce((s,i)=>s+(+i.cost||0),0),dt=(a,b)=>(a.date||'').localeCompare(b.date||''),ls=[...L].sort(dt).pop(),lg=[...F].sort(dt).pop(),
 ago=d=>{const x=Math.round((new Date(n+'T00:00')-new Date(d+'T00:00'))/864e5);return x<=0?'today':x+(x>1?' days ago':' day ago')},row=(k,v)=>`<div class="r"><span class="m">${k}</span><b>${v}</b></div>`,
@@ -693,6 +703,70 @@ return `<div class="c fz"><div class="r"><span class="m">${w}${nm?', '+E(nm):''}
 ${B?`<div class="cl" onclick="setBud()"><div class="fbar" style="margin-top:12px"><i style="width:${Math.min(100,pc).toFixed(0)}%;background:${col}"></i></div><div class="r m"><span>${Math.round(pc)}% of ${rm(B)} budget</span><span>${pc>=100?rm(a-B)+' over':pace>B?'on pace for '+rm(pace):rm(B-a)+' left'}</span></div></div>`:`<button class="lnk" style="margin-top:8px" onclick="setBud()">Set a monthly budget ›</button>`}
 <div class="fmts"><button class="fmt" onclick="hsD()"><span>Health</span><b style="color:${hc}">${h.s}</b></button><button class="fmt" onclick="stD()"><span>Streak</span><b>${sk} wk</b></button><button class="fmt" onclick="achD()"><span>Badges</span><b>${u}/${Ac.length}</b></button></div>
 ${h.it.length?`<button class="lnk" onclick="hsD()">${h.it.length} thing${h.it.length>1?'s':''} to look at ›</button>`:''}</div>`}
+// ---- Car loans (hire purchase, Malaysia) ----
+// 'eir'  = agreements under the Hire-Purchase (Amendment) Act 2026 (from 1 June 2026): reducing balance,
+//          interest each month = outstanding balance x EIR / 12; settling early means paying the outstanding balance.
+// 'flat' = older agreements: flat rate on the original amount, early settlement rebate by the Rule of 78.
+const LOANCUT='2026-06-01';
+const pmt=(P,r,n)=>r>0?P*r/(1-Math.pow(1+r,-n)):P/n,
+addM=(d,k)=>{const x=new Date(d+'T00:00'),day=x.getDate();x.setDate(1);x.setMonth(x.getMonth()+k);x.setDate(Math.min(day,new Date(x.getFullYear(),x.getMonth()+1,0).getDate()));return iso(x)},
+dueBy=(d0,asOf)=>{if(!d0||asOf<d0)return 0;let k=(+asOf.slice(0,4)-+d0.slice(0,4))*12+(+asOf.slice(5,7)-+d0.slice(5,7));if(addM(d0,k)>asOf)k--;return k+1};
+// Monthly rate that makes a reducing-balance loan of P over n months cost `inst` a month (used to show the EIR of a flat-rate loan).
+function eirOf(P,n,inst){if(!(P>0&&n>0&&inst>0)||inst*n<=P)return 0;let lo=0,hi=.1;for(let i=0;i<80;i++){const m=(lo+hi)/2;pmt(P,m,n)>inst?hi=m:lo=m}return (lo+hi)/2*1200}
+function loanCalc(L,asOf){asOf=asOf||today();const P=+L.amt||0,n=Math.round(+L.n||0),flat=L.lm==='flat',rate=(+L.rate||0)/100,d0=L.date||today();if(!(P>0&&n>0))return null;
+const out={P,n,flat,d0,rows:[],end:addM(d0,n-1)};
+if(flat){const TI=P*rate*n/12,inst=+L.inst||(P+TI)/n,S=n*(n+1)/2,k0=Math.min(n,dueBy(d0,asOf)),k=n-k0,reb=TI*k*(k+1)/(n*(n+1));
+let ip=0;for(let i=1;i<=k0;i++)ip+=TI*(n-i+1)/S;
+for(let i=0;i<=n;i++){const kk=n-i;out.rows.push({d:addM(d0,i-1),bal:Math.max(0,kk*inst-TI*kk*(kk+1)/(n*(n+1)))})}
+Object.assign(out,{inst,TI,paidN:k0,leftN:k,intPaid:ip,intLeft:TI-ip,settle:Math.max(0,k*inst-reb),rebate:reb,eir:eirOf(P,n,inst),total:inst*n});return out}
+const r=rate/12,inst=+L.inst||pmt(P,r,n),pre=L.pre||{},k0=dueBy(d0,asOf);let bal=P,ip=0,it=0,i=0,paidN=0,balNow=P,intPaid=0;out.rows.push({d:addM(d0,-1),bal:P});
+while(bal>0.005&&i<n+600){const d=addM(d0,i),iv=bal*r,pay=Math.min(inst,bal+iv);bal=bal+iv-pay;it+=iv;
+Object.entries(pre).forEach(([pd,a])=>{if(pd>addM(d0,i-1)&&pd<=d)bal=Math.max(0,bal-(+a||0))});i++;out.rows.push({d,bal});if(d<=asOf){paidN=i;balNow=bal;intPaid=it}}
+if(k0===0){balNow=P;intPaid=0}
+Object.assign(out,{inst,paidN,leftN:Math.max(0,i-paidN),intPaid,intLeft:it-intPaid,TI:it,settle:balNow,eir:rate*100,total:P+it,end:addM(d0,i-1),months:i});return out}
+// Same loan with an extra amount every month, to show what paying more saves.
+function loanWhatIf(L,extra){const base=loanCalc(L);if(!base||base.flat||!(extra>0))return null;const x={...L,inst:base.inst+extra};const b=loanCalc(x);return{saved:base.TI-b.TI,months:base.months-b.months,end:b.end}}
+const loans=()=>live('loan').filter(l=>!l.carId||cars().some(c=>c.id===l.carId));
+function loanCard(){const A=loans();
+if(!A.length)return `<div class="sh"><span>Car loan</span><button class="lnk" onclick="openL()">+ Add</button></div><div class="c cl" onclick="openL()"><b>🏦 Track your car loan</b><div class="m">Monthly instalment, balance left, interest paid and what it costs to settle early. Works with new reducing-balance (EIR) loans and older flat-rate loans.</div></div>`;
+return `<div class="sh"><span>Car loan${A.length>1?'s':''}</span><button class="lnk" onclick="openL()">+ Add</button></div>`+A.map(L=>{const c=loanCalc(L);if(!c)return '';const car=cars().find(x=>x.id===L.carId),pc=c.paidN/(c.paidN+c.leftN||1)*100,done=c.leftN===0;
+return `<div class="c fz cl" data-id="${E(L.id)}" onclick="loanSheet(this.dataset.id)"><div class="r"><span class="m">${E(L.name||'Car loan')}${car?' · '+E(car.name):''}</span><span class="tag">${c.flat?'Flat rate':'EIR '+c.eir.toFixed(2)+'%'}</span></div>
+<div class="fbig">${rm(c.inst)}<small class="m" style="font-size:14px;font-weight:500"> / month</small></div><div class="m">${done?'Fully paid 🎉':c.leftN+' of '+(c.paidN+c.leftN)+' instalments left · ends '+new Date(c.end+'T00:00').toLocaleString('en-GB',{month:'short',year:'numeric'})}</div>
+<div class="fbar" style="margin-top:12px"><i style="width:${pc.toFixed(1)}%;background:var(--cy)"></i></div>
+<div class="fmts"><div class="fmt"><span>${c.flat?'Settle today':'Balance today'}</span><b>${rm(c.settle)}</b></div><div class="fmt"><span>Interest paid</span><b>${rm(c.intPaid)}</b></div><div class="fmt"><span>Interest left</span><b>${rm(c.intLeft)}</b></div></div></div>`}).join('')}
+function loanSheet(id){const L=D.items.find(i=>i.id===id);if(!L)return;const c=loanCalc(L);if(!c)return openL(id);const car=cars().find(x=>x.id===L.carId);
+const pts=c.rows.filter((_,i)=>i%Math.max(1,Math.ceil(c.rows.length/60))===0||_===c.rows[c.rows.length-1]).map(x=>({v:x.bal,l:new Date(x.d+'T00:00').toLocaleString('en-GB',{month:'short',year:'2-digit'}),t:`<b>${new Date(x.d+'T00:00').toLocaleString('en-GB',{month:'long',year:'numeric'})}</b> · ${c.flat?'settlement':'balance'} ${rm(x.bal)}`}));
+const pre=Object.entries(L.pre||{}).sort();
+sheet(`<h2>${E(L.name||'Car loan')}${car?' · '+E(car.name):''}</h2>
+<p class="m">${c.flat?'Older agreement: flat rate on the amount financed. Settling early gives a rebate on unearned interest by the Rule of 78.':'Reducing balance: each month\'s interest is the outstanding balance × EIR ÷ 12, so settling early or paying extra cuts the interest.'}</p>
+<div class="fmts"><div class="fmt"><span>Monthly</span><b>${rm(c.inst)}</b></div><div class="fmt"><span>${c.flat?'Flat rate':'EIR'}</span><b>${(+L.rate||0).toFixed(2)}%</b></div><div class="fmt"><span>${c.flat?'Equal to EIR':'Tenure'}</span><b>${c.flat?c.eir.toFixed(2)+'%':Math.round(c.n/12*10)/10+' yr'}</b></div></div>
+<div class="c fz" style="margin-top:10px"><div class="m">${c.flat?'Amount to settle':'Balance'} over time</div>${chart('ln',pts,{kind:'line',fmt:v=>'RM '+fmtN(v)})}</div>
+<div class="r mt"><span class="m">Amount financed</span><b>${rm(c.P)}</b></div><div class="r"><span class="m">Total interest</span><b>${rm(c.TI)}</b></div><div class="r"><span class="m">Total you pay</span><b>${rm(c.total)}</b></div>
+<div class="r"><span class="m">Paid so far</span><b>${c.paidN} instalment${c.paidN===1?'':'s'} · ${rm(c.paidN*c.inst)}</b></div><div class="r"><span class="m">Last instalment</span><b>${fd(c.end)}</b></div>
+<div class="r"><span class="m">${c.flat?'Settle today (after rebate)':'Settle today (balance)'}</span><b>${rm(c.settle)}</b></div>${c.flat&&c.rebate?`<div class="r"><span class="m">Rule of 78 rebate</span><b>${rm(c.rebate)}</b></div>`:''}
+<p class="m">Estimates from the figures you entered. Your bank's settlement letter is final, and it may add fees allowed by your agreement.${c.flat?' Some banks offer an extra early-settlement discount on older agreements, so ask yours.':''}</p>
+${c.flat?'':`<div class="c fz"><div class="m">What if you pay more each month?</div><div class="row mt" style="align-items:center"><input id="lwx" type="number" inputmode="decimal" min="0" step="10" placeholder="Extra RM per month" style="margin:0" oninput="lwIf('${E(id)}')"></div><div class="m" id="lwo">Type an amount to see the interest you save.</div></div>
+<div class="c fz"><div class="r"><span class="m">Extra payments</span></div>${pre.length?pre.map(([d,a])=>`<div class="r mt"><span>${fd(d)}</span><span><b>${rm(a)}</b> <button class="lnk" onclick="lnPre('${E(id)}','${d}')">Remove</button></span></div>`).join(''):'<div class="m mt">None yet. A lump sum lowers the balance, so later interest is lower.</div>'}
+<div class="row mt"><input id="lpd" type="date" value="${today()}" style="margin:0"><input id="lpa" type="number" inputmode="decimal" min="0" placeholder="RM" style="margin:0;flex:0 0 110px"><button onclick="lnPre('${E(id)}')" style="flex:0 0 auto">Add</button></div></div>`}
+<div class="row mt"><button class="g" onclick="$('#gd').close();openL('${E(id)}')">Edit loan</button>${c.leftN?`<button class="g" onclick="ics(null,{id:'loan-${E(id)}',item:'Car loan instalment ${rm(c.inst)}',date:'${addM(c.d0,c.paidN)}',label:'${E((L.name||'Car loan').replace(/'/g,''))}'})">📅 Next instalment</button>`:''}</div>`)}
+function lwIf(id){const L=D.items.find(i=>i.id===id),v=+$('#lwx').value,w=L&&loanWhatIf(L,v),o=$('#lwo');if(!o)return;o.innerHTML=w?`Save about <b>${rm(w.saved)}</b> interest and finish <b>${w.months} month${w.months===1?'':'s'}</b> earlier (${new Date(w.end+'T00:00').toLocaleString('en-GB',{month:'short',year:'numeric'})}).`:'Type an amount to see the interest you save.'}
+function lnPre(id,del){const L=D.items.find(i=>i.id===id);if(!L)return;const p={...(L.pre||{})};if(del)delete p[del];else{const d=$('#lpd').value,a=+$('#lpa').value;if(!d||!(a>0))return toast('Enter a date and amount');p[d]=(+p[d]||0)+a}
+L.pre=p;L.updated=Date.now();commit();loanSheet(id);toast(del?'Extra payment removed':'Extra payment added')}
+let editL=null;
+function openL(id){editL=id||null;const L=id?D.items.find(i=>i.id===id):{};const cs=cars();$('#lh').textContent=id?'Edit car loan':'Add car loan';
+$('#lc').innerHTML='<option value="">No car</option>'+cs.map(c=>`<option value="${E(c.id)}">${E(c.name)}</option>`).join('');$('#lc').value=id?(L.carId||''):((cur()||{}).id||'');
+$('#ln').value=L.name||'';$('#la').value=L.amt||'';$('#lyr').value=L.n?Math.round(L.n/12*100)/100:'';$('#lr').value=L.rate||'';$('#lfd').value=L.date||'';$('#li').value=L.inst||'';$('#lno').value=L.notes||'';
+$('#lm').value=L.lm||((L.date||today())<LOANCUT?'flat':'eir');$('#lxd').hidden=!id;lnForm();$('#lnd').showModal()}
+function lnForm(){const f=$('#lm').value==='flat',P=+$('#la').value,n=Math.round((+$('#lyr').value||0)*12),r=(+$('#lr').value||0)/100;
+$('#lrl').textContent=f?'Flat rate (% a year)':'Effective interest rate, EIR (% a year)';
+const est=P>0&&n>0?(f?(P+P*r*n/12)/n:pmt(P,r/12,n)):0;$('#li').placeholder=est?'About '+est.toFixed(2):'From your agreement';
+$('#lhint').textContent=f?'Signed before 1 June 2026: interest is a flat rate on the full amount, and early settlement uses the Rule of 78 rebate.':'Signed from 1 June 2026 (Hire-Purchase (Amendment) Act 2026): interest is charged on the reducing balance, shown as the EIR.'}
+$('#lnf').onsubmit=e=>{e.preventDefault();const n=Math.round((+$('#lyr').value||0)*12),a=+$('#la').value;if(!(a>0&&n>0))return alert('Enter the amount financed and the tenure.');if(!$('#lfd').value)return alert('Enter the date of your first instalment.');
+let L=editL&&D.items.find(i=>i.id===editL);if(!L){L={id:uid(),kind:'loan'};D.items.push(L)}
+Object.assign(L,{name:$('#ln').value.trim(),carId:$('#lc').value,lm:$('#lm').value,amt:a,n,rate:+$('#lr').value||0,date:$('#lfd').value,inst:+$('#li').value||0,notes:$('#lno').value.trim(),deleted:0,updated:Date.now()});
+$('#lnd').close();commit();toast(editL?'Loan updated':'Loan saved')};
+function delL(){const L=D.items.find(i=>i.id===editL);if(L)softDel(L,'lnd','Loan deleted')}
+function loanEvs(){const o=[];loans().forEach(L=>{const c=loanCalc(L);if(!c||!c.leftN)return;const nx=addM(c.d0,c.paidN);o.push({key:'loan-'+L.id,title:'Car Log: Car loan instalment '+rm(c.inst)+' ('+(L.name||'Car loan')+')',date:nx})});return o}
 const PLAN=[['Engine oil and filter',5000,6],['Air filter',20000,12],['Cabin filter',20000,12],['Spark plugs',20000,24],['Brake pads',10000,6],['Brake fluid',40000,24],['Coolant',40000,24],['Transmission fluid',40000,24],['Tyres',10000,6],['Wheel alignment',10000,12],['Battery',0,24],['Timing belt',80000,60]];
 const planCard=()=>cur()&&!mine('todo').some(t=>t.rpm||t.rpk)?'<div class="c cl" onclick="plan()" style="border-color:var(--amb)"><b>🗓️ Set up a maintenance plan</b><div class="m">Add common service intervals in one go. Garage then tells you when each one is due.</div></div>':'';
 function plan(){const T=mine('todo'),has=n=>T.some(t=>(t.item||'').toLowerCase().split(', ').includes(n.toLowerCase()));
@@ -704,7 +778,7 @@ $('#gd').close();if(n){commit();go('todo');toast('Added '+n+' reminder'+(n>1?'s'
 function bdg(){if(!('Notification' in window))return toast('Open Garage from your Home Screen first');Notification.requestPermission().then(p=>{toast(p==='granted'?'Icon badge turned on':'Permission was not given');render()})}
 function badge(){if(!navigator.setAppBadge)return;const n=cars().reduce((s,c)=>s+remOf(c).filter(i=>st(i)>0).length,0);(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}
 function memo(f){let k,v;return function(){const kk=VER+'|'+(D.cfg.sel||'')+'|'+today();if(kk!==k){v=f();k=kk}return v}}
-const APP_V='2026.11.16d',CODE_V=6;let DRE='',MISS=[];
+const APP_V='2026.11.16e',CODE_V=6;let DRE='',MISS=[];
 const logE=(a,m)=>{const x={t:Date.now(),a:String(a),m:String((m&&m.message)||m||'').replace(/token[^,;]*/gi,'token …').slice(0,300)};LOG.unshift(x);if(LOG.length>100)LOG.length=100;kv('put','log',LOG).catch(()=>{})};
 addEventListener('error',e=>logE('app',(e.message||'Error')+(e.lineno?' (line '+e.lineno+')':'')));addEventListener('unhandledrejection',e=>logE('app',e.reason));
 const okUrl=u=>/^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+|macros)\/s\/[\w-]{20,}\/(exec|dev)$/.test(u||'');
@@ -714,15 +788,16 @@ try{r=await fetch(c.url,{method:'POST',headers:{'Content-Type':'text/plain'},bod
 catch(e){throw new Error(e.name==='AbortError'?'no reply from Google after '+Math.round(t/1000)+' seconds':navigator.onLine===false?'you are offline':'could not reach Google ('+e.message+')')}finally{clearTimeout(tm)}
 const tx=await r.text();let j;try{j=JSON.parse(tx)}catch(e){throw new Error(/<html/i.test(tx)?'Google sent a web page instead of data. Check the web app link and that access is set to Anyone':'unreadable reply from Google')}
 if(j&&j.error)throw new Error(j.error);return j}
-const NUMF=['lead','budget','odo','cost','ppl','litres','tank','rpm','rpk','other','updated','full','ph','deleted'],DATEF=['date','rtax','ins','odoAt','sz'],IDF=['id','carId','rid'],
-STRF={dtype:12,ref:60,kind:8,item:300,name:120,plate:20,year:8,colour:40,engine:40,notes:1000,brand:40,state:40,area:80,ftype:30,place:120,mode:4,pt:4,icon:8};
-function clean(i){if(!i||typeof i!=='object'||Array.isArray(i))return null;if(typeof i.id!=='string'||!/^[\w.:-]{1,80}$/.test(i.id))return null;if(!['car','log','fuel','todo','svc','logo','doc'].includes(i.kind))return null;const o={};
+const NUMF=['amt','n','rate','inst','lead','budget','odo','cost','ppl','litres','tank','rpm','rpk','other','updated','full','ph','deleted'],DATEF=['date','rtax','ins','odoAt','sz'],IDF=['id','carId','rid'],
+STRF={lm:4,dtype:12,ref:60,kind:8,item:300,name:120,plate:20,year:8,colour:40,engine:40,notes:1000,brand:40,state:40,area:80,ftype:30,place:120,mode:4,pt:4,icon:8};
+function clean(i){if(!i||typeof i!=='object'||Array.isArray(i))return null;if(typeof i.id!=='string'||!/^[\w.:-]{1,80}$/.test(i.id))return null;if(!['car','log','fuel','todo','svc','logo','doc','loan'].includes(i.kind))return null;const o={};
 for(const k of Object.keys(i)){const v=i[k];
 if(NUMF.includes(k)){if(v==='')o[k]='';else if(v!=null&&v!==''){const n=+v;if(isFinite(n))o[k]=n}}
 else if(DATEF.includes(k))o[k]=typeof v==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(v)?v:'';
 else if(IDF.includes(k)){if(typeof v==='string'&&/^[\w.:-]{0,120}$/.test(v))o[k]=v}
 else if(k in STRF){if(v!=null)o[k]=String(v).slice(0,STRF[k])}
 else if(k==='logo')o[k]=typeof v==='string'&&v.length<300000&&/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(v)?v:'';
+else if(k==='pre'&&v&&typeof v==='object'){const q={};for(const[d,x]of Object.entries(v).slice(0,120)){const y=+x;if(/^\d{4}-\d{2}-\d{2}$/.test(d)&&isFinite(y)&&y>0)q[d]=y}o.pre=q}
 else if(k==='prices'&&v&&typeof v==='object'){const p={};for(const[n,x]of Object.entries(v).slice(0,40)){const y=+x;if(isFinite(y))p[String(n).slice(0,120)]=y}o.prices=p}}
 if(o.mode&&o.mode!=='and')o.mode='or';if(o.pt&&o.pt!=='pdf')o.pt='img';return o}
 async function rcpt(f){const sm=await shrink(f,1400,'image/jpeg',.72);return /jpe?g/i.test(f.type)&&f.size<sm.length*.74?rd(f):sm}
@@ -847,6 +922,7 @@ return `<div class="c"><div style="display:flex;gap:12px;align-items:center"><di
 <div class="kpis" style="grid-template-columns:repeat(2,1fr)"><div class="kpi"><span>Tracking since</span><b>${first?new Date(first+'T00:00').toLocaleString('en-GB',{month:'short',year:'numeric'}):'—'}</b></div><div class="kpi"><span>Entries</span><b>${fmtN(A.length)}</b></div><div class="kpi"><span>Distance tracked</span><b>${km(Math.round(dist))}</b></div><div class="kpi"><span>Money tracked</span><b>${rmk(sp)}</b></div></div>
 <div class="chips"><span class="chip2 cl" onclick="stD()">🔥 ${streak()}-week streak</span><span class="chip2 cl" onclick="achD()">🏆 ${u}/${B.length} badges</span><span class="chip2 cl" onclick="recap()">📤 Monthly recap</span></div>${nm?'':'<p class="m">Add your name in ⚙ Settings for a personal greeting.</p>'}</div>
 ${safe(docsCard)}
+${safe(loanCard)}
 <div class="sh"><span>My cars</span><span>${cs.length}</span></div><div class="cars">${cs.map(cc).join('')}<div class="carc add" onclick="openC()">＋ Add car</div></div>
 <div class="sh"><span>Next badges</span><span class="cl" onclick="achD()" style="color:var(--cy)">See all ›</span></div>${nb.length?nb.map(a=>`<div class="c cl" onclick="achD()"><div class="r"><span>${a.ic} <b>${E(a.t)}</b></span><span class="m">${a.n>1?fmtN(a.v)+' / '+fmtN(a.n):'Not yet'}</span></div><div class="m">${E(a.d)}</div><div class="lv"><i style="width:${(a.v/a.n*100).toFixed(0)}%"></i></div></div>`).join(''):'<p class="m">Every badge unlocked. 🏆</p>'}
 <div class="sh"><span>Service items</span><span>${S().length}</span></div><div class="c"><p class="m" style="margin-top:0">Tap one to rename it, change its icon or remove it.</p><div class="ichips">${S().map(x=>`<span onclick="svcAct('${E(x.id)}')">${E(x.icon||'🔧')} ${E(x.name)}</span>`).join('')}</div><div class="row mt"><input id="ns" placeholder="New item, e.g. Rustproofing" aria-label="New service item" style="margin:0"><button onclick="addSvc($('#ns').value);commit()">Add</button></div></div>
