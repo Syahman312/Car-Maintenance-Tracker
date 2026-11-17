@@ -797,8 +797,8 @@ return `<div class="c halert ${s===2?'bad':'soon'} cl" onclick="${t.virtual?`ope
 let FIN=null,FINERR='',FINAT=0,FINBUSY=0;
 try{const x=JSON.parse(localStorage.getItem('garage.fin')||'null');if(x&&x.fin){FIN=x.fin;FINAT=x.at||0}}catch(e){}
 async function finLoad(force){if(FINBUSY||!D.cfg.url||(!force&&Date.now()-FINAT<6e5))return;FINBUSY=1;try{const j=await api({action:'finance'},30000);
-if(j.fin){FIN=j.fin;FINERR='';FINAT=Date.now();try{localStorage.setItem('garage.fin',JSON.stringify({fin:FIN,at:FINAT}))}catch(e){}}else FINERR=j.finError||'Garage\'s script has not set up the Finance link yet';}
-catch(e){FINERR=/unknown|not.*(supported|recogni)|action/i.test(e.message)?'Update Garage\'s Code.gs with the Finance link (FinanceLink.gs)':e.message;FINAT=Date.now()}finally{FINBUSY=0}render()}
+if(j.fin){FIN=j.fin;FINERR='';FINAT=Date.now();try{localStorage.setItem('garage.fin',JSON.stringify({fin:FIN,at:FINAT}))}catch(e){}}else FINERR=j.finError||'Update Garage\'s Code.gs to version 7 (apps-script/Code.gs in the Garage repo)';}
+catch(e){FINERR=/unknown|not.*(supported|recogni)|action/i.test(e.message)?'Update Garage\'s Code.gs to version 7 (apps-script/Code.gs in the Garage repo)':e.message}finally{FINBUSY=0;FINAT=Date.now()}render()}
 const finDebt=a=>['loan','card','bnpl','borrow'].includes(a.type)||(a.owed!==null&&a.owed>0),
 finPick=c=>{if(!FIN)return{};const A=FIN.accounts||[],G=(FIN.goals||[]).filter(g=>!g.achieved),rx=[c.name,c.plate].filter(Boolean).map(x=>x.toLowerCase());
 const loan=A.find(a=>a.name===c.finLoan)||(c.finLoan===''?null:A.find(a=>a.type==='loan'&&(/car|hire|vehicle|auto|\bhp\b/i.test(a.name)||rx.some(x=>a.name.toLowerCase().includes(x))))),
@@ -825,7 +825,7 @@ $('#gd').close();if(n){commit();go('todo');toast('Added '+n+' reminder'+(n>1?'s'
 function bdg(){if(!('Notification' in window))return toast('Open Garage from your Home Screen first');Notification.requestPermission().then(p=>{toast(p==='granted'?'Icon badge turned on':'Permission was not given');render()})}
 function badge(){if(!navigator.setAppBadge)return;const n=cars().reduce((s,c)=>s+remOf(c).filter(i=>st(i)>0).length,0);(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}
 function memo(f){let k,v;return function(){const kk=VER+'|'+(D.cfg.sel||'')+'|'+today();if(kk!==k){v=f();k=kk}return v}}
-const APP_V='2026.11.17a',CODE_V=6;let DRE='',MISS=[];
+const APP_V='2026.11.17b',CODE_V=7;let DRE='',MISS=[];
 const logE=(a,m)=>{const x={t:Date.now(),a:String(a),m:String((m&&m.message)||m||'').replace(/token[^,;]*/gi,'token …').slice(0,300)};LOG.unshift(x);if(LOG.length>100)LOG.length=100;kv('put','log',LOG).catch(()=>{})};
 addEventListener('error',e=>logE('app',(e.message||'Error')+(e.lineno?' (line '+e.lineno+')':'')));addEventListener('unhandledrejection',e=>logE('app',e.reason));
 const okUrl=u=>/^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+|macros)\/s\/[\w-]{20,}\/(exec|dev)$/.test(u||'');
@@ -871,10 +871,11 @@ const c=D.cfg;if(!c.url){add('Google Sheets sync',false,'Not set up. Add your we
 add('Web app link is a Google Apps Script link',okUrl(c.url),okUrl(c.url)?'':'It should start with https://script.google.com/macros/s/ and end with /exec.');
 add('Secret word is strong',(c.token||'').length>=16,(c.token||'').length>=16?'':'Use at least 16 characters. Tap “Make a strong secret word”.');show();
 try{const h=await api({action:'health'});add('Script reachable and secret word accepted',true);
-add('Code.gs is up to date',(h.v||0)>=CODE_V,(h.v||0)>=CODE_V?'Version '+h.v:'Yours is '+(h.v?'version '+h.v:'an older version')+'. Paste the new Code.gs and redeploy.');
+add('Code.gs is up to date',(h.v||0)>=CODE_V,(h.v||0)>=CODE_V?'Version '+h.v:'Yours is '+(h.v?'version '+h.v:'an older version')+'. Paste apps-script/Code.gs from the Garage GitHub repo and redeploy.');
 add('Google Sheet',!!h.sheet,h.sheet?glink(h.sheet.url,h.sheet.name)+' · '+h.sheet.rows+' records':'');
 add('Receipts folder in Drive',c.drv?!!h.receipts:null,h.receipts?glink(h.receipts.url,'Open Garage Receipts'):c.drv?'Appears after the first receipt uploads.':'Drive receipts are switched off.');
 add('Daily backups in Drive',!!h.backups,h.backups?glink(h.backups.url,'Open Garage Backups')+(h.backups.last?' · last '+fd(h.backups.last):''):'Made on the next sync.');
+add('Finance link (loan and insurance)',(h.v||0)<7?false:h.finance?!h.finance.error:null,(h.v||0)<7?'Needs Code.gs version 7.':h.finance?(h.finance.error?E(h.finance.error):glink(h.finance.url,h.finance.name)):'Optional. Add FINANCE_SHEET_ID in Script Properties to show your loan and insurance fund.');
 add('Google Calendar',c.cal?h.calendar:null,c.cal?(h.calendar?glink('https://calendar.google.com/','“Car Log” calendar found'):'Created on the next sync.'):'Calendar reminders are switched off.');
 add('No errors logged by the script',!h.errors,h.errors?h.errors+' logged in the Log tab of your sheet. Latest: '+(h.recent||[]).slice(0,2).map(x=>E(x[1]+': '+x[2])).join(' · '):'');
 const R=D.items.filter(i=>i.rid&&!i.deleted).map(i=>i.rid);if(R.length){const m=await api({action:'check',rids:R},60000);MISS=m.missing||[];
