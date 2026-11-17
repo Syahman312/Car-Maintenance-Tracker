@@ -228,6 +228,15 @@ main{position:relative;min-height:calc(100dvh - 200px);overflow-x:clip}html,body
 .dico{width:36px;height:36px;border-radius:10px;background:#16171a;border:1px solid #24252a;display:grid;place-items:center;font-size:18px;flex:none}.flist .tag{font-size:11.5px}
 .kc .kv{font-size:20px;font-weight:700;margin:4px 0 8px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}.kc .r{margin-top:2px}.kc .kx{color:var(--tx)}.ell{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}div.fmt{cursor:default}
 .shr{display:flex;gap:12px;align-items:center}.shr .seg2 button{min-height:26px;padding:3px 10px}.ins .c b{font-size:19px}
+.hero2{padding:16px;background:radial-gradient(120% 90% at 70% 0%,#0f2633 0%,#0b0b0c 62%);border-color:#1d2a33}
+.hk{font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cy)}.ht{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15;margin-top:2px}
+.hb{flex:none;font-size:12.5px;font-weight:700;padding:5px 11px;border-radius:99px;border:1px solid currentColor;cursor:pointer;white-space:nowrap}.hb.s2{background:var(--red);color:#000;border-color:var(--red)}.hb.s1{color:var(--amb)}.hb.s0{color:var(--grn)}
+.hp{margin:12px 0 10px;display:grid;place-items:center;cursor:pointer;overflow:hidden;border-radius:14px}.hp img{display:block;width:100%;height:auto;max-height:280px;object-fit:cover;border-radius:14px}
+.hp.none{aspect-ratio:16/7;border:1px dashed #2a2c31;color:#4a4f57;gap:6px;align-content:center;font-size:13px}.hp.none svg{width:46%;max-width:220px}
+.hts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.hts button{background:#111214cc;border:1px solid #24252a;border-radius:14px;padding:10px 11px;text-align:left;color:var(--tx);font-weight:400;min-width:0;backdrop-filter:blur(6px)}
+.hts span{display:block;font-size:11.5px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.hts b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-variant-numeric:tabular-nums}.hts small{font-size:11px;color:var(--mu);margin-left:2px;font-weight:500}
+.halert{display:flex;gap:12px;align-items:flex-start;padding:14px}.halert .hai{font-size:20px;line-height:1.2}.halert.bad{background:#2a1214;border-color:#5b2328}.halert.bad b{color:#ffb4b4}.halert.soon{background:#2a2112;border-color:#5b4723}.halert.soon b{color:#ffd88a}
+.fint .c{margin:0}.fint b{display:block;margin-top:6px;font-size:15px}.fti{width:34px;height:34px;border-radius:10px;background:#16171a;border:1px solid #24252a;display:grid;place-items:center;font-size:17px}.fint{margin:8px 0}
 </style></head><body>
 <header><h1 class="sr">Garage – car maintenance and fuel tracker</h1><div class="w"><div style="display:flex;gap:10px;align-items:center"><img id="av" class="av" alt="" hidden><div><select id="cs" aria-label="Choose car" onchange="cf('sel',this.value);render()"></select><small id="sub"></small></div></div><div><div id="odo"></div><div class="hr"><button class="ib" type="button" aria-label="Settings" onclick="openSettings()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button><button class="pill" id="sy" type="button" title="Sync status. Tap for settings" onclick="openSettings()"><span class="dot" aria-hidden="true"></span><span class="sr">Sync status: </span><span id="syt">Local only</span></button></div></div></div></header>
 <main class="w"><div id="v"></div></main>
@@ -248,6 +257,7 @@ main{position:relative;min-height:calc(100dvh - 200px);overflow-x:clip}html,body
 <dialog id="cd"><form id="g"><h2 id="ctt"></h2>
 <label for="cn">Car name</label><input id="cn" required placeholder="e.g. Saga or Wife’s car">
 <label for="cl">Car logo or picture</label><input id="cl" type="file" accept="image/*"><button type="button" class="g" id="lx" onclick="rmLg=1;this.hidden=true" style="margin-bottom:12px">Remove logo</button>
+<label for="cph">Car photo (shown at the top of Reports)</label><input id="cph" type="file" accept="image/*"><button type="button" class="g" id="cphx" onclick="rmCph=1;this.hidden=true" style="margin-bottom:12px">Remove photo</button>
 <label for="co">Current odometer (km)</label><input id="co" type="number" inputmode="numeric" min="0">
 <div class="row"><div><label for="cp">Plate number</label><input id="cp"></div><div><label for="cy">Year</label><input id="cy" type="number" inputmode="numeric"></div></div>
 <div class="row"><div><label for="cc">Colour</label><input id="cc"></div><div><label for="ce">Engine</label><input id="ce" placeholder="e.g. 1.3L"></div></div>
@@ -294,7 +304,7 @@ main{position:relative;min-height:calc(100dvh - 200px);overflow-x:clip}html,body
 <script>
 var SL={rep:"reports",log:"services",fuel:"fuel",todo:"reminders",set:"garage"},LS={reports:"rep",services:"log",fuel:"fuel",reminders:"todo",garage:"set",more:"set"},VER=0,SHOW=60,QT,AT,LOG=[];
 const $=s=>document.querySelector(s),E=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-let D={items:[],cfg:{url:'',token:'',last:''}},tab='rep',bnOpen=false,kind='log',editId=null,doneId=null,editC=null,editU=null,RF='',RT='',PR={},rmLg=0,FB='',FS='',rtab='gen',rO=0,RM='all',RY=0,sel=new Set,rmPh=0,T;
+let rmCph=0;let D={items:[],cfg:{url:'',token:'',last:''}},tab='rep',bnOpen=false,kind='log',editId=null,doneId=null,editC=null,editU=null,RF='',RT='',PR={},rmLg=0,FB='',FS='',rtab='gen',rO=0,RM='all',RY=0,sel=new Set,rmPh=0,T;
 const DEF=['Engine oil and filter','Air filter','Cabin filter','Spark plugs','Brake pads','Brake fluid','Coolant','Transmission fluid','Tyres','Wheel alignment','Battery','Wiper blades','Road tax and insurance'];
 const P=new Promise((r,j)=>{const q=indexedDB.open('carlog',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)});
 const kv=(m,k,v)=>P.then(d=>new Promise((r,j)=>{const s=d.transaction('k',m==='get'?'readonly':'readwrite').objectStore('k'),q=m==='get'?s.get(k):s.put(v,k);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}));
@@ -367,9 +377,9 @@ let PDU='';function viewP(id){const it=D.items.find(i=>i.id===id)||{};DRE='';get
 if(PDU)URL.revokeObjectURL(PDU);PDU='';if(it.pt==='pdf'){const u=PDU=URL.createObjectURL(blob(p,'application/pdf'));$('#pi').hidden=true;$('#pf').hidden=false;$('#pf').src=u;$('#pb').innerHTML=`<a class="btn" href="${u}" target="_blank" rel="noopener">Open</a><a class="btn" href="${u}" download="receipt.pdf">Download</a>`}
 else{$('#pf').hidden=true;$('#pf').src='about:blank';$('#pb').innerHTML='';$('#pi').hidden=false;$('#pi').src=p}$('#pd').showModal()})}
 function openC(id){editC=id||null;const c=id?D.items.find(i=>i.id===id):{};$('#ctt').textContent=id?'Edit car':'Add car';
-$('#cn').value=c.name||'';$('#co').value=c.odo||'';$('#cc').value=c.colour||'';$('#ce').value=c.engine||'';$('#cr').value=c.rtax||'';$('#ci').value=c.ins||'';$('#ck').value=c.tank||'';rmLg=0;$('#cl').value='';$('#lx').hidden=!c.logo;$('#cp').value=c.plate||'';$('#cy').value=c.year||'';$('#cm').value=c.notes||'';$('#cx').hidden=!id;$('#cdoc').hidden=!id;$('#cd').showModal()}
+$('#cn').value=c.name||'';$('#co').value=c.odo||'';$('#cc').value=c.colour||'';$('#ce').value=c.engine||'';$('#cr').value=c.rtax||'';$('#ci').value=c.ins||'';$('#ck').value=c.tank||'';rmLg=0;rmCph=0;$('#cl').value='';$('#cph').value='';$('#cphx').hidden=!c.ph;$('#lx').hidden=!c.logo;$('#cp').value=c.plate||'';$('#cy').value=c.year||'';$('#cm').value=c.notes||'';$('#cx').hidden=!id;$('#cdoc').hidden=!id;$('#cd').showModal()}
 $('#g').onsubmit=async e=>{e.preventDefault();let c=editC&&D.items.find(i=>i.id===editC);if(!c){c={id:uid(),kind:'car'};D.items.push(c);D.cfg.sel=c.id}
-Object.assign(c,{name:$('#cn').value.trim(),odo:+$('#co').value||0,colour:$('#cc').value.trim(),engine:$('#ce').value.trim(),rtax:$('#cr').value,ins:$('#ci').value,tank:+$('#ck').value||0,plate:$('#cp').value.trim(),year:$('#cy').value.trim(),notes:$('#cm').value.trim(),updated:Date.now()});const f0=$('#cl').files[0];if(f0){try{c.logo=await shrink(f0,128,'image/webp',.85)}catch(x){}}else if(rmLg)c.logo='';$('#cd').close();commit()};
+Object.assign(c,{name:$('#cn').value.trim(),odo:+$('#co').value||0,colour:$('#cc').value.trim(),engine:$('#ce').value.trim(),rtax:$('#cr').value,ins:$('#ci').value,tank:+$('#ck').value||0,plate:$('#cp').value.trim(),year:$('#cy').value.trim(),notes:$('#cm').value.trim(),updated:Date.now()});const f0=$('#cl').files[0];if(f0){try{c.logo=await shrink(f0,128,'image/webp',.85)}catch(x){}}else if(rmLg)c.logo='';const f1=$('#cph').files[0];if(f1){try{await kv('put','p:'+c.id,await shrink(f1,1100,'image/webp',.82));c.ph=1;c.pt='img';if(c.rid){D.cfg.drop=[...(D.cfg.drop||[]),c.rid];c.rid=''}delete PHC[c.id]}catch(x){alert('Could not read that photo.')}}else if(rmCph&&c.ph){c.ph=0;c.pt='';if(c.rid){D.cfg.drop=[...(D.cfg.drop||[]),c.rid];c.rid=''}kv('put','p:'+c.id,null);delete PHC[c.id]}$('#cd').close();commit()};
 function delC(){if(!confirm('Delete this car and all its entries?'))return;const now=Date.now();D.items.forEach(i=>{if(i.id===editC||i.carId===editC){i.deleted=1;i.updated=now}});$('#cd').close();commit()}
 function commit(){save();render();if(D.cfg.url){clearTimeout(T);T=setTimeout(sync,1500)}}
 function merge(list){list=(Array.isArray(list)?list:[]).map(clean).filter(Boolean);VER++;const m=new Map(D.items.map(i=>[i.id,i]));list.forEach(i=>{const o=m.get(i.id);if(!o||o.updated<i.updated)m.set(i.id,i)});D.items=[...m.values()]}
@@ -487,7 +497,7 @@ if(yr)for(let y=a.getFullYear();y<=z.getFullYear();y++)B.push({k:''+y,l:''+y,a:0
 return B}
 function put(B,F,L,fr,to,yr){const add=(x,f)=>x.filter(i=>i.date>=fr&&i.date<=to).forEach(i=>{const m=B.find(q=>q.k===i.date.slice(0,yr?4:7));if(m)m[f]+=+i.cost||0});add(F,'a');add(L,'b');return B}
 const kc=(t,i,c,v,rows)=>`<div class="c fz kc"><div class="m">${t}</div><div class="kv">${v}</div>${rows.map(([k,x])=>`<div class="r m"><span>${k}</span><span class="kx">${x}</span></div>`).join('')}</div>`,kc0=(t,i,c,v,rows)=>`<div class="c"><div style="display:flex;gap:8px;align-items:center"><span class="ic2" style="background:${c}">${i}</span><b style="color:${c}">${t}</b></div><div class="m mt">Total</div><div style="font-size:20px;font-weight:700;color:${c}">${v}</div><div style="border-top:1px solid var(--bd);margin-top:8px;padding-top:6px">${rows.map(([k,x])=>`<div class="r"><span class="m">${k}</span><b style="font-size:13px">${x}</b></div>`).join('')}</div></div>`;
-function reports(){return safe(syncWarn)+safe(checkin)+safe(overview)+reports0()}
+function reports(){return safe(syncWarn)+safe(checkin)+safe(heroCar)+safe(finTiles)+safe(overview)+reports0()}
 function reports0(){const F=mine('fuel'),L=mine('log');if(!RT)RT=today();if(!RF)RF=iso(new Date(new Date().getFullYear(),new Date().getMonth()-11,1));
 const inR=i=>i.date>=RF&&i.date<=RT,FR=F.filter(inR),LR=L.filter(inR),A=[...FR,...LR],S2=(a,k)=>a.reduce((s,i)=>s+(+i[k]||0),0),od=A.filter(i=>i.odo).map(i=>+i.odo),dist=od.length>1?Math.max(...od)-Math.min(...od):0,
 ds=A.map(i=>i.date).sort(),days=ds.length>1?Math.max(1,Math.round((new Date(ds[ds.length-1])-new Date(ds[0]))/864e5)):0,fa=S2(FR,'cost'),sv=S2(LR,'cost'),tot=fa+sv,lt=S2(FR,'litres'),
@@ -547,7 +557,7 @@ m.textContent='Getting your location…';navigator.geolocation.getCurrentPositio
 async function lgUp(inp){const f=inp.files[0];if(!f)return;const n=$('#lgs').value;try{const d=await shrink(f,128,'image/webp',.85);let x=D.items.find(i=>i.kind==='logo'&&i.name===n);if(!x){x={id:'logo-'+n.replace(/[^a-z0-9]/gi,'-').toLowerCase(),kind:'logo',name:n};D.items.push(x)}Object.assign(x,{logo:d,deleted:0,updated:Date.now()});commit()}catch(e){alert('Could not read that picture.')}inp.value=''}
 function lgReset(){const x=D.items.find(i=>i.kind==='logo'&&i.name===$('#lgs').value);if(x){x.logo='';x.deleted=1;x.updated=Date.now();commit()}}
 const post=(o,ms)=>api(o,ms);
-async function pushFiles(){for(const it of D.items){if((it.kind!=='log'&&it.kind!=='doc')||!it.ph||it.rid||it.deleted)continue;const p=await kv('get','p:'+it.id);if(!p)continue;const pdf=it.pt==='pdf',mime=pdf?'application/pdf':(p.match(/^data:([^;]+)/)||[])[1]||'image/jpeg',
+async function pushFiles(){for(const it of D.items){if((it.kind!=='log'&&it.kind!=='doc'&&it.kind!=='car')||!it.ph||it.rid||it.deleted)continue;const p=await kv('get','p:'+it.id);if(!p)continue;const pdf=it.pt==='pdf',mime=pdf?'application/pdf':(p.match(/^data:([^;]+)/)||[])[1]||'image/jpeg',
 r=await post({action:'up',ms:0,name:(it.date||'')+' '+(it.item||it.name||'receipt').replace(/[^\w ,.-]/g,'').slice(0,40)+(pdf?'.pdf':'.jpg'),mime,data:p.split(',')[1]});
 if(!r.fid)throw new Error('update Code.gs first');it.rid=r.fid;it.updated=Date.now();await save()}}
 async function getP(it){let p=await kv('get','p:'+it.id);if(!p&&it.rid&&D.cfg.url){try{const r=await post({action:'get',fid:it.rid},60000);if(r.data&&/^(image\/[\w.+-]+|application\/pdf)$/.test(r.mime)){p='data:'+r.mime+';base64,'+r.data;await kv('put','p:'+it.id,p)}}catch(e){logE('drive',e);DRE=e.message}}return p}
@@ -767,6 +777,43 @@ Object.assign(L,{name:$('#ln').value.trim(),carId:$('#lc').value,lm:$('#lm').val
 $('#lnd').close();commit();toast(editL?'Loan updated':'Loan saved')};
 function delL(){const L=D.items.find(i=>i.id===editL);if(L)softDel(L,'lnd','Loan deleted')}
 function loanEvs(){const o=[];loans().forEach(L=>{const c=loanCalc(L);if(!c||!c.leftN)return;const nx=addM(c.d0,c.paidN);o.push({key:'loan-'+L.id,title:'Car Log: Car loan instalment '+rm(c.inst)+' ('+(L.name||'Car loan')+')',date:nx})});return o}
+// ---- Reports hero: car photo, odometer, next due and status badge, with the urgent alert below ----
+const PHC={};
+// Car photos live with receipts (device storage + Drive), not in the synced record: a photo is too big for one Sheet cell.
+function carPhoto(c){if(!c||!c.ph)return '';if(PHC[c.id]!==undefined)return PHC[c.id];PHC[c.id]='';getP(c).then(p=>{if(p){PHC[c.id]=p;render()}}).catch(()=>{});return ''}
+function heroCar(){const c=cur();if(!c)return '';const U=[...rem()].sort((a,b)=>st(b)-st(a)||(a.date||'9').localeCompare(b.date||'9')),top=U[0],s=top?st(top):0,ph=carPhoto(c);
+const badge=top?[['All good','s0','✓'],['Due soon','s1','⏰'],['Overdue','s2','⚠']][s]:['No reminders','',''],sub=[c.year,c.plate].filter(Boolean).join(' · ');
+let nx='—',nl='Next due';if(top){const{dk,dd}=dl(top);if(top.odo&&dk!==null&&(dd===null||dk<=0||!top.date))nx=fmtN(top.odo)+'<small>km</small>';else if(top.date)nx=E(sd(top.date));nl=top.virtual?top.item.replace(/ renewal$/,''):'Next due'}
+const ef=effs(mine('fuel')),av=ef.length?ef.reduce((a,e)=>a+e.km,0)/ef.reduce((a,e)=>a+e.l,0):0,lf=mine('fuel').filter(i=>i.odo).sort((a,b)=>b.odo-a.odo)[0],T=+c.tank||0,left=T&&av&&lf?Math.max(0,T*av-Math.max(0,odoNow()-lf.odo)):null,h=hs();
+return `<div class="c hero2"><div class="r" style="align-items:flex-start"><div style="min-width:0"><div class="hk">${E(sub||'My car')}</div><div class="ht">${E(c.name)}</div></div><span class="hb ${badge[1]}" onclick="go('todo')">${badge[2]?badge[2]+' ':''}${badge[0]}</span></div>
+<div class="hp${ph?'':' none'}" onclick="${ph?`viewP('${E(c.id)}')`:`openC('${E(c.id)}')`}">${ph?`<img src="${ph}" alt="${E(c.name)}">`:`<svg viewBox="0 0 240 90" aria-hidden="true"><path d="M20 66h200M44 66c0-10 8-18 18-18s18 8 18 18M160 66c0-10 8-18 18-18s18 8 18 18M30 58l10-20c4-6 10-10 18-10h70c10 0 18 4 26 10l24 14c10 2 18 4 24 10" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Add a photo of your car</span>`}</div>
+<div class="hts"><button onclick="setOdo()"><span>Odometer ✎</span><b>${fmtN(odoNow())}<small>km</small></b></button><button onclick="go('todo')"><span>${E(nl)}</span><b>${nx}</b></button>${left!==null?`<button onclick="go('fuel')"><span>Fuel left</span><b>~${fmtN(left)}<small>km</small></b></button>`:`<button onclick="hsD()"><span>Health</span><b>${h?h.s:'—'}</b></button>`}</div></div>${heroAlert(top,s)}`}
+function heroAlert(t,s){if(!t||s<1)return '';const{dd,dk}=dl(t),why=[];
+if(dk!==null&&dk<=(s===2?0:500))why.push(dk<=0?'Overdue by '+km(-dk)+' (due at '+km(t.odo)+')':km(dk)+' left (due at '+km(t.odo)+')');
+if(dd!==null&&(s===2?dd<0:dd<=30))why.push(dd<0?'Overdue by '+(-dd)+' day'+(dd<-1?'s':'')+' (due '+fd(t.date)+')':dd===0?'Due today':dd+' day'+(dd>1?'s':'')+' left (due '+fd(t.date)+')');
+return `<div class="c halert ${s===2?'bad':'soon'} cl" onclick="${t.virtual?`openD('car:${t.id==='rtax'?'roadtax':'insurance'}:${E(t.carId)}')`:`go('todo')`}"><span class="hai">${s===2?'⚠':'⏰'}</span><div style="min-width:0"><b>${E(t.item)} ${s===2?'overdue':'due soon'}</b><div class="m">${why.join(' · ')||'Check your reminders'}</div>${t.last?`<div class="m">Based on: last done ${fd(t.last.date)}${t.last.odo?' at '+km(t.last.odo):''}</div>`:''}</div></div>`}
+
+// ---- Finance link: loan balance and insurance sinking fund, read live from the Finance (Ledger) Sheet via Garage's script ----
+let FIN=null,FINERR='',FINAT=0,FINBUSY=0;
+try{const x=JSON.parse(localStorage.getItem('garage.fin')||'null');if(x&&x.fin){FIN=x.fin;FINAT=x.at||0}}catch(e){}
+async function finLoad(force){if(FINBUSY||!D.cfg.url||(!force&&Date.now()-FINAT<6e5))return;FINBUSY=1;try{const j=await api({action:'finance'},30000);
+if(j.fin){FIN=j.fin;FINERR='';FINAT=Date.now();try{localStorage.setItem('garage.fin',JSON.stringify({fin:FIN,at:FINAT}))}catch(e){}}else FINERR=j.finError||'Garage\'s script has not set up the Finance link yet';}
+catch(e){FINERR=/unknown|not.*(supported|recogni)|action/i.test(e.message)?'Update Garage\'s Code.gs with the Finance link (FinanceLink.gs)':e.message;FINAT=Date.now()}finally{FINBUSY=0}render()}
+const finDebt=a=>['loan','card','bnpl','borrow'].includes(a.type)||(a.owed!==null&&a.owed>0),
+finPick=c=>{if(!FIN)return{};const A=FIN.accounts||[],G=(FIN.goals||[]).filter(g=>!g.achieved),rx=[c.name,c.plate].filter(Boolean).map(x=>x.toLowerCase());
+const loan=A.find(a=>a.name===c.finLoan)||(c.finLoan===''?null:A.find(a=>a.type==='loan'&&(/car|hire|vehicle|auto|\bhp\b/i.test(a.name)||rx.some(x=>a.name.toLowerCase().includes(x))))),
+ins=G.find(g=>g.name===c.finIns)||(c.finIns===''?null:G.find(g=>/insur|takaful/i.test(g.name)&&(rx.some(x=>g.name.toLowerCase().includes(x))||/car|motor|vehicle/i.test(g.name)))||G.find(g=>/insur|takaful/i.test(g.name)));return{loan,ins}};
+function finTiles(){const c=cur();if(!c||!D.cfg.url)return '';finLoad();if(!FIN)return FINERR?`<div class="c fz cl" onclick="finSheet()"><div class="m">Finance link</div><div>${E(FINERR)}</div></div>`:'';
+const{loan,ins}=finPick(c),pc=ins&&ins.target?Math.min(100,(ins.saved||0)/ins.target*100):0;
+return `<div class="g2 fint"><div class="c fz cl" onclick="finSheet()"><span class="fti">🏦</span><b>Vehicle loan</b><div class="m">${loan?rm(loan.owed!==null?loan.owed:Math.abs(loan.balance||0))+' balance':'Pick the loan account ›'}</div></div>
+<div class="c fz cl" onclick="finSheet()"><span class="fti">🛡️</span><b>${ins?E(ins.name):'Car insurance'}</b><div class="m">${ins?(ins.target?Math.round(pc)+'% of '+rm(ins.target):'')+'</div><div class="fbar"><i style="width:'+pc.toFixed(0)+'%;background:var(--cy)"></i></div><div class="m">'+rm(ins.saved||0)+' set aside':'Pick the sinking fund ›'}</div></div></div>${FINERR?`<p class="m" style="margin:0 2px">Finance not refreshed: ${E(FINERR)}</p>`:''}`}
+function finSheet(){const c=cur();if(!c)return;const{loan,ins}=finPick(c),A=(FIN&&FIN.accounts||[]).filter(finDebt),G=(FIN&&FIN.goals||[]).filter(g=>!g.achieved),o=(v,l,on)=>`<option value="${E(v)}"${on?' selected':''}>${E(l)}</option>`;
+sheet(`<h2>Finance link · ${E(c.name)}</h2><p class="m">Read from your Finance (Ledger) Sheet by Garage's Google script. Garage doesn't keep its own copy, so change these figures in Finance.</p>
+${FIN?`<label class="f"><span>Loan account for this car</span><select id="fl1">${o('','None',!loan)}${A.map(a=>o(a.name,a.name+' · '+rm(a.owed!==null?a.owed:Math.abs(a.balance||0)),loan&&loan.name===a.name)).join('')}</select></label>
+<label class="f"><span>Insurance sinking fund</span><select id="fl2">${o('','None',!ins)}${G.map(g=>o(g.name,g.name+(g.target?' · '+rm(g.saved||0)+' of '+rm(g.target):''),ins&&ins.name===g.name)).join('')}</select></label>
+<button class="mt" style="width:100%" onclick="finSave()">Save</button><p class="m">Last read ${FINAT?new Date(FINAT).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'never'}.</p>`:`<p>${E(FINERR||'Not read yet.')}</p>`}
+<button class="g mt" style="width:100%" onclick="finLoad(1).then(()=>finSheet())">↻ Refresh from Finance</button>`)}
+function finSave(){const c=cur();if(!c)return;c.finLoan=$('#fl1').value;c.finIns=$('#fl2').value;c.updated=Date.now();$('#gd').close();commit();toast('Finance link saved')}
 const PLAN=[['Engine oil and filter',5000,6],['Air filter',20000,12],['Cabin filter',20000,12],['Spark plugs',20000,24],['Brake pads',10000,6],['Brake fluid',40000,24],['Coolant',40000,24],['Transmission fluid',40000,24],['Tyres',10000,6],['Wheel alignment',10000,12],['Battery',0,24],['Timing belt',80000,60]];
 const planCard=()=>cur()&&!mine('todo').some(t=>t.rpm||t.rpk)?'<div class="c cl" onclick="plan()" style="border-color:var(--amb)"><b>🗓️ Set up a maintenance plan</b><div class="m">Add common service intervals in one go. Garage then tells you when each one is due.</div></div>':'';
 function plan(){const T=mine('todo'),has=n=>T.some(t=>(t.item||'').toLowerCase().split(', ').includes(n.toLowerCase()));
@@ -778,7 +825,7 @@ $('#gd').close();if(n){commit();go('todo');toast('Added '+n+' reminder'+(n>1?'s'
 function bdg(){if(!('Notification' in window))return toast('Open Garage from your Home Screen first');Notification.requestPermission().then(p=>{toast(p==='granted'?'Icon badge turned on':'Permission was not given');render()})}
 function badge(){if(!navigator.setAppBadge)return;const n=cars().reduce((s,c)=>s+remOf(c).filter(i=>st(i)>0).length,0);(n?navigator.setAppBadge(n):navigator.clearAppBadge()).catch(()=>{})}
 function memo(f){let k,v;return function(){const kk=VER+'|'+(D.cfg.sel||'')+'|'+today();if(kk!==k){v=f();k=kk}return v}}
-const APP_V='2026.11.16e',CODE_V=6;let DRE='',MISS=[];
+const APP_V='2026.11.17a',CODE_V=6;let DRE='',MISS=[];
 const logE=(a,m)=>{const x={t:Date.now(),a:String(a),m:String((m&&m.message)||m||'').replace(/token[^,;]*/gi,'token …').slice(0,300)};LOG.unshift(x);if(LOG.length>100)LOG.length=100;kv('put','log',LOG).catch(()=>{})};
 addEventListener('error',e=>logE('app',(e.message||'Error')+(e.lineno?' (line '+e.lineno+')':'')));addEventListener('unhandledrejection',e=>logE('app',e.reason));
 const okUrl=u=>/^https:\/\/script\.google\.com\/(a\/macros\/[\w.-]+|macros)\/s\/[\w-]{20,}\/(exec|dev)$/.test(u||'');
@@ -789,7 +836,7 @@ catch(e){throw new Error(e.name==='AbortError'?'no reply from Google after '+Mat
 const tx=await r.text();let j;try{j=JSON.parse(tx)}catch(e){throw new Error(/<html/i.test(tx)?'Google sent a web page instead of data. Check the web app link and that access is set to Anyone':'unreadable reply from Google')}
 if(j&&j.error)throw new Error(j.error);return j}
 const NUMF=['amt','n','rate','inst','lead','budget','odo','cost','ppl','litres','tank','rpm','rpk','other','updated','full','ph','deleted'],DATEF=['date','rtax','ins','odoAt','sz'],IDF=['id','carId','rid'],
-STRF={lm:4,dtype:12,ref:60,kind:8,item:300,name:120,plate:20,year:8,colour:40,engine:40,notes:1000,brand:40,state:40,area:80,ftype:30,place:120,mode:4,pt:4,icon:8};
+STRF={finLoan:80,finIns:80,lm:4,dtype:12,ref:60,kind:8,item:300,name:120,plate:20,year:8,colour:40,engine:40,notes:1000,brand:40,state:40,area:80,ftype:30,place:120,mode:4,pt:4,icon:8};
 function clean(i){if(!i||typeof i!=='object'||Array.isArray(i))return null;if(typeof i.id!=='string'||!/^[\w.:-]{1,80}$/.test(i.id))return null;if(!['car','log','fuel','todo','svc','logo','doc','loan'].includes(i.kind))return null;const o={};
 for(const k of Object.keys(i)){const v=i[k];
 if(NUMF.includes(k)){if(v==='')o[k]='';else if(v!=null&&v!==''){const n=+v;if(isFinite(n))o[k]=n}}
